@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://characters/dwarf.fbx" type="PackedScene" id=1]
+[ext_resource path="res://characters/dwarf.gd" type="Script" id=2]
+
+[node name="Dwarf" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="pickaxe" parent="RootNode/group1" index="2"]
+visible = false
