@@ -13,6 +13,7 @@ export var pick_limit = 3
 export var roar_cooldown = 3.0
 export var roar_expansion = 5.0
 export var roar_radius = 3
+export var roar_delay = 1.5
 
 enum {UP, DOWN, LEFT, RIGHT}
 
@@ -27,6 +28,7 @@ func _ready():
 	name = "Player%d" % player_seat
 
 	$Model.color = color
+	$RoarDelay.wait_time = roar_delay
 
 	map = get_node("/root/Game/Level")
 	print(map)
@@ -138,25 +140,8 @@ func __discharge_roar():
 	if not roaring:
 		return
 
-	roaring = false
-	roar = 0.0
 	$RoarSphere.visible = false
-	# remaining cooldown = basic cooldown + % of reached charge
-	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
-
-	if not map:
-		return
-
-	var coord = map.world_to_coords(self.transform.origin)
-	if not coord:
-		return
-
-	var occupied_tile_pos = map.coords_to_world(coord)
-	var radius = 0.5 + (occupied_tile_pos - self.transform.origin).length() + roar
-	var blocks = map.get_blocks_in_radius(coord, radius)
-	for block_info in blocks:
-		if block_info[1] == Map.BLOCK_TYPE.NONE:
-			map.spawn_tile(block_info[0], Map.BLOCK_TYPE.SOIL)
+	$RoarDelay.start()
 
 func __update_roar(delta):
 	if not roaring:
@@ -171,3 +156,26 @@ func __update_roar(delta):
 
 func __can_roar() -> bool:
 	return roar_cooldown_remaining == 0 and roaring == false
+
+func _on_roar_delay_timeout():
+	if not map:
+		return
+
+	var global_pos = self.global_transform.origin
+	var coord = map.world_to_coords(global_pos)
+	if not coord:
+		return
+
+	var occupied_tile_pos = map.coords_to_world(coord)
+	var radius = 0.5 + (occupied_tile_pos - global_pos).length() + roar
+	var blocks = map.get_blocks_in_radius(coord, radius)
+	for block_info in blocks:
+		if block_info[0] == coord:
+			continue
+		if block_info[1] == Map.BLOCK_TYPE.NONE:
+			map.spawn_tile(block_info[0], Map.BLOCK_TYPE.SOIL)
+
+	# remaining cooldown = basic cooldown + % of reached charge
+	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
+	roaring = false
+	roar = 0.0
