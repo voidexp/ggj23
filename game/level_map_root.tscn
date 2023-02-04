@@ -17,6 +17,8 @@ soil_brick = ExtResource( 3 )
 rock_brick = ExtResource( 4 )
 
 [node name="Ground" type="StaticBody" parent="."]
+collision_layer = 0
+collision_mask = 0
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Ground"]
