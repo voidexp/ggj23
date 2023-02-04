@@ -28,30 +28,9 @@ func clear_block(i, j):
 	for free_neighbour in __get_free_neighbours(i, j):
 		var neigbour_id = __get_block_id(free_neighbour.x, free_neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
-
-func __get_block_id(x, z):
-	return z * size_x + x
-
-func __get_free_neighbours(i, j):
-	var result = []
-	for neighbour in __get_neighbours(i, j):
-		if __tile_map[neighbour.x][neighbour.y] == BLOCK_TYPE.NONE:
-			result.append(neighbour)
-
-	return result
-
-func __get_neighbours(i, j):
-	var result = []
-	if i > 0:
-		result.append(Vector2(i - 1, j))
-	if j > 0: 
-		result.append(Vector2(i, j- 1))
-	if i < size_x - 1:
-		result.append(Vector2(i + 1, j))
-	if j < size_z - 1: 
-		result.append(Vector2(i, j + 1))
-
-	return result
+	
+	var _dbg_connected = __a_star.are_points_connected(0, curr_block_id)
+	print_debug("Destroyed block (%i, %i), coonected".format(i, j), _dbg_connected)
 
 func _ready():
 	__import_block_types()
@@ -80,10 +59,13 @@ func __init_tiles():
 			var block_type = __generate_block_type_by_position(i, j)
 			row.append(block_type)
 			
-			var new_block = BLOCK_TYPES_MAP[block_type].instance()
+			var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
+			new_block.col_id = i
+			new_block.row_id = j
 
 			add_child(new_block)
 			new_block.translate(position)
+			new_block.connect("destroyed", self, "_on_GridBlock_destroyed")
 
 func __generate_block_type_by_position(i, j):
 	if i == ceil(size_x / 2) and j == ceil(size_z / 2):
@@ -95,7 +77,30 @@ func __generate_block_type_by_position(i, j):
 func __init_ground():
 	var ground_size = Vector3(size_x / 2, GROUND_THICKNESS / 2, size_z / 2)
 	$Ground/CollisionShape.shape.extents = ground_size
-	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+
+func _on_GridBlock_destroyed(i, j):
+	clear_block(i, j)
+
+func __get_block_id(x, z):
+	return z * size_x + x
+
+func __get_free_neighbours(i, j):
+	var result = []
+	for neighbour in __get_neighbours(i, j):
+		if __tile_map[neighbour.x][neighbour.y] == BLOCK_TYPE.NONE:
+			result.append(neighbour)
+
+	return result
+
+func __get_neighbours(i, j):
+	var result = []
+	if i > 0:
+		result.append(Vector2(i - 1, j))
+	if j > 0: 
+		result.append(Vector2(i, j- 1))
+	if i < size_x - 1:
+		result.append(Vector2(i + 1, j))
+	if j < size_z - 1: 
+		result.append(Vector2(i, j + 1))
+
+	return result

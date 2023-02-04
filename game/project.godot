@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "StaticBody",
+"class": "GridBlock",
+"language": "GDScript",
+"path": "res://grid_block.gd"
+} ]
+_global_script_class_icons={
+"GridBlock": ""
+}
+
 [application]
 
 config/name="GGJ23"
