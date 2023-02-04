@@ -141,6 +141,7 @@ func __discharge_roar():
 	if not roaring:
 		return
 
+	roaring = false
 	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
 	$RoarDelay.start()
