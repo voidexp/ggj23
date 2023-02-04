@@ -73,6 +73,11 @@ func get_blocks_in_radius(coords, radius):
 				result.append([row_id, col_id, __block_types_map[row_id][col_id]])
 	return result
 
+func spawn_tile(grid_pos, type):
+	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
+	__block_types_map[grid_pos.y][grid_pos.x] = type
+	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
+
 func _ready():
 	__init_vars()
 	__init_block_types()
@@ -93,8 +98,6 @@ func __init_block_types():
 
 func __generate_tiles():
 	assert(col_count % 2 == 1)
-	var start_x = -col_count / 2
-	var start_z = -row_count / 2
 
 	gold_position = Vector2(ceil(col_count / 2), ceil(row_count / 2))
 	gold_block_id = __get_block_id(gold_position.x, gold_position.y)
@@ -107,18 +110,19 @@ func __generate_tiles():
 		__blocks_map.append(blocks_row)
 
 		for col_id in range(col_count):
-			var position = Vector3(start_z + col_id, 0, start_x + row_id)
 			var block_type = __generate_block_type_by_position(row_id, col_id)
 			types_row.append(block_type)
 
-			var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
-			blocks_row.append(new_block)
-			new_block.row_id = row_id
-			new_block.col_id = col_id
+			blocks_row.append(__create_block(Vector2(col_id, row_id), block_type))
 
-			add_child(new_block)
-			new_block.translate(position)
-			new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
+func __create_block(grid_pos, block_type):
+	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
+	new_block.row_id = grid_pos.y
+	new_block.col_id = grid_pos.x
+	add_child(new_block)
+	new_block.translate(__grid_pos_to_real_pos(grid_pos))
+	new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
+	return new_block
 
 func __init_ground():
 	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
