@@ -14,9 +14,9 @@ size = Vector3( 20, 0.1, 20 )
 
 [node name="LevelMapRoot" type="Spatial"]
 script = ExtResource( 1 )
-soil_brick = ExtResource( 3 )
-rock_brick = ExtResource( 4 )
-gold_brick = ExtResource( 5 )
+soil_block = ExtResource( 4 )
+rock_block = ExtResource( 3 )
+gold_block = ExtResource( 5 )
 
 [node name="Ground" type="StaticBody" parent="."]
 collision_layer = 0
