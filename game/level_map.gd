@@ -2,6 +2,8 @@ extends Spatial
 
 enum BLOCK_TYPE {NONE, SOIL, ROCK, GOLD}
 
+signal path_state_changed
+
 export(PackedScene) var soil_block
 export(PackedScene) var rock_block
 export(PackedScene) var gold_block
@@ -199,6 +201,7 @@ func __update_paths():
 func __add_path(path_id, path):
 	if path_id in __paths:
 		return
+	emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, true)
 
 	__paths[path_id] = __draw_path(path)
 
@@ -206,6 +209,7 @@ func __remove_path(path_id):
 	if path_id in __paths:
 		for node in __paths[path_id]:
 			node.queue_free()
+		emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, false)
 		return __paths.erase(path_id)
 
 func __draw_path(path):
