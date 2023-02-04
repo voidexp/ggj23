@@ -52,6 +52,12 @@ func _physics_process(step):
 	elif last_action == RIGHT:
 		dir.x = 1
 
+	# Orient the player towards the moving direction
+	var angle = Vector3.FORWARD.signed_angle_to(dir, Vector3.UP)
+	transform.basis = Basis()
+	rotate(Vector3.UP, angle)
+
+	# Attempt to move, as long as we're not colliding
 	var offset = dir * speed * step
 	if not test_move(transform, offset) and move_and_collide(offset):
 		# TODO: what else do we do on collision?
