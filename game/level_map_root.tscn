@@ -2,9 +2,10 @@
 
 [ext_resource path="res://level_map.gd" type="Script" id=1]
 [ext_resource path="res://Ground.gd" type="Script" id=2]
-[ext_resource path="res://soil_block.tscn" type="PackedScene" id=3]
-[ext_resource path="res://rock_block.tscn" type="PackedScene" id=4]
-[ext_resource path="res://gold_block.tscn" type="PackedScene" id=5]
+[ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
+[ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
+[ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
+
 
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 10, 0.05, 10 )

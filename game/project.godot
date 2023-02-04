@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "StaticBody",
 "class": "GridBlock",
 "language": "GDScript",
-"path": "res://grid_block.gd"
+"path": "res://objects/grid_block.gd"
 } ]
 _global_script_class_icons={
 "GridBlock": ""
