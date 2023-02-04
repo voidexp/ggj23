@@ -147,12 +147,13 @@ func __discharge_roar():
 	if not map:
 		return
 
-	var coord = map.world_to_coords(self.transform.origin)
+	var global_pos = self.global_transform.origin
+	var coord = map.world_to_coords(global_pos)
 	if not coord:
 		return
 
 	var occupied_tile_pos = map.coords_to_world(coord)
-	var radius = 0.5 + (occupied_tile_pos - self.transform.origin).length() + roar
+	var radius = 0.5 + (occupied_tile_pos - global_pos).length() + roar
 	var blocks = map.get_blocks_in_radius(coord, radius)
 	for block_info in blocks:
 		if block_info[1] == Map.BLOCK_TYPE.NONE:
