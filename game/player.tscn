@@ -79,7 +79,7 @@ colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0
 gradient = SubResource( 7 )
 
 [sub_resource type="Curve" id=9]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.157303, 0.314773 ), 0.0, 0.0, 0, 0, Vector2( 0.370787, 0.1625 ), 0.0, 0.0, 0, 0, Vector2( 0.617977, 0 ), 0.0, 0.0, 0, 0 ]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.235955, 0.209091 ), 0.0, 0.0, 0, 0, Vector2( 0.483146, 0.0909091 ), 0.0, 0.0, 0, 0, Vector2( 0.741573, 0 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="CurveTexture" id=10]
 curve = SubResource( 9 )
@@ -88,7 +88,7 @@ curve = SubResource( 9 )
 emission_shape = 1
 emission_sphere_radius = 0.01
 spread = 0.0
-gravity = Vector3( 0, 4, 2 )
+gravity = Vector3( 0, 4, 0 )
 angular_velocity = 90.0
 angular_velocity_random = 1.0
 scale = 0.5
@@ -109,7 +109,7 @@ particles_anim_loop = false
 material = SubResource( 12 )
 
 [sub_resource type="Curve" id=14]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.196629, 0.671591 ), 0.0, 0.0, 0, 0, Vector2( 0.370787, 0.235227 ), 0.0, 0.0, 0, 0, Vector2( 0.58427, 0.0170454 ), 0.0, 0.0, 0, 0 ]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.0955056, 0.292045 ), 0.0, 0.0, 0, 0, Vector2( 0.393258, 0.219318 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0011363 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="CurveTexture" id=15]
 curve = SubResource( 14 )
@@ -119,7 +119,7 @@ lifetime_randomness = 1.0
 emission_shape = 1
 emission_sphere_radius = 0.01
 spread = 0.0
-gravity = Vector3( 0, 4, 2 )
+gravity = Vector3( 0, 4, 0 )
 angular_velocity = 90.0
 angular_velocity_random = 1.0
 scale = 0.4
@@ -182,15 +182,16 @@ anims/DimLight = SubResource( 5 )
 anims/RESET = SubResource( 6 )
 
 [node name="Candle" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84016, -0.490709 )
-amount = 40
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84016, -0.246253 )
+lifetime = 0.6
+speed_scale = 0.5
 process_material = SubResource( 11 )
 draw_pass_1 = SubResource( 13 )
 
 [node name="Smoke" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.76705, 0.0136309 )
-amount = 64
-lifetime = 2.0
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1089, -0.255897 )
+lifetime = 0.6
+speed_scale = 0.5
 process_material = SubResource( 16 )
 draw_pass_1 = SubResource( 18 )
 
