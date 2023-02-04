@@ -14,11 +14,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.2017, 0, 0 )
 color = Color( 0.188235, 0.243137, 0.866667, 1 )
 player_seat = 2
 
-[node name="Camera2" type="Camera" parent="."]
-transform = Transform( 0.997021, -3.37175e-09, 0.0771367, -0.0771367, -4.35812e-08, 0.997021, 0, -1, -4.37114e-08, 2.59747, 50, 0 )
-fov = 20.0
-size = 25.6113
-
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 50, 0 )
 fov = 20.0
