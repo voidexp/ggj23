@@ -36,11 +36,16 @@ func clear_block(row_id, col_id):
 	for neighbour in __get_connectable_neighbours(col_id, row_id):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
-	if __a_star.get_id_path(gold_block_id, player1_root_id):
-		print('----------Player1 connected')
-	if __a_star.get_id_path(gold_block_id, player2_root_id):
-		print('----!!!!!------Player2 connected')	
+	for player_root_id in [player1_root_id, player2_root_id]:
+		print('checkin path for %d, %d' % [gold_block_id, player_root_id])
+		var path = __a_star.get_id_path(gold_block_id, player_root_id)
+		__draw_path(path)
 
+func __draw_path(path):
+	for block_id in path:
+		var position = __get_position_by_id(block_id)
+		__draw_debug_sphere(Vector2(position.x, position.y))
+		
 func _ready():
 	__import_block_types()
 	__init_ground()
@@ -97,11 +102,14 @@ func __init_ground():
 func __generate_bases():
 	player1_root_id = __get_block_id(player1_root.x, player1_root.y)
 	player2_root_id = __get_block_id(player2_root.x, player2_root.y)
-	__draw_debug_sphere(Vector3(player1_root.x - row_count / 2 - 1, 1.5, player1_root.y - col_count / 2))
-	__draw_debug_sphere(Vector3(player2_root.x - row_count / 2 + 1, 1.5, player2_root.y - row_count / 2))
+	__draw_debug_sphere(Vector2(player1_root.x - 1, player1_root.y))
+	__draw_debug_sphere(Vector2(player2_root.x + 1, player2_root.y))
 
 func __get_block_id(col_id, row_id):
 	return row_id * col_count + col_id
+
+func __get_position_by_id(block_id):
+	return Vector2(block_id % col_count, int(block_id / col_count))
 
 func __get_connectable_neighbours(col_id, row_id):
 	var result = []
@@ -111,8 +119,8 @@ func __get_connectable_neighbours(col_id, row_id):
 			if neigbour_type == BLOCK_TYPE.GOLD:
 				print('------------Gold is found!')
 			result.append(neighbour)
-	print('---connectable neigbours for %d, %d' % [col_id, row_id])
-	print('--------------', result)
+#	print('---connectable neigbours for %d, %d' % [col_id, row_id])
+#	print('--------------', result)
 	return result
 
 func __get_neighbours(col_id, row_id):
@@ -129,7 +137,9 @@ func __get_neighbours(col_id, row_id):
 	return result
 
 # Add a debug sphere at global location.
-func __draw_debug_sphere(location, size=0.25):
+func __draw_debug_sphere(location, size=0.25, height=1.5):
+#	print('-------------drawing sphere', location, size)
+	var position = Vector3(location.x - col_count / 2, height, location.y - row_count / 2)
 	# Will usually work, but you might need to adjust this.
 	var scene_root = get_children()[0]
 	# Create sphere with low detail of size.
@@ -147,5 +157,5 @@ func __draw_debug_sphere(location, size=0.25):
 	# Add to meshinstance in the right place.
 	var node = MeshInstance.new()
 	node.mesh = sphere
-	node.global_transform.origin = location
+	node.global_transform.origin = position
 	scene_root.add_child(node)
