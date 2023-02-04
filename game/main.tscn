@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://level_map_root.tscn" type="PackedScene" id=2]
 [ext_resource path="res://camera.gd" type="Script" id=3]
+[ext_resource path="res://audio/Synth.ogg" type="AudioStream" id=4]
+[ext_resource path="res://audio/BASS.ogg" type="AudioStream" id=5]
+[ext_resource path="res://audio/DRUMS.ogg" type="AudioStream" id=6]
 
 [node name="Spatial" type="Spatial"]
 
@@ -22,3 +25,15 @@ speed = 2
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 4.23003 )
 script = ExtResource( 3 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+autoplay = true
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+autoplay = true
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+autoplay = true

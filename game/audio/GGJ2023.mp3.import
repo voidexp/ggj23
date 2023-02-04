@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/GGJ2023.mp3-a5eb9f4beaf064de17c557a3f64a89f9.mp3str"
+
+[deps]
+
+source_file="res://audio/GGJ2023.mp3"
+dest_files=[ "res://.import/GGJ2023.mp3-a5eb9f4beaf064de17c557a3f64a89f9.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
