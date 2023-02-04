@@ -13,7 +13,9 @@ func _ready():
 	name = '_'.join([name, str(row_id), str(col_id)])
 
 func queue_free():
+	
 	emit_signal("destroyed", row_id, col_id)
+	.queue_free()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
