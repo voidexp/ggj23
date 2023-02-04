@@ -34,6 +34,9 @@ func _unhandled_input(event):
 
 func _physics_process(step):
 	var movement = Vector3.ZERO
+	if not actions:
+		return
+
 	var last_action = actions.back()
 	if last_action == UP:
 		movement.z = -1
