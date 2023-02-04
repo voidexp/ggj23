@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://level_map.tscn" type="PackedScene" id=2]
@@ -69,7 +69,7 @@ color = Color( 0.188235, 0.243137, 0.866667, 1 )
 player_seat = 2
 speed = 2
 
-[node name="LevelMap" parent="." instance=ExtResource( 2 )]
+[node name="Level" parent="." instance=ExtResource( 2 )]
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 8.03318 )

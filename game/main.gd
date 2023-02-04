@@ -7,7 +7,7 @@ var p2_score = 777
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var player_positions = $LevelMap.get_player_positions()
+	var player_positions = $Level.get_player_positions()
 	$Player1.transform.origin = player_positions[0]
 	$Player2.transform.origin = player_positions[1]
 
