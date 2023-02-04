@@ -29,11 +29,13 @@ var BLOCK_TYPES_MAP = {
 	BLOCK_TYPE.GOLD: gold_block
 }
 
-var __tile_map = []
+var __block_types_map = []
+var __blocks_map = []  # TODO I don't think we really need it. Check after I get sober
 var __a_star = AStar.new()
 
 func clear_block(row_id, col_id):
-	__tile_map[row_id][col_id] = BLOCK_TYPE.NONE
+	__block_types_map[row_id][col_id] = BLOCK_TYPE.NONE
+	__blocks_map[row_id][col_id] = null
 
 	var curr_block_id = __get_block_id(col_id, row_id)
 	__a_star.add_point(curr_block_id, Vector3(col_id, 0, row_id))
@@ -47,11 +49,29 @@ func clear_block(row_id, col_id):
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
-	
-func __draw_path(path):
-	for block_id in path:
-		var position = __get_position_by_id(block_id)
-		__draw_debug_sphere(Vector2(position.x, position.y))
+
+func world_to_coords(position):
+	var coords = __real_pos_to_grid_pos(to_local(position))
+	if coords.x < 0 or coords.y < 0 or coords.x >= col_count or coords.y >= row_count:
+		return null
+
+	return coords
+
+func coords_to_world(coords):
+	if 0 <= coords.x < col_count and 0 <=coords.y < row_count:
+		return to_global(__grid_pos_to_real_pos(coords))
+
+	return null
+
+func get_blocks_in_radius(coords, radius):
+	var position = __grid_pos_to_real_pos(coords)
+	var result = []
+	for row_id in row_count:
+		var blocks_row = __block_types_map[row_id]
+		for col_id in col_count:
+			if position.distance_to(__grid_pos_to_real_pos(Vector2(col_id, row_id))) <= radius:
+				result.append([row_id, col_id, __block_types_map[row_id][col_id]])
+	return result
 
 func _ready():
 	__init_vars()
@@ -63,7 +83,7 @@ func _ready():
 func __init_vars():
 	player1_root = Vector2(0, int(row_count / 2) + 1)
 	player2_root = Vector2(col_count - 1, int(row_count / 2) + 1)
-	
+
 func __init_block_types():
 	BLOCK_TYPES_MAP = {
 	BLOCK_TYPE.SOIL: soil_block,
@@ -75,27 +95,47 @@ func __generate_tiles():
 	assert(col_count % 2 == 1)
 	var start_x = -col_count / 2
 	var start_z = -row_count / 2
-	
+
 	gold_position = Vector2(ceil(col_count / 2), ceil(row_count / 2))
 	gold_block_id = __get_block_id(gold_position.x, gold_position.y)
 	__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
 
 	for row_id in range(row_count):
-		var row = [] 
-		__tile_map.append(row)
+		var types_row = []
+		__block_types_map.append(types_row)
+		var blocks_row = []
+		__blocks_map.append(blocks_row)
 
 		for col_id in range(col_count):
 			var position = Vector3(start_z + col_id, 0, start_x + row_id)
 			var block_type = __generate_block_type_by_position(row_id, col_id)
-			row.append(block_type)
-			
+			types_row.append(block_type)
+
 			var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
+			blocks_row.append(new_block)
 			new_block.row_id = row_id
 			new_block.col_id = col_id
 
 			add_child(new_block)
 			new_block.translate(position)
 			new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
+
+func __init_ground():
+	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
+	$Ground/CollisionShape.shape.extents = ground_size
+
+func __init_players():
+	player1_root_id = __get_block_id(player1_root.x, player1_root.y)
+	player2_root_id = __get_block_id(player2_root.x, player2_root.y)
+
+	var player1_grid_pos = Vector2(player1_root.x - 1, player1_root.y)
+	var player2_grid_pos = Vector2(player2_root.x + 1, player2_root.y)
+
+	__draw_debug_sphere(player1_grid_pos)
+	__draw_debug_sphere(player2_grid_pos)
+
+	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
+	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
 
 func __generate_block_type_by_position(col_id, row_id):
 	if col_id == gold_position.x and row_id == gold_position.y:
@@ -107,26 +147,6 @@ func __generate_block_type_by_position(col_id, row_id):
 func __on_GridBlock_destroyed(row_id, col_id):
 	clear_block(row_id, col_id)
 
-func __init_ground():
-	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
-	$Ground/CollisionShape.shape.extents = ground_size
-
-func __init_players():
-	player1_root_id = __get_block_id(player1_root.x, player1_root.y)
-	player2_root_id = __get_block_id(player2_root.x, player2_root.y)
-	
-	var player1_grid_pos = Vector2(player1_root.x - 1, player1_root.y)
-	var player2_grid_pos = Vector2(player2_root.x + 1, player2_root.y)
-	
-	__draw_debug_sphere(player1_grid_pos)
-	__draw_debug_sphere(player2_grid_pos)
-
-	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
-	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
-
-func __grid_pos_to_real_pos(grid_position):
-	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
-
 func __get_block_id(col_id, row_id):
 	return row_id * col_count + col_id
 
@@ -136,7 +156,7 @@ func __get_position_by_id(block_id):
 func __get_connectable_neighbours(col_id, row_id):
 	var result = []
 	for neighbour in __get_neighbours(col_id, row_id):
-		var neigbour_type = __tile_map[neighbour.y][neighbour.x]
+		var neigbour_type = __block_types_map[neighbour.y][neighbour.x]
 		if neigbour_type== BLOCK_TYPE.NONE or neigbour_type == BLOCK_TYPE.GOLD:
 			if neigbour_type == BLOCK_TYPE.GOLD:
 				print('------------Gold is found!')
@@ -149,11 +169,11 @@ func __get_neighbours(col_id, row_id):
 	var result = []
 	if col_id > 0:
 		result.append(Vector2(col_id - 1, row_id))
-	if row_id > 0: 
+	if row_id > 0:
 		result.append(Vector2(col_id, row_id - 1))
 	if col_id < col_count - 1:
 		result.append(Vector2(col_id + 1, row_id))
-	if row_id < row_count - 1: 
+	if row_id < row_count - 1:
 		result.append(Vector2(col_id, row_id + 1))
 
 	return result
@@ -175,9 +195,20 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 	material.albedo_color = Color(1, 0, 0)
 	material.flags_unshaded = true
 	sphere.surface_set_material(0, material)
-	
+
 	# Add to meshinstance in the right place.
 	var node = MeshInstance.new()
 	node.mesh = sphere
 	node.global_transform.origin = position
 	scene_root.add_child(node)
+
+func __grid_pos_to_real_pos(grid_position):
+	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
+
+func __real_pos_to_grid_pos(position):
+	return Vector2(int(position.x + col_count / 2), int(position.z + row_count / 2))
+
+func __draw_path(path):
+	for block_id in path:
+		var position = __get_position_by_id(block_id)
+		__draw_debug_sphere(Vector2(position.x, position.y))
