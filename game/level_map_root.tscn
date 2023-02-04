@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://level_map.gd" type="Script" id=1]
 [ext_resource path="res://Ground.gd" type="Script" id=2]
 [ext_resource path="res://soil_block.tscn" type="PackedScene" id=3]
 [ext_resource path="res://rock_block.tscn" type="PackedScene" id=4]
+[ext_resource path="res://gold_block.tscn" type="PackedScene" id=5]
 
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 10, 0.05, 10 )
@@ -15,6 +16,7 @@ size = Vector3( 20, 0.1, 20 )
 script = ExtResource( 1 )
 soil_brick = ExtResource( 3 )
 rock_brick = ExtResource( 4 )
+gold_brick = ExtResource( 5 )
 
 [node name="Ground" type="StaticBody" parent="."]
 script = ExtResource( 2 )
