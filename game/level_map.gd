@@ -188,22 +188,25 @@ func __update_paths():
 	for player_root_id in [player1_root_id, player2_root_id]:
 		var path = __a_star.get_id_path(gold_block_id, player_root_id)
 		if path:
+
 			__add_path(player_root_id, path)
 		else:
 			__remove_path(player_root_id)
 
 func __add_path(path_id, path):
 	if path_id in __paths:
-		return
-	emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, true)
+		__remove_path(path_id, false)
+	else:
+		emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, true)
 
 	__paths[path_id] = __draw_path(path)
 
-func __remove_path(path_id):
+func __remove_path(path_id, notify=true):
 	if path_id in __paths:
 		for node in __paths[path_id]:
 			node.queue_free()
-		emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, false)
+		if notify:
+			emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, false)
 		return __paths.erase(path_id)
 
 func __draw_path(path):
