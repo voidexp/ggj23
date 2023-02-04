@@ -10,14 +10,19 @@ export var col_count = 21
 export var row_count = 21
 
 var player1_root
+var player1_root_id
+var player1_position
+
 var player2_root
+var player2_root_id
+var player2_position
+
 var gold_position
 var gold_block_id
 
-var player1_root_id
-var player2_root_id
-
 const GROUND_THICKNESS = 0.1
+const DEFAULT_Y = 0.0
+
 var BLOCK_TYPES_MAP = {
 	BLOCK_TYPE.SOIL: soil_block,
 	BLOCK_TYPE.ROCK: rock_block,
@@ -37,10 +42,12 @@ func clear_block(row_id, col_id):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
 	for player_root_id in [player1_root_id, player2_root_id]:
-		print('checkin path for %d, %d' % [gold_block_id, player_root_id])
 		var path = __a_star.get_id_path(gold_block_id, player_root_id)
 		__draw_path(path)
 
+func get_player_positions():
+	return [to_global(player1_position), to_global(player2_position)]
+	
 func __draw_path(path):
 	for block_id in path:
 		var position = __get_position_by_id(block_id)
@@ -51,7 +58,7 @@ func _ready():
 	__init_block_types()
 	__init_ground()
 	__generate_tiles()
-	__generate_bases()
+	__init_players()
 
 func __init_vars():
 	player1_root = Vector2(0, int(row_count / 2) + 1)
@@ -104,11 +111,22 @@ func __init_ground():
 	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
 	$Ground/CollisionShape.shape.extents = ground_size
 
-func __generate_bases():
+func __init_players():
 	player1_root_id = __get_block_id(player1_root.x, player1_root.y)
 	player2_root_id = __get_block_id(player2_root.x, player2_root.y)
-	__draw_debug_sphere(Vector2(player1_root.x - 1, player1_root.y))
-	__draw_debug_sphere(Vector2(player2_root.x + 1, player2_root.y))
+	
+	var player1_grid_pos = Vector2(player1_root.x - 1, player1_root.y)
+	var player2_grid_pos = Vector2(player2_root.x + 1, player2_root.y)
+	
+	__draw_debug_sphere(player1_grid_pos)
+	__draw_debug_sphere(player2_grid_pos)
+
+	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
+	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
+
+func __grid_pos_to_real_pos(grid_position):
+	print_debug('----------------grid_to_pos', grid_position, Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2))
+	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
 
 func __get_block_id(col_id, row_id):
 	return row_id * col_count + col_id

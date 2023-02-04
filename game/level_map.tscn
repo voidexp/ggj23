@@ -12,7 +12,7 @@ extents = Vector3( 10, 0.05, 10 )
 [sub_resource type="CubeMesh" id=5]
 size = Vector3( 20, 0.1, 20 )
 
-[node name="LevelMapRoot" type="Spatial"]
+[node name="LevelMap" type="Spatial"]
 script = ExtResource( 1 )
 soil_block = ExtResource( 4 )
 rock_block = ExtResource( 3 )
