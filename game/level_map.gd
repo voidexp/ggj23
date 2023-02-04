@@ -9,8 +9,8 @@ export(PackedScene) var gold_block
 export var col_count = 21
 export var row_count = 21
 
-var player1_root = Vector2(0, int(row_count / 2) + 1)
-var player2_root = Vector2(col_count - 1, int(row_count / 2) + 1)
+var player1_root
+var player2_root
 var gold_position
 var gold_block_id
 
@@ -45,14 +45,19 @@ func __draw_path(path):
 	for block_id in path:
 		var position = __get_position_by_id(block_id)
 		__draw_debug_sphere(Vector2(position.x, position.y))
-		
+
 func _ready():
-	__import_block_types()
+	__init_vars()
+	__init_block_types()
 	__init_ground()
 	__generate_tiles()
 	__generate_bases()
 
-func __import_block_types():
+func __init_vars():
+	player1_root = Vector2(0, int(row_count / 2) + 1)
+	player2_root = Vector2(col_count - 1, int(row_count / 2) + 1)
+	
+func __init_block_types():
 	BLOCK_TYPES_MAP = {
 	BLOCK_TYPE.SOIL: soil_block,
 	BLOCK_TYPE.ROCK: rock_block,
