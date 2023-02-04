@@ -13,7 +13,7 @@ extents = Vector3( 10, 0.05, 10 )
 
 [sub_resource type="SpatialMaterial" id=6]
 vertex_color_use_as_albedo = true
-albedo_color = Color( 0.160784, 0.141176, 0.141176, 1 )
+albedo_color = Color( 0.341176, 0.329412, 0.329412, 1 )
 
 [node name="LevelMap" type="Spatial"]
 script = ExtResource( 1 )

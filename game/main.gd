@@ -28,8 +28,8 @@ func _process(_delta):
 	$UI.p1_score = int(p1_score)
 	$UI.p2_score = int(p2_score)
 
-	assert(p1_score < 300)
-	assert(p2_score < 300)
+	assert(p1_score < 100)
+	assert(p2_score < 100)
 
 func __on_path_state_changed(player_id, is_active):
 	if player_id == 1:

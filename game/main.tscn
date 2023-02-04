@@ -62,13 +62,13 @@ script = ExtResource( 7 )
 [node name="Player1" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3383, 0, 0 )
 color = Color( 0.588235, 0.12549, 0.12549, 1 )
-speed = 2
+speed = 4
 
 [node name="Player2" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5682, 0, 0 )
 color = Color( 0.188235, 0.243137, 0.866667, 1 )
 player_seat = 2
-speed = 2
+speed = 4
 
 [node name="Level" parent="." instance=ExtResource( 2 )]
 
@@ -78,12 +78,15 @@ script = ExtResource( 3 )
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 6 )
+autoplay = true
 
 [node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 5 )
+autoplay = true
 
 [node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 4 )
+autoplay = true
 
 [node name="Scenery" parent="." instance=ExtResource( 9 )]
 
