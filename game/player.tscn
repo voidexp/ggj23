@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://characters/dwarf.tscn" type="PackedScene" id=2]
@@ -41,6 +41,37 @@ tracks/0/keys = {
 flags_transparent = true
 albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
 
+[sub_resource type="Animation" id=5]
+resource_name = "DimLight"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 9.807, 5.0, 9.807 ]
+}
+
+[sub_resource type="Animation" id=6]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 9.807 ]
+}
+
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
 
@@ -71,3 +102,14 @@ visible = false
 radial_segments = 24
 rings = 12
 material = SubResource( 4 )
+
+[node name="OmniLight2" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 0, 0 )
+light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
+light_energy = 9.807
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="OmniLight2"]
+autoplay = "DimLight"
+playback_speed = 0.5
+anims/DimLight = SubResource( 5 )
+anims/RESET = SubResource( 6 )

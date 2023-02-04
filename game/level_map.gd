@@ -74,7 +74,7 @@ func world_to_coords(position):
 	return coords
 
 func coords_to_world(coords):
-	if 0 <= coords.x < col_count and 0 <=coords.y < row_count:
+	if coords.x >= 0 and coords.x < col_count and coords.y >= 0 and coords.y < row_count:
 		return to_global(__grid_pos_to_real_pos(coords))
 
 	return null
@@ -86,7 +86,7 @@ func get_blocks_in_radius(coords, radius):
 		var blocks_row = __block_types_map[row_id]
 		for col_id in col_count:
 			if position.distance_to(__grid_pos_to_real_pos(Vector2(col_id, row_id))) <= radius:
-				result.append([row_id, col_id, __block_types_map[row_id][col_id]])
+				result.append([Vector2(row_id, col_id), __block_types_map[row_id][col_id]])
 	return result
 
 func spawn_tile(grid_pos, type):

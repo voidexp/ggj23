@@ -1,6 +1,7 @@
 extends KinematicBody
 
 const Trait = preload("res://traits/trait.gd")
+const Map = preload("res://level_map.gd")
 
 export var color: Color
 export var player_seat: int = 1
@@ -20,11 +21,15 @@ var picks = pick_limit
 var roaring = false
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
+var map: Map = null
 
 func _ready():
 	name = "Player%d" % player_seat
 
 	$Model.color = color
+
+	map = get_node("/root/Game/Level")
+	print(map)
 
 	$AnimationPlayer.connect("animation_finished", self, "__exit_cooldown")
 
@@ -139,7 +144,19 @@ func __discharge_roar():
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
 
-	# TODO: execute actual gameplay mechanic
+	if not map:
+		return
+
+	var coord = map.world_to_coords(self.transform.origin)
+	if not coord:
+		return
+
+	var occupied_tile_pos = map.coords_to_world(coord)
+	var radius = 0.5 + (occupied_tile_pos - self.transform.origin).length() + roar
+	var blocks = map.get_blocks_in_radius(coord, radius)
+	for block_info in blocks:
+		if block_info[1] == Map.BLOCK_TYPE.NONE:
+			map.spawn_tile(block_info[0], Map.BLOCK_TYPE.SOIL)
 
 func __update_roar(delta):
 	if not roaring:
