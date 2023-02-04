@@ -5,6 +5,7 @@ enum BLOCK_TYPE {NONE, SOIL, ROCK, GOLD}
 export(PackedScene) var soil_block
 export(PackedScene) var rock_block
 export(PackedScene) var gold_block
+
 export var size_x = 21
 export var size_z = 21
 
@@ -19,7 +20,38 @@ var __tile_map = []
 var __a_star = AStar.new()
 
 func clear_block(i, j):
-	pass
+	__tile_map[i][j] = BLOCK_TYPE.NONE
+
+	var curr_block_id = __get_block_id(i, j)
+	__a_star.add_point(curr_block_id, Vector2(j, j))
+
+	for free_neighbour in __get_free_neighbours(i, j):
+		var neigbour_id = __get_block_id(free_neighbour.x, free_neighbour.y)
+		__a_star.connect_points(curr_block_id, neigbour_id)
+
+func __get_block_id(x, z):
+	return z * size_x + x
+
+func __get_free_neighbours(i, j):
+	var result = []
+	for neighbour in __get_neighbours(i, j):
+		if __tile_map[neighbour.x][neighbour.y] == BLOCK_TYPE.NONE:
+			result.append(neighbour)
+
+	return result
+
+func __get_neighbours(i, j):
+	var result = []
+	if i > 0:
+		result.append(Vector2(i - 1, j))
+	if j > 0: 
+		result.append(Vector2(i, j- 1))
+	if i < size_x - 1:
+		result.append(Vector2(i + 1, j))
+	if j < size_z - 1: 
+		result.append(Vector2(i, j + 1))
+
+	return result
 
 func _ready():
 	__import_block_types()
