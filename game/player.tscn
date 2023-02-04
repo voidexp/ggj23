@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://characters/dwarf.tscn" type="PackedScene" id=2]
@@ -39,7 +39,7 @@ tracks/0/keys = {
 
 [sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
-albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
+albedo_color = Color( 1, 1, 1, 0.0392157 )
 
 [sub_resource type="Animation" id=5]
 resource_name = "DimLight"
@@ -71,6 +71,73 @@ tracks/0/keys = {
 "update": 0,
 "values": [ 9.807 ]
 }
+
+[sub_resource type="Gradient" id=7]
+colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0335255, 1 )
+
+[sub_resource type="GradientTexture" id=8]
+gradient = SubResource( 7 )
+
+[sub_resource type="Curve" id=9]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.157303, 0.314773 ), 0.0, 0.0, 0, 0, Vector2( 0.370787, 0.1625 ), 0.0, 0.0, 0, 0, Vector2( 0.617977, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=10]
+curve = SubResource( 9 )
+
+[sub_resource type="ParticlesMaterial" id=11]
+emission_shape = 1
+emission_sphere_radius = 0.01
+spread = 0.0
+gravity = Vector3( 0, 4, 2 )
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+scale = 0.5
+scale_curve = SubResource( 10 )
+color = Color( 0.94902, 0.180392, 0.054902, 1 )
+color_ramp = SubResource( 8 )
+
+[sub_resource type="SpatialMaterial" id=12]
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=13]
+material = SubResource( 12 )
+
+[sub_resource type="Curve" id=14]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.196629, 0.671591 ), 0.0, 0.0, 0, 0, Vector2( 0.370787, 0.235227 ), 0.0, 0.0, 0, 0, Vector2( 0.58427, 0.0170454 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 14 )
+
+[sub_resource type="ParticlesMaterial" id=16]
+lifetime_randomness = 1.0
+emission_shape = 1
+emission_sphere_radius = 0.01
+spread = 0.0
+gravity = Vector3( 0, 4, 2 )
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+scale = 0.4
+scale_curve = SubResource( 15 )
+color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
+
+[sub_resource type="SpatialMaterial" id=17]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=18]
+material = SubResource( 17 )
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -104,7 +171,7 @@ rings = 12
 material = SubResource( 4 )
 
 [node name="OmniLight2" type="OmniLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 1.79132, -0.349496 )
 light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
 light_energy = 9.807
 
@@ -113,3 +180,16 @@ autoplay = "DimLight"
 playback_speed = 0.5
 anims/DimLight = SubResource( 5 )
 anims/RESET = SubResource( 6 )
+
+[node name="Candle" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84016, -0.490709 )
+amount = 40
+process_material = SubResource( 11 )
+draw_pass_1 = SubResource( 13 )
+
+[node name="Smoke" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.76705, 0.0136309 )
+amount = 64
+lifetime = 2.0
+process_material = SubResource( 16 )
+draw_pass_1 = SubResource( 18 )
