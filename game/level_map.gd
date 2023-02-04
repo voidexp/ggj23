@@ -47,7 +47,20 @@ func clear_block(row_id, col_id):
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
-	
+
+func world_to_coord(position):
+	var coords = __real_pos_to_grid_pos(to_local(position))
+	if coords.x < 0 or coords.y < 0 or coords.x >= col_count or coords.y >= row_count:
+		return null
+
+	return coords
+
+func coord_to_world(coords):
+	if 0 <= coords.x < col_count and 0 <=coords.y < row_count:
+		return to_global(__grid_pos_to_real_pos(coords))
+
+	return null
+
 func __draw_path(path):
 	for block_id in path:
 		var position = __get_position_by_id(block_id)
@@ -97,16 +110,6 @@ func __generate_tiles():
 			new_block.translate(position)
 			new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
 
-func __generate_block_type_by_position(col_id, row_id):
-	if col_id == gold_position.x and row_id == gold_position.y:
-		return BLOCK_TYPE.GOLD
-	if (col_id % 2 == 1) or (row_id % 2 == 1):
-		return BLOCK_TYPE.ROCK
-	return BLOCK_TYPE.SOIL
-
-func __on_GridBlock_destroyed(row_id, col_id):
-	clear_block(row_id, col_id)
-
 func __init_ground():
 	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
 	$Ground/CollisionShape.shape.extents = ground_size
@@ -124,8 +127,15 @@ func __init_players():
 	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
 	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
 
-func __grid_pos_to_real_pos(grid_position):
-	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
+func __generate_block_type_by_position(col_id, row_id):
+	if col_id == gold_position.x and row_id == gold_position.y:
+		return BLOCK_TYPE.GOLD
+	if (col_id % 2 == 1) or (row_id % 2 == 1):
+		return BLOCK_TYPE.ROCK
+	return BLOCK_TYPE.SOIL
+
+func __on_GridBlock_destroyed(row_id, col_id):
+	clear_block(row_id, col_id)
 
 func __get_block_id(col_id, row_id):
 	return row_id * col_count + col_id
@@ -181,3 +191,9 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 	node.mesh = sphere
 	node.global_transform.origin = position
 	scene_root.add_child(node)
+
+func __grid_pos_to_real_pos(grid_position):
+	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
+
+func __real_pos_to_grid_pos(position):
+	return Vector2(int(position.x + col_count / 2), int(position.z + row_count / 2))
