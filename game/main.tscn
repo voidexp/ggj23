@@ -23,8 +23,6 @@ player_seat = 2
 speed = 2
 
 [node name="LevelMap" parent="." instance=ExtResource( 2 )]
-col_count = 27
-row_count = 27
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 4.23003 )
