@@ -26,11 +26,11 @@ func clear_block(row_id, col_id):
 	__a_star.add_point(curr_block_id, Vector3(col_id, 0, row_id))
 
 	for free_neighbour in __get_free_neighbours(row_id, col_id):
+		print_debug('Free neighbour', free_neighbour)
 		var neigbour_id = __get_block_id(free_neighbour.x, free_neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
 	
-	var _dbg_connected = __a_star.are_points_connected(1, curr_block_id)
-	print_debug("Destroyed block (%d, %d), coonected with 0, 1: " % [row_id, col_id], _dbg_connected)
+	print_debug("Destroyed block (%d, %d), coonected with: " % [row_id, col_id], __a_star.get_point_connections(curr_block_id), __a_star.get_point_capacity())
 
 func _ready():
 	__import_block_types()
