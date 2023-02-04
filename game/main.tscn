@@ -11,7 +11,6 @@
 
 [sub_resource type="Animation" id=5]
 resource_name = "MainLight"
-length = 3.0
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:light_energy")
@@ -23,7 +22,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.5, 1 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
-"values": [ 9.924, 5.451, 9.959 ]
+"values": [ 2.0, 0.0, 2.0 ]
 }
 
 [sub_resource type="Animation" id=6]
@@ -86,13 +85,12 @@ stream = ExtResource( 4 )
 
 [node name="OmniLight" type="OmniLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.40069, 0.010469 )
-light_color = Color( 0.941176, 0.780392, 0.0392157, 1 )
+light_color = Color( 0.603922, 0.564706, 0.372549, 1 )
 light_energy = 9.924
-light_indirect_energy = 11.448
-omni_range = 18.455
+omni_range = 53.714
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="OmniLight"]
 autoplay = "MainLight"
-playback_speed = 0.5
+playback_speed = 0.01
 anims/MainLight = SubResource( 5 )
 anims/RESET = SubResource( 6 )
