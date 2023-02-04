@@ -125,7 +125,6 @@ func __init_players():
 	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
 
 func __grid_pos_to_real_pos(grid_position):
-	print_debug('----------------grid_to_pos', grid_position, Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2))
 	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
 
 func __get_block_id(col_id, row_id):
