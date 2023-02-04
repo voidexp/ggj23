@@ -51,22 +51,11 @@ func clear_block(row_id, col_id):
 		else:
 			__remove_path(player_root_id)
 
-func __add_path(path_id, path):
-	if path_id in __paths:
-		return
-
-	__paths[path_id] = __draw_path(path)
-
-func __remove_path(path_id):
-	if path_id in __paths:
-		for shape in __paths[path_id]:
-			shape.queue_free()
-		return __paths.erase(path_id)
-
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
 
 func world_to_coords(position):
+	print('-----world_to_coords', position)
 	var coords = __real_pos_to_grid_pos(to_local(position))
 	if coords.x < 0 or coords.y < 0 or coords.x >= col_count or coords.y >= row_count:
 		return null
@@ -74,22 +63,25 @@ func world_to_coords(position):
 	return coords
 
 func coords_to_world(coords):
+	print('-----coords_to_world', coords)
 	if coords.x >= 0 and coords.x < col_count and coords.y >= 0 and coords.y < row_count:
 		return to_global(__grid_pos_to_real_pos(coords))
 
 	return null
 
 func get_blocks_in_radius(coords, radius):
+	print('---------get_blocks_in_radius', coords, radius)
 	var position = __grid_pos_to_real_pos(coords)
 	var result = []
 	for row_id in row_count:
 		var blocks_row = __block_types_map[row_id]
 		for col_id in col_count:
 			if position.distance_to(__grid_pos_to_real_pos(Vector2(col_id, row_id))) <= radius:
-				result.append([Vector2(row_id, col_id), __block_types_map[row_id][col_id]])
+				result.append([Vector2(col_id, row_id), __block_types_map[row_id][col_id]])
 	return result
 
 func spawn_tile(grid_pos, type):
+	print('---------spawn_tile', grid_pos, type)
 	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
 	__block_types_map[grid_pos.y][grid_pos.x] = type
 	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
@@ -199,6 +191,25 @@ func __get_neighbours(col_id, row_id):
 
 	return result
 
+func __add_path(path_id, path):
+	if path_id in __paths:
+		return
+
+	__paths[path_id] = __draw_path(path)
+
+func __remove_path(path_id):
+	if path_id in __paths:
+		for shape in __paths[path_id]:
+			shape.queue_free()
+		return __paths.erase(path_id)
+
+func __draw_path(path):
+	var all_spheres = []
+	for block_id in path:
+		var position = __get_position_by_id(block_id)
+		all_spheres.append(__draw_debug_sphere(Vector2(position.x, position.y)))
+	return all_spheres
+
 # Add a debug sphere at global location.
 func __draw_debug_sphere(location, size=0.25, height=1.5):
 #	print('-------------drawing sphere', location, size)
@@ -229,10 +240,3 @@ func __grid_pos_to_real_pos(grid_position):
 
 func __real_pos_to_grid_pos(position):
 	return Vector2(int(position.x + col_count / 2), int(position.z + row_count / 2))
-
-func __draw_path(path):
-	var all_spheres = []
-	for block_id in path:
-		var position = __get_position_by_id(block_id)
-		all_spheres.append(__draw_debug_sphere(Vector2(position.x, position.y)))
-	return all_spheres
