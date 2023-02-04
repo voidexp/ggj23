@@ -39,7 +39,7 @@ tracks/0/keys = {
 
 [sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
-albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
+albedo_color = Color( 1, 1, 1, 0.0392157 )
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -67,7 +67,6 @@ anims/Cooldown = SubResource( 2 )
 anims/RESET = SubResource( 3 )
 
 [node name="RoarSphere" type="CSGSphere" parent="."]
-visible = false
 radial_segments = 24
 rings = 12
 material = SubResource( 4 )

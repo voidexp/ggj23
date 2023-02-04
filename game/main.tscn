@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://level_map.tscn" type="PackedScene" id=2]
@@ -8,6 +8,68 @@
 [ext_resource path="res://audio/DRUMS.ogg" type="AudioStream" id=6]
 [ext_resource path="res://main.gd" type="Script" id=7]
 
+[sub_resource type="Animation" id=1]
+resource_name = "DimLight"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 9.807, 5.0, 9.807 ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 9.807 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "DimLight"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 9.807, 5.0, 9.807 ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 9.807 ]
+}
+
 [node name="Spatial" type="Spatial"]
 script = ExtResource( 7 )
 
@@ -16,18 +78,37 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3383, 0, 0 )
 color = Color( 0.588235, 0.12549, 0.12549, 1 )
 speed = 2
 
+[node name="OmniLight" type="OmniLight" parent="Player1"]
+light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
+light_energy = 9.807
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player1/OmniLight"]
+autoplay = "DimLight"
+playback_speed = 0.4
+anims/DimLight = SubResource( 1 )
+anims/RESET = SubResource( 2 )
+
 [node name="Player2" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5682, 0, 0 )
 color = Color( 0.188235, 0.243137, 0.866667, 1 )
 player_seat = 2
 speed = 2
 
+[node name="OmniLight2" type="OmniLight" parent="Player2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 0, 0 )
+light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
+light_energy = 9.807
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="Player2/OmniLight2"]
+autoplay = "DimLight"
+playback_speed = 0.4
+anims/DimLight = SubResource( 3 )
+anims/RESET = SubResource( 4 )
+
 [node name="LevelMap" parent="." instance=ExtResource( 2 )]
-col_count = 27
-row_count = 27
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 4.23003 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 8.03318 )
 script = ExtResource( 3 )
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
@@ -41,3 +122,10 @@ autoplay = true
 [node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 4 )
 autoplay = true
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.40069, 0.010469 )
+light_color = Color( 0.941176, 0.780392, 0.0392157, 1 )
+light_energy = 8.756
+light_indirect_energy = 9.339
+omni_range = 18.455
