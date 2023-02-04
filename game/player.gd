@@ -1,53 +1,68 @@
 extends KinematicBody
 
+const Trait = preload("res://traits/trait.gd")
+
 export var color: Color
 export var player_seat: int = 1
 export var speed: int = 1
 
 enum {UP, DOWN, LEFT, RIGHT}
 
-var actions = []
+var movements = []
 
 func _ready():
-	$Model.color = color
+	name = "Player%d" % player_seat
 
+	$Model.color = color
 
 func _unhandled_input(event):
 	if event.is_action_released("p%d_move_right" % player_seat):
-		actions.erase(RIGHT)
+		movements.erase(RIGHT)
 	if event.is_action_released("p%d_move_left" % player_seat):
-		actions.erase(LEFT)
+		movements.erase(LEFT)
 	if event.is_action_released("p%d_move_up" % player_seat):
-		actions.erase(UP)
+		movements.erase(UP)
 	if event.is_action_released("p%d_move_down" % player_seat):
-		actions.erase(DOWN)
+		movements.erase(DOWN)
 
 	if event.is_action_pressed("p%d_move_down" % player_seat):
-		actions.push_back(DOWN)
+		movements.push_back(DOWN)
 	if event.is_action_pressed("p%d_move_up" % player_seat):
-		actions.push_back(UP)
+		movements.push_back(UP)
 	if event.is_action_pressed("p%d_move_left" % player_seat):
-		actions.push_back(LEFT)
+		movements.push_back(LEFT)
 	if event.is_action_pressed("p%d_move_right" % player_seat):
-		actions.push_back(RIGHT)
+		movements.push_back(RIGHT)
 
+	if event.is_action_pressed("p%d_action" % player_seat):
+		__do_pick()
 
 func _physics_process(step):
-	var movement = Vector3.ZERO
-	if not actions:
+	var dir = Vector3.ZERO
+	if not movements:
 		return
 
-	var last_action = actions.back()
+	var last_action = movements.back()
 	if last_action == UP:
-		movement.z = -1
+		dir.z = -1
 	elif last_action == DOWN:
-		movement.z = 1
+		dir.z = 1
 	elif last_action == LEFT:
-		movement.x = -1
+		dir.x = -1
 	elif last_action == RIGHT:
-		movement.x = 1
+		dir.x = 1
 
-	var offset = movement * speed * step
-	if not test_move(transform, offset) and move_and_collide(movement * speed * step):
+	var offset = dir * speed * step
+	if not test_move(transform, offset) and move_and_collide(offset):
 		# TODO: what else do we do on collision?
 		pass
+
+func __do_pick():
+	var target = $RayCast.get_collider() as Spatial
+	if not target:
+		return
+
+	for node in target.get_children():
+		if node.is_in_group("traits"):
+			var aspect = node as Trait
+			aspect.handle_pick(self, 10)

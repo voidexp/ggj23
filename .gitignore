@@ -1,3 +1,5 @@
+# VSCode
+.vscode/
 
 # Godot-specific ignores
 .import/

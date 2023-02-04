@@ -1,16 +1,17 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://level_map_root.tscn" type="PackedScene" id=2]
+[ext_resource path="res://soil_block.tscn" type="PackedScene" id=3]
 
 [node name="Spatial" type="Spatial"]
 
 [node name="Player1" parent="." instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6904, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3383, 0, 0 )
 color = Color( 0.588235, 0.12549, 0.12549, 1 )
 
 [node name="Player2" parent="." instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.2017, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5682, 0, 0 )
 color = Color( 0.188235, 0.243137, 0.866667, 1 )
 player_seat = 2
 
@@ -20,3 +21,13 @@ fov = 20.0
 size = 25.6113
 
 [node name="LevelMapRoot" parent="." instance=ExtResource( 2 )]
+
+[node name="SoilBlock" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4636, 0, 3.0694 )
+collision_layer = 1
+collision_mask = 1
+
+[node name="SoilBlock2" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.4166, 0, 3.0694 )
+collision_layer = 1
+collision_mask = 1
