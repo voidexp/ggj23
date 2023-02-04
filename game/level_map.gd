@@ -44,12 +44,14 @@ func clear_block(row_id, col_id):
 	for neighbour in __get_connectable_neighbours(col_id, row_id):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
-	for player_root_id in [player1_root_id, player2_root_id]:
-		var path = __a_star.get_id_path(gold_block_id, player_root_id)
-		if path:
-			__add_path(player_root_id, path)
-		else:
-			__remove_path(player_root_id)
+	__update_paths()
+
+func spawn_tile(grid_pos, type):
+	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
+	__block_types_map[grid_pos.y][grid_pos.x] = type
+	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
+	__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
+	__update_paths()
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
@@ -81,13 +83,6 @@ func get_blocks_in_radius(coords, radius):
 				result.append([Vector2(col_id, row_id), __block_types_map[row_id][col_id]])
 	print('---------result', result)
 	return result
-
-func spawn_tile(grid_pos, type):
-	print('---------spawn_tile', grid_pos, type)
-	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
-	__block_types_map[grid_pos.y][grid_pos.x] = type
-	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
-	__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
 
 func _ready():
 	__init_vars()
@@ -193,6 +188,14 @@ func __get_neighbours(col_id, row_id):
 
 	return result
 
+func __update_paths():
+	for player_root_id in [player1_root_id, player2_root_id]:
+		var path = __a_star.get_id_path(gold_block_id, player_root_id)
+		if path:
+			__add_path(player_root_id, path)
+		else:
+			__remove_path(player_root_id)
+
 func __add_path(path_id, path):
 	if path_id in __paths:
 		return
@@ -201,8 +204,8 @@ func __add_path(path_id, path):
 
 func __remove_path(path_id):
 	if path_id in __paths:
-		for shape in __paths[path_id]:
-			shape.queue_free()
+		for node in __paths[path_id]:
+			node.queue_free()
 		return __paths.erase(path_id)
 
 func __draw_path(path):
@@ -217,7 +220,6 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 #	print('-------------drawing sphere', location, size)
 	var position = Vector3(location.x - col_count / 2, height, location.y - row_count / 2)
 	# Will usually work, but you might need to adjust this.
-	var scene_root = get_children()[0]
 	# Create sphere with low detail of size.
 	var sphere = SphereMesh.new()
 	sphere.radial_segments = 4
@@ -234,8 +236,8 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 	var node = MeshInstance.new()
 	node.mesh = sphere
 	node.global_transform.origin = position
-	scene_root.add_child(node)
-	return sphere
+	add_child(node)
+	return node
 
 func __grid_pos_to_real_pos(grid_position):
 	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
