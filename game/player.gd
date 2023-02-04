@@ -61,7 +61,7 @@ func _process(delta):
 
 func _physics_process(step):
 	var dir = Vector3.ZERO
-	if not movements:
+	if not movements or roaring:
 		return
 
 	var last_action = movements.back()
