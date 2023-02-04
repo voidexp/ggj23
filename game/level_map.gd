@@ -53,7 +53,13 @@ func world_to_coord(position):
 	if coords.x < 0 or coords.y < 0 or coords.x >= col_count or coords.y >= row_count:
 		return null
 
-	return __real_pos_to_grid_pos(to_local(position))
+	return coords
+
+func coord_to_world(coords):
+	if 0 <= coords.x < col_count and 0 <=coords.y < row_count:
+		return to_global(__grid_pos_to_real_pos(coords))
+
+	return null
 
 func __draw_path(path):
 	for block_id in path:
