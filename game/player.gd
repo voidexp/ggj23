@@ -9,10 +9,17 @@ export var speed: int = 1
 export var pick_cooldown = 1.0
 export var pick_limit = 3
 
+export var roar_cooldown = 3.0
+export var roar_expansion = 5.0
+export var roar_radius = 3
+
 enum {UP, DOWN, LEFT, RIGHT}
 
 var movements = []
 var picks = pick_limit
+var roaring = false
+var roar = 0.0
+var roar_cooldown_remaining = 0.0
 
 func _ready():
 	name = "Player%d" % player_seat
@@ -43,8 +50,14 @@ func _unhandled_input(event):
 	if event.is_action_pressed("p%d_action" % player_seat):
 		__do_pick()
 
-func _process(_delta):
+	if event.is_action_pressed("p%d_aux_action" % player_seat):
+		__charge_roar()
+	elif event.is_action_released("p%d_aux_action" % player_seat):
+		__discharge_roar()
+
+func _process(delta):
 	__update_cooldown()
+	__update_roar(delta)
 
 func _physics_process(step):
 	var dir = Vector3.ZERO
@@ -90,7 +103,7 @@ func __do_pick():
 			aspect.handle_pick(self, 10)
 
 func __enter_cooldown():
-	$AnimationPlayer.play("Cooldown", -1, 1/ pick_cooldown)
+	$AnimationPlayer.play("Cooldown", -1, 1 / pick_cooldown)
 
 func __exit_cooldown(__unused=null):
 	picks = pick_limit
@@ -108,3 +121,36 @@ func __update_cooldown():
 			0.1)
 	else:
 		$Cooldown.text = "%d" % picks
+
+func __charge_roar():
+	if not __can_roar():
+		return
+
+	roaring = true
+	$RoarSphere.visible = true
+
+func __discharge_roar():
+	if not roaring:
+		return
+
+	roaring = false
+	roar = 0.0
+	$RoarSphere.visible = false
+	# remaining cooldown = basic cooldown + % of reached charge
+	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
+
+	# TODO: execute actual gameplay mechanic
+
+func __update_roar(delta):
+	if not roaring:
+		# update the cooldown
+		roar_cooldown_remaining -= delta
+		if roar_cooldown_remaining <= 0:
+			roar_cooldown_remaining = 0
+	else:
+		# update the roar expansion
+		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
+		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
+
+func __can_roar() -> bool:
+	return roar_cooldown_remaining == 0 and roaring == false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://characters/dwarf.tscn" type="PackedScene" id=2]
@@ -37,6 +37,10 @@ tracks/0/keys = {
 "values": [ Color( 1, 1, 1, 1 ) ]
 }
 
+[sub_resource type="SpatialMaterial" id=4]
+flags_transparent = true
+albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
+
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
 
@@ -61,3 +65,9 @@ valign = 1
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Cooldown = SubResource( 2 )
 anims/RESET = SubResource( 3 )
+
+[node name="RoarSphere" type="CSGSphere" parent="."]
+visible = false
+radial_segments = 24
+rings = 12
+material = SubResource( 4 )
