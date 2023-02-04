@@ -24,6 +24,7 @@ var roar = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
 var map: Map = null
+var snap_to = null
 
 func _ready():
 	name = "Player%d" % player_seat
@@ -32,7 +33,6 @@ func _ready():
 	$RoarDelay.wait_time = roar_delay
 
 	map = get_node("/root/Game/Level")
-	print(map)
 
 	$AnimationPlayer.connect("animation_finished", self, "__exit_cooldown")
 
@@ -68,30 +68,75 @@ func _process(delta):
 	__update_roar(delta)
 
 func _physics_process(step):
-	var dir = Vector3.ZERO
-	if not movements:
-		return
+	var dir
 
-	var last_action = movements.back()
-	if last_action == UP:
-		dir.z = -1
-	elif last_action == DOWN:
-		dir.z = 1
-	elif last_action == LEFT:
-		dir.x = -1
-	elif last_action == RIGHT:
-		dir.x = 1
+	if snap_to:
+		dir = (snap_to - global_transform.origin).normalized()
+	else:
+		dir = Vector3.ZERO
+		if not movements or roaring:
+			return
+
+		var last_action = movements.back()
+		if last_action == UP:
+			dir.z = -1
+		elif last_action == DOWN:
+			dir.z = 1
+		elif last_action == LEFT:
+			dir.x = -1
+		elif last_action == RIGHT:
+			dir.x = 1
+
+		snap_to = __get_snap_target(dir)
+		print("Snapping to: %s" % snap_to)
 
 	# Orient the player towards the moving direction
 	var angle = Vector3.FORWARD.signed_angle_to(dir, Vector3.UP)
 	transform.basis = Basis()
 	rotate(Vector3.UP, angle)
 
-	# Attempt to move, as long as we're not colliding
-	var offset = dir * speed * step
-	if not test_move(transform, offset) and move_and_collide(offset):
-		# TODO: what else do we do on collision?
-		pass
+	# Attempt to move, as long as we're not colliding and not overshooting the
+	# snap target
+	var snap_dist = INF if not snap_to else (global_transform.origin - snap_to).length()
+	var offset = min(speed * step, snap_dist)
+	var move_delta = dir * offset
+
+	# TODO: maybe this whole movement logic could be simplified
+	var collision = test_move(transform, move_delta)
+	if not collision:
+		collision = move_and_collide(move_delta) != null
+		if snap_to and (global_transform.origin - snap_to).length() <= 0.001:
+			transform.origin = snap_to
+			snap_to = null
+			collision = false
+			print("Snap reached")
+	if snap_to and collision:
+		snap_to = null
+		print("Snap canceled")
+
+func __get_snap_target(dir):
+	if not map:
+		# no map found, abort
+		return null
+
+	var pos = global_transform.origin
+	var coord = map.world_to_coords(pos)
+	if not coord:
+		# not on map, abort
+		return null
+
+	# go over neighbors of the current tile and pick the one we're looking at
+	var neighbors = map.get_neighbors(coord.x, coord.y)
+	for n_coord in neighbors:
+		# 1. obtain world position of the tile
+		var n_pos = map.coords_to_world(n_coord)
+		# 2. compute the direction to it
+		var n_dir = (n_pos - pos).normalized()
+		# 3. perform dot product with desired movement direction
+		var dot = n_dir.dot(dir)
+		# 4. if dot is close to unit, then the directions match
+		if abs(dot - 1.0) <= 0.1:
+			return n_pos
 
 func __do_pick():
 	if __is_in_cooldown():

@@ -59,8 +59,6 @@ func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
 
 func world_to_coords(position):
-	print('-----world_to_coords', position)
-	print('-----local_pos', to_local(position))
 	var coords = __real_pos_to_grid_pos(to_local(position))
 	if coords.x < 0 or coords.y < 0 or coords.x >= col_count or coords.y >= row_count:
 		return null
@@ -68,7 +66,6 @@ func world_to_coords(position):
 	return coords
 
 func coords_to_world(coords):
-	print('-----coords_to_world', coords)
 	if coords.x >= 0 and coords.x < col_count and coords.y >= 0 and coords.y < row_count:
 		return to_global(__grid_pos_to_real_pos(coords))
 
@@ -83,7 +80,19 @@ func get_blocks_in_radius(coords, radius):
 		for col_id in col_count:
 			if position.distance_to(__grid_pos_to_real_pos(Vector2(col_id, row_id))) <= radius:
 				result.append([Vector2(col_id, row_id), __block_types_map[row_id][col_id]])
-	print('---------result', result)
+	return result
+
+func get_neighbors(col_id, row_id):
+	var result = []
+	if col_id > 0:
+		result.append(Vector2(col_id - 1, row_id))
+	if row_id > 0:
+		result.append(Vector2(col_id, row_id - 1))
+	if col_id < col_count - 1:
+		result.append(Vector2(col_id + 1, row_id))
+	if row_id < row_count - 1:
+		result.append(Vector2(col_id, row_id + 1))
+
 	return result
 
 func _ready():
@@ -167,27 +176,12 @@ func __get_position_by_id(block_id):
 
 func __get_connectable_neighbours(col_id, row_id):
 	var result = []
-	for neighbour in __get_neighbours(col_id, row_id):
+	for neighbour in get_neighbors(col_id, row_id):
 		var neigbour_type = __block_types_map[neighbour.y][neighbour.x]
 		if neigbour_type== BLOCK_TYPE.NONE or neigbour_type == BLOCK_TYPE.GOLD:
 			if neigbour_type == BLOCK_TYPE.GOLD:
 				print('------------Gold is found!')
 			result.append(neighbour)
-#	print('---connectable neigbours for %d, %d' % [col_id, row_id])
-#	print('--------------', result)
-	return result
-
-func __get_neighbours(col_id, row_id):
-	var result = []
-	if col_id > 0:
-		result.append(Vector2(col_id - 1, row_id))
-	if row_id > 0:
-		result.append(Vector2(col_id, row_id - 1))
-	if col_id < col_count - 1:
-		result.append(Vector2(col_id + 1, row_id))
-	if row_id < row_count - 1:
-		result.append(Vector2(col_id, row_id + 1))
-
 	return result
 
 func __update_paths():
@@ -221,7 +215,6 @@ func __draw_path(path):
 
 # Add a debug sphere at global location.
 func __draw_debug_sphere(location, size=0.25, height=1.5):
-#	print('-------------drawing sphere', location, size)
 	var position = Vector3(location.x - col_count / 2, height, location.y - row_count / 2)
 	# Will usually work, but you might need to adjust this.
 	# Create sphere with low detail of size.
