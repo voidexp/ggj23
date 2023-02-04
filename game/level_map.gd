@@ -156,8 +156,8 @@ func __generate_block_type_by_position(col_id, row_id):
 	if col_id == gold_position.x and row_id == gold_position.y:
 		return BLOCK_TYPE.GOLD
 	if (col_id % 2 == 1) or (row_id % 2 == 1):
-		return BLOCK_TYPE.ROCK
-	return BLOCK_TYPE.SOIL
+		return BLOCK_TYPE.SOIL
+	return BLOCK_TYPE.ROCK
 
 func __on_GridBlock_destroyed(row_id, col_id):
 	clear_block(row_id, col_id)

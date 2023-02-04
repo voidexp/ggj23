@@ -195,5 +195,6 @@ process_material = SubResource( 16 )
 draw_pass_1 = SubResource( 18 )
 
 [node name="RoarDelay" type="Timer" parent="."]
+one_shot = true
 
 [connection signal="timeout" from="RoarDelay" to="." method="_on_roar_delay_timeout"]
