@@ -67,6 +67,7 @@ anims/Cooldown = SubResource( 2 )
 anims/RESET = SubResource( 3 )
 
 [node name="RoarSphere" type="CSGSphere" parent="."]
+visible = false
 radial_segments = 24
 rings = 12
 material = SubResource( 4 )

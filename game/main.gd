@@ -1,9 +1,8 @@
 extends Spatial
 
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var p1_score = 999
+var p2_score = 777
 
 
 # Called when the node enters the scene tree for the first time.
@@ -13,6 +12,6 @@ func _ready():
 	$Player2.transform.origin = player_positions[1]
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func _process(_delta):
+	$UI.p1_score = p1_score
+	$UI.p2_score = p2_score
