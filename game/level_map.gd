@@ -32,6 +32,7 @@ var BLOCK_TYPES_MAP = {
 var __block_types_map = []
 var __blocks_map = []  # TODO I don't think we really need it. Check after I get sober
 var __a_star = AStar.new()
+var __paths = {}
 
 func clear_block(row_id, col_id):
 	__block_types_map[row_id][col_id] = BLOCK_TYPE.NONE
@@ -45,7 +46,22 @@ func clear_block(row_id, col_id):
 		__a_star.connect_points(curr_block_id, neigbour_id)
 	for player_root_id in [player1_root_id, player2_root_id]:
 		var path = __a_star.get_id_path(gold_block_id, player_root_id)
-		__draw_path(path)
+		if path:
+			__add_path(player_root_id, path)
+		else:
+			__remove_path(player_root_id)
+
+func __add_path(path_id, path):
+	if path_id in __paths:
+		return
+
+	__paths[path_id] = __draw_path(path)
+
+func __remove_path(path_id):
+	if path_id in __paths:
+		for shape in __paths[path_id]:
+			shape.queue_free()
+		return __paths.erase(path_id)
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
@@ -77,6 +93,7 @@ func spawn_tile(grid_pos, type):
 	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
 	__block_types_map[grid_pos.y][grid_pos.x] = type
 	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
+	__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
 
 func _ready():
 	__init_vars()
@@ -205,6 +222,7 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 	node.mesh = sphere
 	node.global_transform.origin = position
 	scene_root.add_child(node)
+	return sphere
 
 func __grid_pos_to_real_pos(grid_position):
 	return Vector3(grid_position.x - col_count / 2, DEFAULT_Y, grid_position.y - row_count / 2)
@@ -213,6 +231,8 @@ func __real_pos_to_grid_pos(position):
 	return Vector2(int(position.x + col_count / 2), int(position.z + row_count / 2))
 
 func __draw_path(path):
+	var all_spheres = []
 	for block_id in path:
 		var position = __get_position_by_id(block_id)
-		__draw_debug_sphere(Vector2(position.x, position.y))
+		all_spheres.append(__draw_debug_sphere(Vector2(position.x, position.y)))
+	return all_spheres
