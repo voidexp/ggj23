@@ -22,6 +22,7 @@ var picks = pick_limit
 var roaring = false
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
+var roar_pos
 var map: Map = null
 
 func _ready():
@@ -68,7 +69,7 @@ func _process(delta):
 
 func _physics_process(step):
 	var dir = Vector3.ZERO
-	if not movements or roaring:
+	if not movements:
 		return
 
 	var last_action = movements.back()
@@ -140,6 +141,7 @@ func __discharge_roar():
 	if not roaring:
 		return
 
+	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
 	$RoarDelay.start()
 
@@ -161,16 +163,16 @@ func _on_roar_delay_timeout():
 	if not map:
 		return
 
-	var global_pos = self.global_transform.origin
-	var coord = map.world_to_coords(global_pos)
+	var coord = map.world_to_coords(roar_pos)
 	if not coord:
 		return
 
+	var curr_coord = map.world_to_coords(global_transform.origin)
 	var occupied_tile_pos = map.coords_to_world(coord)
-	var radius = 0.5 + (occupied_tile_pos - global_pos).length() + roar
+	var radius = 0.5 + (occupied_tile_pos - roar_pos).length() + roar
 	var blocks = map.get_blocks_in_radius(coord, radius)
 	for block_info in blocks:
-		if block_info[0] == coord:
+		if block_info[0] == curr_coord:
 			continue
 		if block_info[1] == Map.BLOCK_TYPE.NONE:
 			map.spawn_tile(block_info[0], Map.BLOCK_TYPE.SOIL)
