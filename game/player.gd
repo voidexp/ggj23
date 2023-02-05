@@ -143,6 +143,7 @@ func __do_pick():
 		return
 
 	picks -= 1
+	$Model/RootNode/AnimationPlayer.play("pickaxe hit")
 	if picks == 0:
 		__enter_cooldown()
 

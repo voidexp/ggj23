@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://characters/dwarf.fbx" type="PackedScene" id=1]
 [ext_resource path="res://characters/dwarf.gd" type="Script" id=2]
@@ -17,6 +17,37 @@ albedo_color = Color( 0.384314, 0.219608, 0.219608, 1 )
 [sub_resource type="SpatialMaterial" id=4]
 albedo_texture = ExtResource( 4 )
 
+[sub_resource type="Animation" id=5]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("group1/pickaxe:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0.321997 ) ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "pickaxe hit"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("group1/pickaxe:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0.321997 ), Vector3( 0, 0, -50 ), Vector3( 0, 0, 10 ), Vector3( 0, 0, 0 ) ]
+}
+
 [node name="Dwarf" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
@@ -24,7 +55,7 @@ script = ExtResource( 2 )
 material/0 = SubResource( 1 )
 
 [node name="pickaxe" parent="RootNode/group1" index="1"]
-visible = false
+transform = Transform( 0.999984, -0.00561988, 0, 0.00561988, 0.999984, 0, 0, 0, 1, 0, 25.9402, -62.3455 )
 
 [node name="dwarf" parent="RootNode/group1" index="2"]
 material/0 = SubResource( 2 )
@@ -32,3 +63,8 @@ material/0 = SubResource( 2 )
 [node name="helmet" parent="RootNode/group1" index="3"]
 material/0 = SubResource( 3 )
 material/1 = SubResource( 4 )
+
+[node name="AnimationPlayer" parent="RootNode" index="1"]
+autoplay = "pickaxe hit"
+anims/RESET = SubResource( 5 )
+"anims/pickaxe hit" = SubResource( 6 )
