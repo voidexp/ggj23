@@ -31,8 +31,8 @@ func _process(_delta):
 	if p2_path_state_active:
 		p2_score += score_to_add
 
-	$UI/Game.p1_score = int(p1_score)
-	$UI/Game.p2_score = int(p2_score)
+	$Scenery.p1_score = int(p1_score)
+	$Scenery.p2_score = int(p2_score)
 
 	__check_win_conditions()
 

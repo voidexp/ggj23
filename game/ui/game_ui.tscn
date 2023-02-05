@@ -15,26 +15,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
 
-[node name="P1Score" type="Label" parent="."]
-margin_left = 59.0
-margin_top = 454.0
-margin_right = 357.0
-margin_bottom = 511.0
-theme = ExtResource( 1 )
-custom_colors/font_color = Color( 1, 0, 0, 1 )
-text = "P1 Score: %d"
-
-[node name="P2Score" type="Label" parent="."]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -285.0
-margin_top = 454.0
-margin_right = 15.0
-margin_bottom = 511.0
-theme = ExtResource( 1 )
-custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )
-text = "P2 Score: %d"
-
 [node name="Winner" type="Label" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
@@ -43,7 +23,7 @@ margin_top = 512.0
 margin_right = -700.0
 margin_bottom = 636.0
 theme = ExtResource( 1 )
-custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )
+custom_colors/font_color = Color( 0.811765, 0.87451, 0.560784, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "P%d Won!"
 align = 1
