@@ -17,9 +17,11 @@ export var roar_delay = 1.5
 
 enum {UP, DOWN, LEFT, RIGHT}
 
+enum {NOT_ROARING, ROAR_CHARGING, ROAR_DISCHARGING}
+
 var movements = []
 var picks = 0
-var roaring = false
+var roaring = NOT_ROARING
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
@@ -75,7 +77,7 @@ func _physics_process(step):
 		dir = (snap_to - global_transform.origin).normalized()
 	else:
 		dir = Vector3.ZERO
-		if not movements or roaring:
+		if not movements or roaring == ROAR_CHARGING:
 			return
 
 		var last_action = movements.back()
@@ -178,17 +180,17 @@ func __update_cooldown():
 		$Cooldown.text = "%d" % picks
 
 func __charge_roar():
-	if not __can_roar():
+	if roar_cooldown_remaining > 0 or roaring:
 		return
 
-	roaring = true
+	roaring = ROAR_CHARGING
 	$RoarSphere.visible = true
 
 func __discharge_roar():
 	if not roaring:
 		return
 
-	roaring = false
+	roaring = ROAR_DISCHARGING
 	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
 	$RoarDelay.start()
@@ -199,13 +201,10 @@ func __update_roar(delta):
 		roar_cooldown_remaining -= delta
 		if roar_cooldown_remaining <= 0:
 			roar_cooldown_remaining = 0
-	else:
+	elif ROAR_CHARGING:
 		# update the roar expansion
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
-
-func __can_roar() -> bool:
-	return roar_cooldown_remaining == 0 and roaring == false
 
 func _on_roar_delay_timeout():
 	if not map:
@@ -227,5 +226,5 @@ func _on_roar_delay_timeout():
 
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
-	roaring = false
+	roaring = NOT_ROARING
 	roar = 0.0
