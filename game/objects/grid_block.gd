@@ -3,18 +3,18 @@ extends StaticBody
 class_name GridBlock
 
 
-var row_id
-var col_id
+var row
+var col
 
 signal destroyed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	name = '_'.join([name, str(row_id), str(col_id)])
+	name = '_'.join([name, str(row), str(col)])
 
 func queue_free():
 
-	emit_signal("destroyed", row_id, col_id)
+	emit_signal("destroyed", row, col)
 	.queue_free()
 
 

@@ -32,18 +32,16 @@ var BLOCK_TYPES_MAP = {
 }
 
 var __block_types_map = []
-var __blocks_map = []  # TODO I don't think we really need it. Check after I get sober
 var __a_star = AStar.new()
 var __paths = {}
 
-func clear_block(row_id, col_id):
-	__block_types_map[row_id][col_id] = BLOCK_TYPE.NONE
-	__blocks_map[row_id][col_id] = null
+func clear_block(row, col):
+	__block_types_map[row][col] = BLOCK_TYPE.NONE
 
-	var curr_block_id = __get_block_id(col_id, row_id)
-	__a_star.add_point(curr_block_id, Vector3(col_id, 0, row_id))
+	var curr_block_id = __get_block_id(col, row)
+	__a_star.add_point(curr_block_id, Vector3(col, 0, row))
 
-	for neighbour in __get_connectable_neighbours(col_id, row_id):
+	for neighbour in __get_connectable_neighbours(col, row):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
 	__update_paths()
@@ -51,7 +49,7 @@ func clear_block(row_id, col_id):
 func spawn_tile(grid_pos, type):
 	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
 	__block_types_map[grid_pos.y][grid_pos.x] = type
-	__blocks_map[grid_pos.y][grid_pos.x] = __create_block(grid_pos, type)
+	__create_block(grid_pos, type)
 	__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
 	__update_paths()
 
@@ -75,23 +73,22 @@ func get_blocks_in_radius(coords, radius):
 	print('---------get_blocks_in_radius', coords, radius)
 	var position = __grid_pos_to_real_pos(coords)
 	var result = []
-	for row_id in row_count:
-		var blocks_row = __block_types_map[row_id]
-		for col_id in col_count:
-			if position.distance_to(__grid_pos_to_real_pos(Vector2(col_id, row_id))) <= radius:
-				result.append([Vector2(col_id, row_id), __block_types_map[row_id][col_id]])
+	for row in row_count:
+		for col in col_count:
+			if position.distance_to(__grid_pos_to_real_pos(Vector2(col, row))) <= radius:
+				result.append([Vector2(col, row), __block_types_map[row][col]])
 	return result
 
-func get_neighbors(col_id, row_id):
+func get_neighbors(col, row):
 	var result = []
-	if col_id > 0:
-		result.append(Vector2(col_id - 1, row_id))
-	if row_id > 0:
-		result.append(Vector2(col_id, row_id - 1))
-	if col_id < col_count - 1:
-		result.append(Vector2(col_id + 1, row_id))
-	if row_id < row_count - 1:
-		result.append(Vector2(col_id, row_id + 1))
+	if col > 0:
+		result.append(Vector2(col - 1, row))
+	if row > 0:
+		result.append(Vector2(col, row - 1))
+	if col < col_count - 1:
+		result.append(Vector2(col + 1, row))
+	if row < row_count - 1:
+		result.append(Vector2(col, row + 1))
 
 	return result
 
@@ -120,22 +117,22 @@ func __generate_tiles():
 	gold_block_id = __get_block_id(gold_position.x, gold_position.y)
 	__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
 
-	for row_id in range(row_count):
+	for row in range(row_count):
 		var types_row = []
 		__block_types_map.append(types_row)
 		var blocks_row = []
-		__blocks_map.append(blocks_row)
 
-		for col_id in range(col_count):
-			var block_type = __generate_block_type_by_position(row_id, col_id)
+		for col in range(col_count):
+			var block_type = __generate_block_type_by_position(row, col)
 			types_row.append(block_type)
 
-			blocks_row.append(__create_block(Vector2(col_id, row_id), block_type))
+			blocks_row.append(__create_block(Vector2(col, row), block_type))
 
 func __create_block(grid_pos, block_type):
 	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
-	new_block.row_id = grid_pos.y
-	new_block.col_id = grid_pos.x
+	new_block.name = "Block_%d_%d" % [grid_pos.x, grid_pos.y]
+	new_block.row = grid_pos.y
+	new_block.col = grid_pos.x
 	add_child(new_block)
 	new_block.translate(__grid_pos_to_real_pos(grid_pos))
 	new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
@@ -158,25 +155,25 @@ func __init_players():
 	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
 	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
 
-func __generate_block_type_by_position(col_id, row_id):
-	if col_id == gold_position.x and row_id == gold_position.y:
+func __generate_block_type_by_position(col, row):
+	if col == gold_position.x and row == gold_position.y:
 		return BLOCK_TYPE.GOLD
-	if (col_id % 2 == 1) or (row_id % 2 == 1):
+	if (col % 2 == 1) or (row % 2 == 1):
 		return BLOCK_TYPE.SOIL
 	return BLOCK_TYPE.ROCK
 
-func __on_GridBlock_destroyed(row_id, col_id):
-	clear_block(row_id, col_id)
+func __on_GridBlock_destroyed(row, col):
+	clear_block(row, col)
 
-func __get_block_id(col_id, row_id):
-	return row_id * col_count + col_id
+func __get_block_id(col, row):
+	return row * col_count + col
 
 func __get_position_by_id(block_id):
 	return Vector2(block_id % col_count, int(block_id / col_count))
 
-func __get_connectable_neighbours(col_id, row_id):
+func __get_connectable_neighbours(col, row):
 	var result = []
-	for neighbour in get_neighbors(col_id, row_id):
+	for neighbour in get_neighbors(col, row):
 		var neigbour_type = __block_types_map[neighbour.y][neighbour.x]
 		if neigbour_type== BLOCK_TYPE.NONE or neigbour_type == BLOCK_TYPE.GOLD:
 			if neigbour_type == BLOCK_TYPE.GOLD:
@@ -188,7 +185,6 @@ func __update_paths():
 	for player_root_id in [player1_root_id, player2_root_id]:
 		var path = __a_star.get_id_path(gold_block_id, player_root_id)
 		if path:
-
 			__add_path(player_root_id, path)
 		else:
 			__remove_path(player_root_id)
