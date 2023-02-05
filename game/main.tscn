@@ -1,16 +1,14 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://level_map.tscn" type="PackedScene" id=2]
 [ext_resource path="res://camera.gd" type="Script" id=3]
-[ext_resource path="res://audio/Synth.ogg" type="AudioStream" id=4]
-[ext_resource path="res://audio/BASS.ogg" type="AudioStream" id=5]
-[ext_resource path="res://audio/DRUMS.ogg" type="AudioStream" id=6]
+[ext_resource path="res://audio/synth1.ogg" type="AudioStream" id=4]
+[ext_resource path="res://audio/bass1.ogg" type="AudioStream" id=5]
+[ext_resource path="res://audio/drums1.ogg" type="AudioStream" id=6]
 [ext_resource path="res://main.gd" type="Script" id=7]
 [ext_resource path="res://ui/game_ui.tscn" type="PackedScene" id=8]
-[ext_resource path="res://objects/barrel.tscn" type="PackedScene" id=9]
-[ext_resource path="res://objects/gun_bullet.tscn" type="PackedScene" id=10]
-[ext_resource path="res://objects/gun.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenery.tscn" type="PackedScene" id=9]
 [ext_resource path="res://objects/river.tscn" type="PackedScene" id=12]
 
 [sub_resource type="Animation" id=5]
@@ -87,6 +85,11 @@ stream = ExtResource( 5 )
 [node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 4 )
 
+[node name="Scenery" parent="." instance=ExtResource( 9 )]
+
+[node name="River" parent="." instance=ExtResource( 12 )]
+transform = Transform( 1, 0, 0, 0, 0.996027, -0.0890507, 0, 0.0890507, 0.996027, -4.67232, -3.9292, -13.3654 )
+
 [node name="OmniLight" type="OmniLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.40069, 0.010469 )
 light_color = Color( 0.603922, 0.564706, 0.372549, 1 )
@@ -98,173 +101,3 @@ autoplay = "MainLight"
 playback_speed = 0.01
 anims/MainLight = SubResource( 5 )
 anims/RESET = SubResource( 6 )
-
-[node name="Spatial" type="Spatial" parent="."]
-
-[node name="gun2" parent="Spatial" instance=ExtResource( 11 )]
-transform = Transform( -0.0849473, 0, -0.996385, 0, 1, 0, 0.996385, 0, -0.0849473, -17.0853, 0.144138, -8.07899 )
-
-[node name="gun_bullet" parent="Spatial/gun2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -4.47035e-08, 0, 1, 0, 4.47035e-08, 0, 1, 0.993882, -0.0880954, -1.23313 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -4.47035e-08, 0, 1, 0, 4.47035e-08, 0, 1, -0.31402, 0.0203491, -0.127481 )
-
-[node name="gun_bullet2" parent="Spatial/gun2/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -5.96046e-08, 0, 1, 0, 5.96046e-08, 0, 1, -0.059979, 0.00608349, 0.517519 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.0469155, 0.118149, -0.0543966 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.157442, 0.028089, 0.104222 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.707294, -0.101942, 0.260483 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.282879, -0.0238302, 0.522041 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.0738001, -0.00706887, -0.485799 )
-
-[node name="gun_bullet2" parent="Spatial/gun2/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104774, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet3" parent="Spatial/gun2/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104775, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet3" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet2" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet3" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104774, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun2/gun_bullet/gun_bullet2/gun_bullet3/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun" parent="Spatial" instance=ExtResource( 11 )]
-transform = Transform( 0.598464, 0, 0.801149, 0, 1, 0, -0.801149, 0, 0.598464, 14.9167, 0.0720692, -3.49926 )
-
-[node name="gun_bullet" parent="Spatial/gun" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -1.35208, -0.0880954, -1.02484 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, 0.0203491, 0.138447 )
-
-[node name="gun_bullet2" parent="Spatial/gun/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104775, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.0469155, 0.118149, -0.0543966 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.157442, 0.028089, 0.104222 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.707294, -0.101942, 0.260483 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.282879, -0.0238302, 0.522041 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet/gun_bullet/gun_bullet/gun_bullet/gun_bullet" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.0738001, -0.00706887, -0.485799 )
-
-[node name="gun_bullet2" parent="Spatial/gun/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104774, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet3" parent="Spatial/gun/gun_bullet/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104775, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet3" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="gun_bullet2" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet3" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, -0.104774, 0.00608349, 0.0716782 )
-
-[node name="gun_bullet" parent="Spatial/gun/gun_bullet/gun_bullet2/gun_bullet3/gun_bullet2" instance=ExtResource( 10 )]
-transform = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0.0971398, -0.00942445, 0.138447 )
-
-[node name="barrel2" parent="Spatial" instance=ExtResource( 9 )]
-transform = Transform( 0.536481, 0.0771763, 0.840378, -0.0442576, -0.991867, 0.119342, 0.842752, -0.101217, -0.528701, 15.3147, 0.902625, -6.85011 )
-
-[node name="barrel2" parent="Spatial/barrel2" instance=ExtResource( 9 )]
-transform = Transform( 0.536481, 0.0771763, 0.840378, -0.0442576, -0.991867, 0.119342, 0.842753, -0.101217, -0.528701, 0.972166, 0.94099, 0.0551128 )
-
-[node name="barrel2" parent="Spatial/barrel2/barrel2" instance=ExtResource( 9 )]
-transform = Transform( -0.219201, 0.610059, -0.761435, 0.775738, 0.582306, 0.243225, 0.591768, -0.537356, -0.600884, -1.04974, 0.258987, 0.251195 )
-
-[node name="barrels2" parent="Spatial" instance=ExtResource( 9 )]
-transform = Transform( 0.598464, 0, 0.801149, 0, 1, 0, -0.801149, 0, 0.598464, 15.2357, -0.0181313, 6.98665 )
-
-[node name="barrel2" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.285682, -0.800117, 0.527446, 0.843912, -0.0507498, -0.534077, 0.454092, 0.597693, 0.66073, -0.0211411, 1.29634, 0.546648 )
-
-[node name="barrel3" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( -0.16252, -0.625408, 0.763187, 0.689927, -0.624984, -0.365236, 0.705401, 0.467184, 0.533059, -1.22949, 0.845856, 0.896929 )
-
-[node name="barrel4" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.993278, 0, 0.11577, 0, 1, 0, -0.11577, 0, 0.993278, -0.701767, -0.0271972, 1.35678 )
-
-[node name="barrel5" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.981094, -0.0385906, 0.189656, 0.191801, 0.0627208, -0.979429, 0.0259015, 0.997285, 0.0689368, 0.73647, 0.299074, 0.268555 )
-
-[node name="barrel6" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.993278, 0, 0.11577, 0, 1, 0, -0.11577, 0, 0.993278, 0.226589, 0.777584, 1.2035 )
-
-[node name="barrel7" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.997011, 0, 0.077276, 0, 1, 0, -0.077276, 0, 0.997011, 0.0887728, -0.0181313, 1.61094 )
-
-[node name="barrel8" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.99701, 0, 0.077276, 0, 1, 0, -0.077276, 0, 0.99701, -0.807536, -0.0181313, 0.565662 )
-
-[node name="barrel" parent="Spatial/barrels2" instance=ExtResource( 9 )]
-transform = Transform( 0.999253, 0, 0.0386669, 0, 1, 0, -0.0386669, 0, 0.999253, 0.0288076, -0.00906563, 0.806326 )
-
-[node name="barrel" parent="Spatial" instance=ExtResource( 9 )]
-transform = Transform( -0.96853, 0.187739, -0.163421, -0.147901, 0.0939883, 0.984527, 0.200193, 0.977712, -0.0632635, 7.77556, 0.159877, -10.9909 )
-
-[node name="barrel" parent="Spatial/barrel" instance=ExtResource( 9 )]
-transform = Transform( -0.96853, 0.187739, -0.163421, -0.147901, 0.0939883, 0.984527, 0.200193, 0.977712, -0.0632635, -0.874786, 0.511952, -0.317294 )
-
-[node name="barrels" parent="Spatial" instance=ExtResource( 9 )]
-transform = Transform( 0.999252, 0, 0.0386669, 0, 1, 0, -0.0386669, 0, 0.999252, -14.1851, -0.00906563, 1.68412 )
-
-[node name="barrel2" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.997011, 0, 0.0772759, 0, 1, 0, -0.0772759, 0, 0.997011, -0.0211439, 0.843518, 0.546652 )
-
-[node name="barrel3" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.988059, 0, 0.15409, 0, 1, 0, -0.15409, 0, 0.988059, -0.594545, 0.768518, 0.95489 )
-
-[node name="barrel4" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.993277, 0, 0.11577, 0, 1, 0, -0.11577, 0, 0.993277, -0.716505, -0.0271969, 1.36735 )
-
-[node name="barrel5" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.981094, -0.0385906, 0.189656, 0.191801, 0.0627208, -0.979429, 0.0259015, 0.997285, 0.0689368, 0.73647, 0.299074, 0.268555 )
-
-[node name="barrel6" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.993278, 0, 0.11577, 0, 1, 0, -0.11577, 0, 0.993278, 0.226589, 0.777584, 1.2035 )
-
-[node name="barrel7" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.997011, 0, 0.077276, 0, 1, 0, -0.077276, 0, 0.997011, 0.0887728, -0.0181313, 1.61094 )
-
-[node name="barrel8" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.99701, 0, 0.077276, 0, 1, 0, -0.077276, 0, 0.99701, -0.807536, -0.0181313, 0.565662 )
-
-[node name="barrel" parent="Spatial/barrels" instance=ExtResource( 9 )]
-transform = Transform( 0.999253, 0, 0.0386669, 0, 1, 0, -0.0386669, 0, 0.999253, 0.0288076, -0.00906563, 0.806326 )
-
-[node name="river" parent="." instance=ExtResource( 12 )]
-transform = Transform( 1, 0, 0, 0, 0.996027, -0.0890507, 0, 0.0890507, 0.996027, -4.67232, -3.9292, -13.3654 )

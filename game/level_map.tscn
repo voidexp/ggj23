@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://level_map.gd" type="Script" id=1]
-[ext_resource path="res://Ground.gd" type="Script" id=2]
+[ext_resource path="res://ground.gd" type="Script" id=2]
 [ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
 [ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
 [ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
