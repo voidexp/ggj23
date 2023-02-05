@@ -75,13 +75,13 @@ tracks/0/keys = {
 [sub_resource type="Gradient" id=7]
 colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0335255, 1 )
 
-[sub_resource type="GradientTexture" id=8]
+[sub_resource type="GradientTexture" id=19]
 gradient = SubResource( 7 )
 
 [sub_resource type="Curve" id=9]
 _data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.235955, 0.209091 ), 0.0, 0.0, 0, 0, Vector2( 0.483146, 0.0909091 ), 0.0, 0.0, 0, 0, Vector2( 0.741573, 0 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=10]
+[sub_resource type="CurveTexture" id=20]
 curve = SubResource( 9 )
 
 [sub_resource type="ParticlesMaterial" id=11]
@@ -92,11 +92,11 @@ gravity = Vector3( 0, 4, 0 )
 angular_velocity = 90.0
 angular_velocity_random = 1.0
 scale = 0.5
-scale_curve = SubResource( 10 )
+scale_curve = SubResource( 20 )
 color = Color( 0.94902, 0.180392, 0.054902, 1 )
-color_ramp = SubResource( 8 )
+color_ramp = SubResource( 19 )
 
-[sub_resource type="SpatialMaterial" id=12]
+[sub_resource type="SpatialMaterial" id=21]
 flags_unshaded = true
 vertex_color_use_as_albedo = true
 params_blend_mode = 1
@@ -106,12 +106,12 @@ particles_anim_v_frames = 1
 particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id=13]
-material = SubResource( 12 )
+material = SubResource( 21 )
 
 [sub_resource type="Curve" id=14]
 _data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.0955056, 0.292045 ), 0.0, 0.0, 0, 0, Vector2( 0.393258, 0.219318 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0011363 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=15]
+[sub_resource type="CurveTexture" id=22]
 curve = SubResource( 14 )
 
 [sub_resource type="ParticlesMaterial" id=16]
@@ -123,10 +123,10 @@ gravity = Vector3( 0, 4, 0 )
 angular_velocity = 90.0
 angular_velocity_random = 1.0
 scale = 0.4
-scale_curve = SubResource( 15 )
+scale_curve = SubResource( 22 )
 color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
 
-[sub_resource type="SpatialMaterial" id=17]
+[sub_resource type="SpatialMaterial" id=23]
 flags_transparent = true
 flags_unshaded = true
 vertex_color_use_as_albedo = true
@@ -137,7 +137,7 @@ particles_anim_v_frames = 1
 particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id=18]
-material = SubResource( 17 )
+material = SubResource( 23 )
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )

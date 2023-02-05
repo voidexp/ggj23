@@ -1,10 +1,79 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://fonts/imm.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://objects/gate.gd" type="Script" id=2]
+[ext_resource path="res://objects/rock_text.jpg" type="Texture" id=3]
 
-[sub_resource type="SpatialMaterial" id=1]
-albedo_color = Color( 0.286275, 0.247059, 0.247059, 1 )
+[sub_resource type="SpatialMaterial" id=25]
+albedo_color = Color( 0.313726, 0.298039, 0.298039, 0.592157 )
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="Gradient" id=18]
+colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0335255, 1 )
+
+[sub_resource type="GradientTexture" id=8]
+gradient = SubResource( 18 )
+
+[sub_resource type="Curve" id=19]
+_data = [ Vector2( 0.169399, 0.0454545 ), 0.0, 0.0, 0, 0, Vector2( 0.224044, 0.854545 ), 0.0, 0.0, 0, 0, Vector2( 0.63388, 0.690909 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.118182 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=10]
+curve = SubResource( 19 )
+
+[sub_resource type="ParticlesMaterial" id=20]
+emission_shape = 1
+emission_sphere_radius = 0.01
+spread = 0.0
+gravity = Vector3( 0, 6, 0 )
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+scale = 0.5
+scale_curve = SubResource( 10 )
+color = Color( 0.94902, 0.180392, 0.054902, 1 )
+color_ramp = SubResource( 8 )
+
+[sub_resource type="SpatialMaterial" id=12]
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=21]
+material = SubResource( 12 )
+
+[sub_resource type="Curve" id=22]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.464481, 0.354545 ), 0.0, 0.0, 0, 0, Vector2( 0.622951, 0.736364 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.981818 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 22 )
+
+[sub_resource type="ParticlesMaterial" id=23]
+lifetime_randomness = 1.0
+emission_shape = 1
+emission_sphere_radius = 0.01
+spread = 0.0
+gravity = Vector3( 0, 4, 0 )
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+scale = 0.4
+scale_curve = SubResource( 15 )
+color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
+
+[sub_resource type="SpatialMaterial" id=17]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=24]
+material = SubResource( 17 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 110
@@ -13,32 +82,89 @@ outline_color = Color( 0.0392157, 0.0352941, 0.0352941, 1 )
 font_data = ExtResource( 1 )
 
 [node name="Spatial" type="CSGCombiner"]
-material_override = SubResource( 1 )
+material_override = SubResource( 25 )
 script = ExtResource( 2 )
 
 [node name="CSGBox" type="CSGBox" parent="."]
-transform = Transform( -4.37114e-08, 0, 1.5, 0, 1, 0, -0.666667, 0, -4.37114e-08, 3.99461, 3, 0.00831532 )
+transform = Transform( -2.18557e-07, 0, 1.5, 0, 1, 0, -5, 0, -6.55671e-08, 3.99461, 3, 4.76696 )
 height = 6.0
 
 [node name="CSGBox2" type="CSGBox" parent="."]
-transform = Transform( -4.37114e-08, 0, 1.5, 0, 1, 0, -0.666667, 0, -4.37114e-08, -3.96102, 3, 0.00831556 )
+transform = Transform( -2.18557e-07, 0, 1.5, 0, 1, 0, -5, 0, -6.55671e-08, -3.96102, 3, 4.76696 )
 height = 6.0
 
+[node name="CSGBox5" type="CSGBox" parent="."]
+transform = Transform( -2.18557e-07, 0, 1.5, 0, 1, 0, -5, 0, -6.55671e-08, 4.14054, 3, -0.872277 )
+width = 0.105775
+height = 2.068
+depth = 0.490167
+
+[node name="Candle" type="Particles" parent="CSGBox5"]
+transform = Transform( -8.74228e-09, 0, -0.2, 0, 1, 0, 0.666667, 0, -2.91409e-08, -0.000717357, 1.11922, -0.0167575 )
+amount = 60
+lifetime = 0.66
+speed_scale = 0.5
+process_material = SubResource( 20 )
+draw_pass_1 = SubResource( 21 )
+
+[node name="Smoke" type="Particles" parent="CSGBox5"]
+transform = Transform( -8.74228e-09, 0, -0.2, 0, 1, 0, 0.666667, 0, -2.91409e-08, -0.00123568, 1.98999, -0.00509739 )
+amount = 64
+speed_scale = 0.5
+process_material = SubResource( 23 )
+draw_pass_1 = SubResource( 24 )
+
+[node name="OmniLight" type="OmniLight" parent="CSGBox5"]
+transform = Transform( 0.2, 0, 0, 0, 1, 0, 1.77636e-15, 0, 0.666667, 0, 1.5447, 0 )
+light_color = Color( 0.992157, 0.960784, 0.541176, 1 )
+light_energy = 0.1
+light_indirect_energy = 0.1
+shadow_enabled = true
+omni_range = 10.578
+
+[node name="CSGBox6" type="CSGBox" parent="."]
+transform = Transform( -2.18557e-07, 0, 1.5, 0, 1, 0, -5, 0, -6.55671e-08, -4.10543, 3, -0.872277 )
+width = 0.105775
+height = 2.068
+depth = 0.490167
+
+[node name="Candle" type="Particles" parent="CSGBox6"]
+transform = Transform( -8.74228e-09, 0, -0.2, 0, 1, 0, 0.666667, 0, -2.91409e-08, -0.000717357, 1.11922, -0.0167575 )
+amount = 60
+lifetime = 0.66
+speed_scale = 0.5
+process_material = SubResource( 20 )
+draw_pass_1 = SubResource( 21 )
+
+[node name="Smoke" type="Particles" parent="CSGBox6"]
+transform = Transform( -8.74228e-09, 0, -0.2, 0, 1, 0, 0.666667, 0, -2.91409e-08, -0.00123568, 1.98999, -0.00509739 )
+amount = 64
+speed_scale = 0.5
+process_material = SubResource( 23 )
+draw_pass_1 = SubResource( 24 )
+
+[node name="OmniLight" type="OmniLight" parent="CSGBox6"]
+transform = Transform( 0.2, 0, 0, 0, 1, 0, 1.77636e-15, 0, 0.666667, 0, 1.66262, 0 )
+light_color = Color( 0.992157, 0.960784, 0.541176, 1 )
+light_energy = 0.1
+light_indirect_energy = 0.1
+shadow_enabled = true
+omni_range = 10.578
+
 [node name="CSGBox3" type="CSGBox" parent="."]
-transform = Transform( -4.37114e-08, -1.49997, 0.00986967, 0, 0.00657978, 0.999978, -0.666667, 4.37104e-08, -2.87611e-10, 0.0635856, 6.99341, 0.00831556 )
+transform = Transform( -2.18557e-07, -1.49998, -4.37126e-08, 0, -6.55663e-08, 1.00003, -5, 6.55663e-08, 1.91074e-15, 0.0635856, 6.99341, 4.76696 )
 height = 8.0
 
 [node name="SpotLight" type="SpotLight" parent="."]
-transform = Transform( 0.9994, 0.00351856, 0.0344564, -0.0136929, 0.95392, 0.299749, -0.0212093, -0.200028, 0.635597, 0.127666, 4.90159, 1.21494 )
-light_color = Color( 0.972549, 0.752941, 0.00784314, 1 )
-light_energy = 16.0
-light_indirect_energy = 16.0
+transform = Transform( 0.999681, 0.00905078, 0.0235749, -0.0248929, 0.19621, 0.980246, 0.00424637, -0.98052, 0.196373, 0.127666, 6.38326, 6.41821 )
+light_color = Color( 0.898039, 0.784314, 0.403922, 1 )
+light_energy = 6.045
+light_specular = 2.95
 shadow_enabled = true
-spot_range = 12.289
-spot_angle = 35.27
+spot_range = 22.23
+spot_angle = 45.19
 
 [node name="Score" type="Label3D" parent="."]
-transform = Transform( -1, 0, -1.31134e-07, 0, 1, 0, 5.82819e-08, 0, -1, -0.0053941, 7.04652, -0.821565 )
-outline_modulate = Color( 1, 1, 1, 1 )
+transform = Transform( -0.999999, -5.68434e-14, -1.31134e-07, 1.06581e-13, 1, 1.05879e-20, 5.82819e-08, 1.48231e-21, -1, -0.00539392, 7.04652, -0.82154 )
 text = "Score: %d"
 font = SubResource( 2 )
