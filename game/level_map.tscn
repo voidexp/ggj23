@@ -1,19 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://level_map.gd" type="Script" id=1]
-[ext_resource path="res://ground.gd" type="Script" id=2]
 [ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
 [ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
 [ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
-
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 10, 0.05, 10 )
-
-[sub_resource type="PlaneMesh" id=5]
-
-[sub_resource type="SpatialMaterial" id=6]
-vertex_color_use_as_albedo = true
-albedo_color = Color( 0.341176, 0.329412, 0.329412, 1 )
+[ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
 
 [node name="LevelMap" type="Spatial"]
 script = ExtResource( 1 )
@@ -21,18 +12,5 @@ soil_block = ExtResource( 3 )
 rock_block = ExtResource( 4 )
 gold_block = ExtResource( 5 )
 
-[node name="Ground" type="StaticBody" parent="."]
-collision_layer = 0
-collision_mask = 0
-script = ExtResource( 2 )
-
-[node name="CollisionShape" type="CollisionShape" parent="Ground"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
-shape = SubResource( 4 )
-disabled = true
-
-[node name="CSGMesh" type="CSGMesh" parent="Ground"]
-transform = Transform( 40, 0, 0, 0, 1, 0, 0, 0, 25, 0, -0.05, 0 )
+[node name="Spawner" parent="." instance=ExtResource( 7 )]
 visible = false
-mesh = SubResource( 5 )
-material = SubResource( 6 )

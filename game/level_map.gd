@@ -64,20 +64,20 @@ func clear_block(col, row):
 
 	__update_paths()
 
-func spawn_tile(grid_pos, type):
+func spawn_tile(grid_pos, type, delayed=true):
 	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
-	__block_types_map[grid_pos.y][grid_pos.x] = type
-	var block = __create_block(grid_pos, type)
 
-	# FIXME
-	if type == BLOCK_TYPE.GOLD:
-		__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
+	if delayed:
+		var spawner = $Spawner.duplicate()
+		add_child(spawner)
+		spawner.visible = true
+		spawner.spawn_duration = $Spawner.spawn_duration * __rng.randf_range(0.7, 1.4)
+		spawner.translate(__grid_pos_to_real_pos(grid_pos))
+		spawner.ghost = BLOCK_TYPES_MAP[type]
+		spawner.connect("spawn_completed", self, "__spawn_tile", [grid_pos, type])
+		spawner.spawn()
 	else:
-		__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
-
-	__update_paths()
-
-	return block
+		__spawn_tile(grid_pos, type)
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
@@ -121,7 +121,6 @@ func get_neighbors(col, row):
 func _ready():
 	__init_vars()
 	__init_block_types()
-	__init_ground()
 	__generate_tiles()
 	__init_players()
 	__generate_borders()
@@ -146,13 +145,11 @@ func __generate_tiles():
 	for row in range(row_count):
 		var types_row = []
 		__block_types_map.append(types_row)
-		var blocks_row = []
 
 		for col in range(col_count):
 			var block_type = __generate_block_type_by_position(row, col)
 			types_row.append(block_type)
-
-			blocks_row.append(__create_block(Vector2(col, row), block_type))
+			__create_block(Vector2(col, row), block_type)
 
 func __generate_borders():
 	var player_pos = __get_position_by_id(player1_root_id)
@@ -167,6 +164,20 @@ func __generate_borders():
 		__create_block(Vector2(col_id, -1), BLOCK_TYPE.ROCK)
 		__create_block(Vector2(col_id, row_count), BLOCK_TYPE.ROCK)
 
+func __spawn_tile(grid_pos, type):
+	__block_types_map[grid_pos.y][grid_pos.x] = type
+	var block = __create_block(grid_pos, type)
+
+	# FIXME: this logic probably is better moved elsewhere?
+	if type == BLOCK_TYPE.GOLD:
+		__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
+		# respawn gold indefinitely
+		block.connect("exhausted", self, "__respawn_gold")
+	else:
+		__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
+
+	__update_paths()
+
 func __create_block(grid_pos, block_type):
 	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
 	new_block.row = grid_pos.y
@@ -175,10 +186,6 @@ func __create_block(grid_pos, block_type):
 	add_child(new_block)
 	new_block.translate(__grid_pos_to_real_pos(grid_pos))
 	return new_block
-
-func __init_ground():
-	var ground_size = Vector3(col_count / 2, GROUND_THICKNESS / 2, row_count / 2)
-	$Ground/CollisionShape.shape.extents = ground_size
 
 func __init_players():
 	player1_root_id = int(__get_block_id(player1_root.x, player1_root.y))
@@ -206,10 +213,7 @@ func __seed_gold():
 			# spawn gold block
 			gold_block_id = __get_block_id(c, r)
 			gold_position = Vector2(c, r)
-			var block = spawn_tile(gold_position, BLOCK_TYPE.GOLD)
-
-			# respawn gold indefinitely
-			block.connect("exhausted", self, "__respawn_gold")
+			spawn_tile(gold_position, BLOCK_TYPE.GOLD, false)
 
 func __respawn_gold():
 	clear_block(gold_position.x, gold_position.y)
@@ -294,8 +298,8 @@ func __draw_debug_sphere(location, size=0.25, height=1.5):
 	# Add to meshinstance in the right place.
 	var node = MeshInstance.new()
 	node.mesh = sphere
-	node.global_transform.origin = position
 	add_child(node)
+	node.global_transform.origin = position
 	return node
 
 func __grid_pos_to_real_pos(grid_position):
