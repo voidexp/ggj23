@@ -33,5 +33,6 @@ disabled = true
 
 [node name="CSGMesh" type="CSGMesh" parent="Ground"]
 transform = Transform( 40, 0, 0, 0, 1, 0, 0, 0, 25, 0, -0.05, 0 )
+visible = false
 mesh = SubResource( 5 )
 material = SubResource( 6 )
