@@ -184,10 +184,11 @@ func __charge_roar():
 		return
 
 	roaring = ROAR_CHARGING
+	roar = 0.0
 	$RoarSphere.visible = true
 
 func __discharge_roar():
-	if not roaring:
+	if roaring != ROAR_CHARGING:
 		return
 
 	roaring = ROAR_DISCHARGING
@@ -201,8 +202,8 @@ func __update_roar(delta):
 		roar_cooldown_remaining -= delta
 		if roar_cooldown_remaining <= 0:
 			roar_cooldown_remaining = 0
-	elif ROAR_CHARGING:
-		# update the roar expansion
+	elif roaring == ROAR_CHARGING:
+		# expand the roar radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
@@ -215,9 +216,7 @@ func _on_roar_delay_timeout():
 		return
 
 	var curr_coord = map.world_to_coords(global_transform.origin)
-	var occupied_tile_pos = map.coords_to_world(coord)
-	var radius = 0.5 + (occupied_tile_pos - roar_pos).length() + roar
-	var blocks = map.get_blocks_in_radius(coord, radius)
+	var blocks = map.get_blocks_in_radius(coord, roar)
 	for block_info in blocks:
 		if block_info[0] == curr_coord:
 			continue
@@ -227,4 +226,3 @@ func _on_roar_delay_timeout():
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
 	roaring = NOT_ROARING
-	roar = 0.0
