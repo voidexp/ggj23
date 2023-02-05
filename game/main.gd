@@ -11,7 +11,6 @@ var p2_path_state_active = false
 
 var _is_game_running = false
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var player_positions = $Level.get_player_positions()
@@ -42,11 +41,13 @@ func __check_win_conditions():
 		$UI.show_winner(1 if p1_score > p2_score else 2)
 		_is_game_running = false
 
-func __on_path_state_changed(player_id, is_active):
+func __on_path_state_changed(state):
 	if not _is_game_running:
 		return
 
-	if player_id == 1:
-		p1_path_state_active = is_active
-	elif player_id == 2:
-		p2_path_state_active = is_active
+	p1_path_state_active = state.p1_linked
+	p2_path_state_active = state.p2_linked
+
+	# TODO: move to some better place, where all dreams go
+	if state.gold:
+		state.gold.get_node("Drainable").enabled = state.p1_linked or state.p2_linked

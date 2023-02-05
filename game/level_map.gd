@@ -11,6 +11,13 @@ export(PackedScene) var gold_block
 export var col_count = 21
 export var row_count = 21
 
+
+class PathState extends Object:
+	var p1_linked: bool
+	var p2_linked: bool
+	var gold: Node
+
+
 var player1_root
 var player1_root_id
 var player1_position
@@ -40,6 +47,10 @@ func clear_block(row, col):
 
 	var curr_block_id = __get_block_id(col, row)
 	__a_star.add_point(curr_block_id, Vector3(col, 0, row))
+
+	if curr_block_id == gold_block_id:
+		gold_position = null
+		gold_block_id = null
 
 	for neighbour in __get_connectable_neighbours(col, row):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
@@ -130,12 +141,12 @@ func __generate_tiles():
 
 func __create_block(grid_pos, block_type):
 	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
-	new_block.name = "Block_%d_%d" % [grid_pos.x, grid_pos.y]
 	new_block.row = grid_pos.y
 	new_block.col = grid_pos.x
 	add_child(new_block)
+	new_block.name = "Block_%d_%d" % [new_block.col, new_block.row]
 	new_block.translate(__grid_pos_to_real_pos(grid_pos))
-	new_block.connect("destroyed", self, "__on_GridBlock_destroyed")
+	new_block.connect("destroyed", self, "__on_block_destroyed")
 	return new_block
 
 func __init_ground():
@@ -162,7 +173,7 @@ func __generate_block_type_by_position(col, row):
 		return BLOCK_TYPE.SOIL
 	return BLOCK_TYPE.ROCK
 
-func __on_GridBlock_destroyed(row, col):
+func __on_block_destroyed(col, row):
 	clear_block(row, col)
 
 func __get_block_id(col, row):
@@ -183,26 +194,31 @@ func __get_connectable_neighbours(col, row):
 
 func __update_paths():
 	for player_root_id in [player1_root_id, player2_root_id]:
-		var path = __a_star.get_id_path(gold_block_id, player_root_id)
-		if path:
-			__add_path(player_root_id, path)
+		if gold_block_id != null:
+			var path = __a_star.get_id_path(gold_block_id, player_root_id)
+			if path:
+				__add_path(player_root_id, path)
+			else:
+				__remove_path(player_root_id)
 		else:
 			__remove_path(player_root_id)
 
+		var state = PathState.new()
+		state.p1_linked = __paths.has(player1_root_id)
+		state.p2_linked = __paths.has(player2_root_id)
+		state.gold = get_node("Block_%d_%d" % [gold_position.x, gold_position.y]) if gold_block_id != null else null
+		emit_signal("path_state_changed", state)
+
 func __add_path(path_id, path):
 	if path_id in __paths:
-		__remove_path(path_id, false)
-	else:
-		emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, true)
+		__remove_path(path_id)
 
 	__paths[path_id] = __draw_path(path)
 
-func __remove_path(path_id, notify=true):
+func __remove_path(path_id):
 	if path_id in __paths:
 		for node in __paths[path_id]:
 			node.queue_free()
-		if notify:
-			emit_signal('path_state_changed', 1 if path_id == player1_root_id else 2, false)
 		return __paths.erase(path_id)
 
 func __draw_path(path):

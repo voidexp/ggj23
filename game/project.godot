@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "GridBlock",
 "language": "GDScript",
 "path": "res://objects/grid_block.gd"
+}, {
+"base": "Node",
+"class": "Trait",
+"language": "GDScript",
+"path": "res://traits/trait.gd"
 } ]
 _global_script_class_icons={
-"GridBlock": ""
+"GridBlock": "",
+"Trait": ""
 }
 
 [application]
