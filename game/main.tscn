@@ -32,7 +32,7 @@ pick_limit = 5
 [node name="Level" parent="." instance=ExtResource( 2 )]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 8.03318 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 10.0332 )
 current = true
 script = ExtResource( 3 )
 
