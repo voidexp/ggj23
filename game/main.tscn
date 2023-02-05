@@ -57,6 +57,7 @@ tracks/1/keys = {
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 7 )
+points_to_win = 1
 
 [node name="Player1" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3383, 0, 0 )

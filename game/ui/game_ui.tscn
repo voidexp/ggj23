@@ -27,3 +27,14 @@ margin_bottom = 511.0
 theme = ExtResource( 1 )
 custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )
 text = "P2 Score: %d"
+
+[node name="Winner" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -1060.0
+margin_top = 493.0
+margin_right = -870.0
+margin_bottom = 541.0
+theme = ExtResource( 1 )
+custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )
+text = "P%d Won!"
