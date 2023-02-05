@@ -4,9 +4,7 @@
 [ext_resource path="res://objects/gun.tscn" type="PackedScene" id=2]
 [ext_resource path="res://objects/barrel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
-
-[sub_resource type="SpatialMaterial" id=1]
-albedo_color = Color( 0.286275, 0.247059, 0.247059, 1 )
+[ext_resource path="res://objects/gate.tscn" type="PackedScene" id=5]
 
 [sub_resource type="BoxShape" id=2]
 extents = Vector3( 1, 1, 2.25949 )
@@ -127,53 +125,11 @@ transform = Transform( -0.96853, 0.187739, -0.163421, -0.147901, 0.0939883, 0.98
 [node name="barrel" parent="barrel" instance=ExtResource( 3 )]
 transform = Transform( -0.968528, 0.187739, -0.163421, -0.147901, 0.0939882, 0.984526, 0.200193, 0.977711, -0.0632634, -1.09024, 0.473496, -0.345988 )
 
-[node name="Spatial" type="CSGCombiner" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1.5, -14.1962, 1.22771, 4.65027 )
-material_override = SubResource( 1 )
+[node name="Gate1" parent="." instance=ExtResource( 5 )]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -13.7903, 0, 0.730324 )
 
-[node name="CSGBox" type="CSGBox" parent="Spatial"]
-height = 6.0
-
-[node name="CSGBox2" type="CSGBox" parent="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.30375 )
-height = 6.0
-
-[node name="CSGBox3" type="CSGBox" parent="Spatial"]
-transform = Transform( 1, 0, 0, 0, 0.00657978, 0.999978, 0, -0.999978, 0.00657978, 0, 3.99341, -2.62068 )
-height = 8.0
-
-[node name="SpotLight" type="SpotLight" parent="Spatial"]
-transform = Transform( 0.0318162, 0.53199, -0.846153, -0.0136939, 1.69335, 1.06413, 0.666314, -0.00742311, 0.020387, -6.64185, 3.92783, -2.57796 )
-light_color = Color( 0.972549, 0.752941, 0.00784314, 1 )
-light_energy = 16.0
-light_indirect_energy = 16.0
-shadow_enabled = true
-spot_range = 12.289
-spot_angle = 35.27
-
-[node name="Spatial2" type="CSGCombiner" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1.5, 14.6423, 1.22771, 4.65027 )
-material_override = SubResource( 1 )
-
-[node name="CSGBox" type="CSGBox" parent="Spatial2"]
-height = 6.0
-
-[node name="CSGBox2" type="CSGBox" parent="Spatial2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.30375 )
-height = 6.0
-
-[node name="CSGBox3" type="CSGBox" parent="Spatial2"]
-transform = Transform( 1, 0, 0, 0, 0.00657978, 0.999978, 0, -0.999978, 0.00657978, 0, 3.99341, -2.62068 )
-height = 8.0
-
-[node name="SpotLight" type="SpotLight" parent="Spatial2"]
-transform = Transform( -0.00560735, -0.5321, 0.846663, -0.0136939, 1.69335, 1.06413, -0.666641, -0.00187572, -0.00559392, 5.82539, 3.92783, -2.57796 )
-light_color = Color( 0.972549, 0.752941, 0.00784314, 1 )
-light_energy = 16.0
-light_indirect_energy = 16.0
-shadow_enabled = true
-spot_range = 12.289
-spot_angle = 35.27
+[node name="Gate2" parent="." instance=ExtResource( 5 )]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 13.79, 0, 0.73 )
 
 [node name="StaticBody" type="StaticBody" parent="."]
 transform = Transform( -0.591915, 0, 0.806001, 0, 1, 0, -0.806001, 0, -0.591915, -13.1078, -0.00906563, 0.977494 )
