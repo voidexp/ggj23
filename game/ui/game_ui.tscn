@@ -27,9 +27,9 @@ text = "P1 Score: %d"
 [node name="P2Score" type="Label" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -260.0
+margin_left = -285.0
 margin_top = 454.0
-margin_right = 40.0
+margin_right = 15.0
 margin_bottom = 511.0
 theme = ExtResource( 1 )
 custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )

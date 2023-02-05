@@ -18,7 +18,7 @@ export var roar_delay = 1.5
 enum {UP, DOWN, LEFT, RIGHT}
 
 var movements = []
-var picks = pick_limit
+var picks = 0
 var roaring = false
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
@@ -28,6 +28,7 @@ var snap_to = null
 
 func _ready():
 	name = "Player%d" % player_seat
+	picks = pick_limit
 
 	$Model.color = color
 	$RoarDelay.wait_time = roar_delay
