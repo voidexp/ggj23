@@ -1,11 +1,9 @@
 [gd_resource type="Theme" load_steps=3 format=2]
 
-[ext_resource path="res://fonts/imm.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://fonts/kenney_blocks.ttf" type="DynamicFontData" id=1]
 
 [sub_resource type="DynamicFont" id=1]
-size = 37
-outline_size = 7
-outline_color = Color( 0, 0, 0, 1 )
+size = 32
 font_data = ExtResource( 1 )
 
 [resource]
