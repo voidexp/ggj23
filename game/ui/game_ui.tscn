@@ -9,8 +9,10 @@ anchor_bottom = 1.0
 script = ExtResource( 2 )
 
 [node name="P1Score" type="Label" parent="."]
-margin_right = 116.0
-margin_bottom = 28.0
+margin_left = 59.0
+margin_top = 454.0
+margin_right = 357.0
+margin_bottom = 511.0
 theme = ExtResource( 1 )
 custom_colors/font_color = Color( 1, 0, 0, 1 )
 text = "P1 Score: %d"
@@ -18,8 +20,10 @@ text = "P1 Score: %d"
 [node name="P2Score" type="Label" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -300.0
-margin_bottom = 48.0
+margin_left = -260.0
+margin_top = 454.0
+margin_right = 40.0
+margin_bottom = 511.0
 theme = ExtResource( 1 )
 custom_colors/font_color = Color( 0.00784314, 0.294118, 0.572549, 1 )
 text = "P2 Score: %d"
