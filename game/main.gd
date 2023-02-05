@@ -31,14 +31,14 @@ func _process(_delta):
 	if p2_path_state_active:
 		p2_score += score_to_add
 
-	$UI.p1_score = int(p1_score)
-	$UI.p2_score = int(p2_score)
+	$UI/Game.p1_score = int(p1_score)
+	$UI/Game.p2_score = int(p2_score)
 
 	__check_win_conditions()
 
 func __check_win_conditions():
 	if p1_score >= points_to_win or p2_score >= points_to_win:
-		$UI.show_winner(1 if p1_score > p2_score else 2)
+		$UI/Game.show_winner(1 if p1_score > p2_score else 2)
 		_is_game_running = false
 
 func __on_path_state_changed(state):
