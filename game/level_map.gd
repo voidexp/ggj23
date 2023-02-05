@@ -41,9 +41,15 @@ var BLOCK_TYPES_MAP = {
 var __block_types_map = []
 var __a_star = AStar.new()
 var __paths = {}
+var __rng
 
-func clear_block(row, col):
+func clear_block(col, row):
 	__block_types_map[row][col] = BLOCK_TYPE.NONE
+
+	var node = get_node(__get_block_name(col, row))
+	if node:
+		node.name = node.name + "_dead" # NOTE: a block with same name added within this tick will be mangled!
+		node.queue_free()
 
 	var curr_block_id = __get_block_id(col, row)
 	__a_star.add_point(curr_block_id, Vector3(col, 0, row))
@@ -55,14 +61,23 @@ func clear_block(row, col):
 	for neighbour in __get_connectable_neighbours(col, row):
 		var neigbour_id = __get_block_id(neighbour.x, neighbour.y)
 		__a_star.connect_points(curr_block_id, neigbour_id)
+
 	__update_paths()
 
 func spawn_tile(grid_pos, type):
 	assert(__block_types_map[grid_pos.y][grid_pos.x] == BLOCK_TYPE.NONE)
 	__block_types_map[grid_pos.y][grid_pos.x] = type
-	__create_block(grid_pos, type)
-	__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
+	var block = __create_block(grid_pos, type)
+
+	# FIXME
+	if type == BLOCK_TYPE.GOLD:
+		__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
+	else:
+		__a_star.remove_point(__get_block_id(grid_pos.x, grid_pos.y))
+
 	__update_paths()
+
+	return block
 
 func get_player_positions():
 	return [to_global(player1_position), to_global(player2_position)]
@@ -110,10 +125,13 @@ func _ready():
 	__generate_tiles()
 	__init_players()
 	__generate_borders()
+	__seed_gold()
 
 func __init_vars():
 	player1_root = Vector2(0, int(row_count / 2) + 1)
 	player2_root = Vector2(col_count - 1, int(row_count / 2) + 1)
+	__rng = RandomNumberGenerator.new()
+	__rng.randomize()
 
 func __init_block_types():
 	BLOCK_TYPES_MAP = {
@@ -124,10 +142,6 @@ func __init_block_types():
 
 func __generate_tiles():
 	assert(col_count % 2 == 1)
-
-	gold_position = Vector2(ceil(col_count / 2), ceil(row_count / 2))
-	gold_block_id = __get_block_id(gold_position.x, gold_position.y)
-	__a_star.add_point(gold_block_id, Vector3(gold_position.x, 0, gold_position.y))
 
 	for row in range(row_count):
 		var types_row = []
@@ -157,10 +171,9 @@ func __create_block(grid_pos, block_type):
 	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
 	new_block.row = grid_pos.y
 	new_block.col = grid_pos.x
+	new_block.name = __get_block_name(grid_pos.x, grid_pos.y)
 	add_child(new_block)
-	new_block.name = "Block_%d_%d" % [new_block.col, new_block.row]
 	new_block.translate(__grid_pos_to_real_pos(grid_pos))
-	new_block.connect("destroyed", self, "__on_block_destroyed")
 	return new_block
 
 func __init_ground():
@@ -180,18 +193,38 @@ func __init_players():
 	player1_position = __grid_pos_to_real_pos(player1_grid_pos)
 	player2_position = __grid_pos_to_real_pos(player2_grid_pos)
 
+func __seed_gold():
+	while gold_block_id == null:
+		var c = __rng.randi() % col_count
+		var r = __rng.randi() % row_count
+		if __block_types_map[r][c] != BLOCK_TYPE.ROCK:
+			print("Gold spawning at %d,%d" % [c, r])
+
+			# remove existing soil block
+			clear_block(c, r)
+
+			# spawn gold block
+			gold_block_id = __get_block_id(c, r)
+			gold_position = Vector2(c, r)
+			var block = spawn_tile(gold_position, BLOCK_TYPE.GOLD)
+
+			# respawn gold indefinitely
+			block.connect("exhausted", self, "__respawn_gold")
+
+func __respawn_gold():
+	clear_block(gold_position.x, gold_position.y)
+	__seed_gold()
+
 func __generate_block_type_by_position(col, row):
-	if col == gold_position.x and row == gold_position.y:
-		return BLOCK_TYPE.GOLD
 	if (col % 2 == 1) or (row % 2 == 1):
 		return BLOCK_TYPE.SOIL
 	return BLOCK_TYPE.ROCK
 
-func __on_block_destroyed(col, row):
-	clear_block(row, col)
-
 func __get_block_id(col, row):
 	return row * col_count + col
+
+func __get_block_name(col, row):
+	return "Block_%d_%d" % [col, row]
 
 func __get_position_by_id(block_id):
 	return Vector2(block_id % col_count, int(block_id / col_count))
@@ -220,7 +253,7 @@ func __update_paths():
 		var state = PathState.new()
 		state.p1_linked = __paths.has(player1_root_id)
 		state.p2_linked = __paths.has(player2_root_id)
-		state.gold = get_node("Block_%d_%d" % [gold_position.x, gold_position.y]) if gold_block_id != null else null
+		state.gold = get_node(__get_block_name(gold_position.x, gold_position.y)) if gold_block_id != null else null
 		emit_signal("path_state_changed", state)
 
 func __add_path(path_id, path):
