@@ -7,7 +7,7 @@ font_path = "res://fonts/imm.ttf"
 size = 37
 outline_size = 7
 outline_color = Color( 0, 0, 0, 1 )
-font_data = SubResource( 2 
+font_data = SubResource( 2 )
 
 [resource]
 default_font = SubResource( 1 )

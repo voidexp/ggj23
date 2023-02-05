@@ -41,7 +41,7 @@ script = ExtResource( 3 )
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource( 4 )
-health = 5.0
+health = 500.0
 
 [node name="Label" type="Label" parent="."]
 anchor_left = -0.01
