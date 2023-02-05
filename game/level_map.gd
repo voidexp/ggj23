@@ -109,6 +109,7 @@ func _ready():
 	__init_ground()
 	__generate_tiles()
 	__init_players()
+	__generate_borders()
 
 func __init_vars():
 	player1_root = Vector2(0, int(row_count / 2) + 1)
@@ -139,6 +140,19 @@ func __generate_tiles():
 
 			blocks_row.append(__create_block(Vector2(col, row), block_type))
 
+func __generate_borders():
+	var player_pos = __get_position_by_id(player1_root_id)
+	for row_id in range(-1, row_count + 1):
+		if row_id == player_pos.y:
+			continue
+
+		__create_block(Vector2(-1, row_id), BLOCK_TYPE.ROCK)
+		__create_block(Vector2(col_count, row_id), BLOCK_TYPE.ROCK)
+
+	for col_id in col_count:
+		__create_block(Vector2(col_id, -1), BLOCK_TYPE.ROCK)
+		__create_block(Vector2(col_id, row_count), BLOCK_TYPE.ROCK)
+
 func __create_block(grid_pos, block_type):
 	var new_block = BLOCK_TYPES_MAP[block_type].instance() as GridBlock
 	new_block.row = grid_pos.y
@@ -154,8 +168,8 @@ func __init_ground():
 	$Ground/CollisionShape.shape.extents = ground_size
 
 func __init_players():
-	player1_root_id = __get_block_id(player1_root.x, player1_root.y)
-	player2_root_id = __get_block_id(player2_root.x, player2_root.y)
+	player1_root_id = int(__get_block_id(player1_root.x, player1_root.y))
+	player2_root_id = int(__get_block_id(player2_root.x, player2_root.y))
 
 	var player1_grid_pos = Vector2(player1_root.x - 1, player1_root.y)
 	var player2_grid_pos = Vector2(player2_root.x + 1, player2_root.y)
