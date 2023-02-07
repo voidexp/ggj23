@@ -1,7 +1,8 @@
 extends KinematicBody
 
 const Trait = preload("res://traits/trait.gd")
-const Map = preload("res://level_map.gd")
+const Level = preload("res://objects/level/level.gd")
+const Map = preload("res://objects/level/map.gd")
 
 export var color: Color
 export var player_seat: int = 1
@@ -25,7 +26,7 @@ var roaring = NOT_ROARING
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
-var map: Map = null
+var level: Level = null
 var snap_to = null
 
 func _ready():
@@ -35,7 +36,7 @@ func _ready():
 	$Model.color = color
 	$RoarDelay.wait_time = roar_delay
 
-	map = get_node("/root/Game/Level")
+	level = get_node("/root/Game/Level")
 
 	$AnimationPlayer.connect("animation_finished", self, "__exit_cooldown")
 
@@ -91,7 +92,6 @@ func _physics_process(step):
 			dir.x = 1
 
 		snap_to = __get_snap_target(dir)
-		print("Snapping to: %s" % snap_to)
 
 	# Orient the player towards the moving direction
 	var angle = Vector3.FORWARD.signed_angle_to(dir, Vector3.UP)
@@ -112,27 +112,25 @@ func _physics_process(step):
 			transform.origin = snap_to
 			snap_to = null
 			collision = false
-			print("Snap reached")
 	if snap_to and collision:
 		snap_to = null
-		print("Snap canceled")
 
 func __get_snap_target(dir):
-	if not map:
-		# no map found, abort
+	if not level:
+		# no level found, abort
 		return null
 
 	var pos = global_transform.origin
-	var coord = map.world_to_coords(pos)
+	var coord = level.world_to_coord(pos)
 	if not coord:
-		# not on map, abort
+		# not on level, abort
 		return null
 
 	# go over neighbors of the current tile and pick the one we're looking at
-	var neighbors = map.get_neighbors(coord.x, coord.y)
-	for n_coord in neighbors:
+	var neighbors = level.get_neighbors(coord)
+	for neighbor in neighbors:
 		# 1. obtain world position of the tile
-		var n_pos = map.coords_to_world(n_coord)
+		var n_pos = level.coord_to_world(neighbor)
 		# 2. compute the direction to it
 		var n_dir = (n_pos - pos).normalized()
 		# 3. perform dot product with desired movement direction
@@ -208,20 +206,16 @@ func __update_roar(delta):
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
 func _on_roar_delay_timeout():
-	if not map:
+	if not level:
 		return
 
-	var coord = map.world_to_coords(roar_pos)
-	if not coord:
-		return
-
-	var curr_coord = map.world_to_coords(global_transform.origin)
-	var blocks = map.get_blocks_in_radius(coord, roar)
-	for block_info in blocks:
-		if block_info[0] == curr_coord:
+	var occupied_tile = level.world_to_coord(global_transform.origin)
+	var tiles = level.get_tiles_in_radius(roar_pos, roar)
+	for tile_info in tiles:  # tile_info = [coord, type]
+		if tile_info[0] == occupied_tile:
 			continue
-		if block_info[1] == Map.BLOCK_TYPE.NONE:
-			map.spawn_tile(block_info[0], Map.BLOCK_TYPE.SOIL)
+		if tile_info[1] == Map.BLOCK_TYPE.NONE:
+			level.spawn_soil(tile_info[0])
 
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)

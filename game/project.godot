@@ -14,6 +14,21 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://objects/grid_block.gd"
 }, {
+"base": "Spatial",
+"class": "Level",
+"language": "GDScript",
+"path": "res://objects/level/level.gd"
+}, {
+"base": "EditorSpatialGizmo",
+"class": "LevelGizmo",
+"language": "GDScript",
+"path": "res://addons/level_gizmo_plugin/level_gizmo.gd"
+}, {
+"base": "Object",
+"class": "Map",
+"language": "GDScript",
+"path": "res://objects/level/map.gd"
+}, {
 "base": "Node",
 "class": "Trait",
 "language": "GDScript",
@@ -21,6 +36,9 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "GridBlock": "",
+"Level": "",
+"LevelGizmo": "",
+"Map": "",
 "Trait": ""
 }
 
@@ -35,6 +53,10 @@ config/icon="res://icon.png"
 window/size/width=1920
 window/size/height=1080
 window/size/fullscreen=true
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/level_gizmo_plugin/plugin.cfg" )
 
 [global]
 

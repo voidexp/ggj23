@@ -1,16 +1,19 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://level_map.gd" type="Script" id=1]
+[ext_resource path="res://objects/level/level.gd" type="Script" id=1]
 [ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
 [ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
 [ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
 [ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
 
-[node name="LevelMap" type="Spatial"]
+[node name="Level" type="Spatial"]
 script = ExtResource( 1 )
 soil_block = ExtResource( 3 )
 rock_block = ExtResource( 4 )
 gold_block = ExtResource( 5 )
+cols = 23
+rows = 23
+p1_base_coord = Vector2( 0, 11 )
+p2_base_coord = Vector2( 22, 11 )
 
 [node name="Spawner" parent="." instance=ExtResource( 7 )]
-visible = false
