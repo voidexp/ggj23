@@ -12,22 +12,20 @@ export(PackedScene) var gold_block
 
 export(int, 3, 100) var cols setget __set_cols
 export(int, 3, 100) var rows setget __set_rows
-export var p1_base_coord: Vector2
-export var p2_base_coord: Vector2
+export var p1_base_coord: Vector2 setget __set_p1_base_coord
+export var p2_base_coord: Vector2 setget __set_p2_base_coord
 
 # An object that holds the current state of the paths from the gold block to
-# player base tiles.
+# player base tiles, useful for gameplay logic.
 class State extends Object:
-	var p1_linked: bool
-	var p2_linked: bool
+	# Indices of bases that are currently linked to the gold block.
+	var linked_bases := Array()
 
 var __map: Map = null
 var __rng: RandomNumberGenerator = null
 var __block_scene_by_type: Dictionary
 var __paths: Dictionary
 var __state: State
-var __p1_base_idx: int = -1
-var __p2_base_idx: int = -1
 var __gold_block_idx = -1
 
 # Spawn a soil block.
@@ -57,8 +55,8 @@ func clear_soil(coord):
 # Get the locations of player bases as global world positions.
 func get_player_positions():
 	return [
-		to_global(__coord_to_position(__map.get_tile_coord(__p1_base_idx))),
-		to_global(__coord_to_position(__map.get_tile_coord(__p2_base_idx))),
+		to_global(__coord_to_position(p1_base_coord)),
+		to_global(__coord_to_position(p2_base_coord)),
 	]
 
 # Map a global world position to the underlying tile coordinate.
@@ -74,10 +72,10 @@ func get_neighbors(coord):
 	return __map.get_neighbors(coord)
 
 # Map a tile coordinate to a global world position.
-func coord_to_world(coords):
-	if coords.x >= 0 and coords.x < cols and coords.y >= 0 and coords.y < rows:
-		return to_global(__coord_to_position(coords))
-
+func coord_to_world(coord):
+	var idx = __map.get_tile_index(coord)
+	if idx != -1:
+		return to_global(__coord_to_position(coord))
 	return null
 
 # Get the list of tiles within a given range from a global position.
@@ -99,14 +97,15 @@ func get_map() -> Map:
 
 func _init():
 	__map = Map.new()
-	__map.connect("map_changed", self, "__sync_blocks")
-	__map.set_size(cols, rows)
 
 func _ready():
 	assert(p1_base_coord.x < cols and p1_base_coord.y < rows)
 	assert(p2_base_coord.x < cols and p2_base_coord.y < rows)
 
 	if Engine.editor_hint:
+		# just set the map
+		__map.connect("map_changed", self, "__sync_blocks")
+		__map.set_size(cols, rows)
 		return
 
 	__block_scene_by_type = {
@@ -121,12 +120,10 @@ func _ready():
 	__rng = RandomNumberGenerator.new()
 	__rng.randomize()
 
+	__map.connect("map_changed", self, "__sync_blocks")
+	__map.set_size(cols, rows)
 	__init_players()
 	__seed_gold()
-
-func _exit_tree():
-	__map.free()
-	__map = null
 
 func _process(_delta):
 	if Engine.editor_hint:
@@ -137,28 +134,41 @@ func _process(_delta):
 		var node_name = __coord_to_block_name(__map.get_tile_coord(__gold_block_idx))
 		if has_node(node_name):
 			var gold = get_node(node_name) as GoldBlock
-			gold.get_node("Drainable").enabled = __state.p1_linked or __state.p2_linked
+			gold.get_node("Drainable").enabled = not __state.linked_bases.empty()
 
 func __set_cols(c):
 	cols = c
 	__map.set_size(cols, rows)
+	if __map.get_tile_index(p1_base_coord) == -1:
+		__set_p1_base_coord(Vector2.ZERO)
+	if __map.get_tile_index(p2_base_coord) == -1:
+		__set_p2_base_coord(Vector2.ZERO)
 
 func __set_rows(r):
 	rows = r
 	__map.set_size(cols, rows)
+	if __map.get_tile_index(p1_base_coord) == -1:
+		__set_p1_base_coord(Vector2.ZERO)
+	if __map.get_tile_index(p2_base_coord) == -1:
+		__set_p2_base_coord(Vector2.ZERO)
+
+func __set_p1_base_coord(coord: Vector2):
+	p1_base_coord = coord
+	if Engine.editor_hint:
+		update_gizmo()
+
+func __set_p2_base_coord(coord: Vector2):
+	p2_base_coord = coord
+	if Engine.editor_hint:
+		update_gizmo()
 
 func __init_players():
-	__p1_base_idx = __map.get_tile_index(p1_base_coord)
-	__p2_base_idx = __map.get_tile_index(p2_base_coord)
-
 	# clear the tiles where players spawn
 	__map.set_tile(p1_base_coord, Map.BLOCK_TYPE.NONE)
-	__map.set_tile(p1_base_coord + Vector2(1, 0), Map.BLOCK_TYPE.NONE)
 	__map.set_tile(p2_base_coord, Map.BLOCK_TYPE.NONE)
-	__map.set_tile(p2_base_coord - Vector2(1, 0), Map.BLOCK_TYPE.NONE)
 
-	__draw_debug_sphere(__map.get_tile_coord(__p1_base_idx))
-	__draw_debug_sphere(__map.get_tile_coord(__p2_base_idx))
+	__draw_debug_sphere(p1_base_coord)
+	__draw_debug_sphere(p2_base_coord)
 
 func __seed_gold():
 	if __gold_block_idx != -1:
@@ -222,15 +232,17 @@ func __sync_blocks(coords):
 	__update_state()
 
 func __update_state():
-	for p_idx in [__p1_base_idx, __p2_base_idx]:
+	__state = State.new()
+
+	var base_coords = [p1_base_coord, p2_base_coord]
+	for i in range(2):
+		var p_idx = __map.get_tile_index(base_coords[i])
 		__remove_path(p_idx)
 		if __gold_block_idx != -1:
 			var path = __map.find_path(__gold_block_idx, p_idx)
 			if path:
 				__add_path(p_idx, path)
-
-	__state.p1_linked = __p1_base_idx in __paths
-	__state.p2_linked = __p2_base_idx in __paths
+				__state.linked_bases.append(p_idx)
 
 func __add_path(path_id, path):
 	if path_id in __paths:

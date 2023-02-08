@@ -32,9 +32,8 @@ func get_rows() -> int:
 	return __rows
 
 func get_tile_index(coord: Vector2) -> int:
-	var idx = int(coord.y * __cols + coord.x)
-	if idx >= 0 and idx < __cols * __rows:
-		return idx
+	if coord.x >= 0 and coord.x < __cols and coord.y >= 0 and coord.y < __rows:
+		return int(coord.y * __cols + coord.x)
 	return -1
 
 func get_tile_coord(index: int) -> Vector2:

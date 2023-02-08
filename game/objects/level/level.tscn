@@ -17,3 +17,4 @@ p1_base_coord = Vector2( 0, 11 )
 p2_base_coord = Vector2( 22, 11 )
 
 [node name="Spawner" parent="." instance=ExtResource( 7 )]
+visible = false

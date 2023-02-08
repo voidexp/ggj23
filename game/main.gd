@@ -25,10 +25,10 @@ func _process(_delta):
 	var score_to_add = score_per_second * _delta
 	var state = $Level.get_state()
 
-	if state.p1_linked:
+	if 0 in state.linked_bases:
 		p1_score += score_to_add
 
-	if state.p2_linked:
+	if 1 in state.linked_bases:
 		p2_score += score_to_add
 
 	$Scenery.p1_score = int(p1_score)

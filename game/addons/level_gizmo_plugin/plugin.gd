@@ -4,7 +4,9 @@ extends EditorPlugin
 class GizmoPlugin extends EditorSpatialGizmoPlugin:
 
 	func _init():
-		create_material("main", Color(0, 1, 0))
+		create_material("primary", Color.steelblue)
+		create_material("secondary", Color.cyan)
+		create_handle_material("handle")
 
 	func create_gizmo(spatial):
 		if spatial is Level:
