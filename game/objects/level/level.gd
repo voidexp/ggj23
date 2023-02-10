@@ -242,7 +242,7 @@ func __update_state():
 			var path = __map.find_path(__gold_block_idx, p_idx)
 			if path:
 				__add_path(p_idx, path)
-				__state.linked_bases.append(p_idx)
+				__state.linked_bases.append(i)
 
 func __add_path(path_id, path):
 	if path_id in __paths:

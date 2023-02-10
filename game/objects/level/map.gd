@@ -88,7 +88,7 @@ func __populate():
 			if (r % 2 and c % 2) or c == 0 or r == 0 or c == __cols - 1 or r == __rows - 1:
 				__set_tile(coord, BLOCK_TYPE.ROCK)
 			else:
-				__set_tile(coord, BLOCK_TYPE.NONE)
+				__set_tile(coord, BLOCK_TYPE.SOIL)
 
 func __set_tile(coord: Vector2, type: int):
 	var idx = get_tile_index(coord)
