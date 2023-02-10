@@ -14,6 +14,7 @@ export(int, 3, 100) var cols setget __set_cols
 export(int, 3, 100) var rows setget __set_rows
 export var p1_base_coord: Vector2 setget __set_p1_base_coord
 export var p2_base_coord: Vector2 setget __set_p2_base_coord
+export(Array, PackedScene) var power_ups
 
 # An object that holds the current state of the paths from the gold block to
 # player base tiles, useful for gameplay logic.
@@ -33,8 +34,14 @@ func spawn_soil(coord):
 	var type = __map.get_tile(coord)
 	assert(type == Map.BLOCK_TYPE.NONE)
 
+	# Don't spawn soil on player bases
 	if coord in [p1_base_coord, p2_base_coord]:
 		return
+
+	# Don't spawn soil on top of non-block objects, such as power-ups
+	for child in get_children():
+		if child is PowerUp and __position_to_coord(child.transform.origin) == coord:
+			return
 
 	var spawner = $Spawner.duplicate()
 	add_child(spawner)
@@ -124,6 +131,7 @@ func _ready():
 	__map.set_size(cols, rows)
 	__init_players()
 	__seed_gold()
+	__seed_power_up()
 
 func _process(_delta):
 	if Engine.editor_hint:
@@ -186,6 +194,33 @@ func __seed_gold():
 			# NOTE: the map will emit an update, which will trigger the block
 			# node spawn
 			__map.set_tile(coord, Map.BLOCK_TYPE.GOLD)
+
+func __seed_power_up():
+	if not power_ups:
+		return
+
+	var coord = __find_random_tile()
+	__map.set_tile(coord, Map.BLOCK_TYPE.NONE)
+	var i = __rng.randi_range(0, len(power_ups) - 1)
+	var power_up = power_ups[i].instance()
+	var pos = __coord_to_position(coord)
+	add_child(power_up)
+	power_up.translate(pos + Vector3.UP * 0.5)
+	power_up.connect("on_pick_up", self, "__on_power_up_pick_up")
+
+func __on_power_up_pick_up(__):
+	__seed_power_up()
+
+func __find_random_tile():
+	var iterations = 100
+	while iterations:
+		var idx = __rng.randi_range(0, __map.tiles_count() - 1)
+		var coord = __map.get_tile_coord(idx)
+		if __map.get_tile(coord) != Map.BLOCK_TYPE.ROCK:
+			return coord
+		iterations -= 1
+
+	assert(false, "could not find a free random tile")
 
 func __sync_blocks(coords):
 	# If we're in Editor, just update the gizmo

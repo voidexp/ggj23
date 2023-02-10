@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://actors/power_ups/speed_boost.gd" type="Script" id=1]
+[ext_resource path="res://actors/power_ups/power_up.tscn" type="PackedScene" id=2]
+
+[node name="PowerUp" instance=ExtResource( 2 )]
+
+[node name="Node" type="Node" parent="." index="3"]
+script = ExtResource( 1 )
+
+[connection signal="on_pick_up" from="." to="Node" method="_on_power_up_pick_up"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://objects/level/level.gd" type="Script" id=1]
+[ext_resource path="res://actors/power_ups/speed_boost.tscn" type="PackedScene" id=2]
 [ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
 [ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
 [ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
@@ -15,6 +16,7 @@ cols = 23
 rows = 23
 p1_base_coord = Vector2( 1, 11 )
 p2_base_coord = Vector2( 21, 11 )
+power_ups = [ ExtResource( 2 ) ]
 
 [node name="Spawner" parent="." instance=ExtResource( 7 )]
 visible = false

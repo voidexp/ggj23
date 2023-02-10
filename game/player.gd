@@ -1,7 +1,8 @@
 extends KinematicBody
 
+class_name Player
+
 const Trait = preload("res://traits/trait.gd")
-const Level = preload("res://objects/level/level.gd")
 const Map = preload("res://objects/level/map.gd")
 
 export var color: Color
@@ -26,7 +27,7 @@ var roaring = NOT_ROARING
 var roar = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
-var level: Level = null
+var level = null
 var snap_to = null
 
 func _ready():
