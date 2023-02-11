@@ -7,15 +7,34 @@ const Map = preload("res://objects/level/map.gd")
 
 export var color: Color
 export var player_seat: int = 1
-export var speed: int = 1
+export var speed: float = 1.0
 
 export var pick_cooldown = 1.0
 export var pick_limit = 3
-
 export var roar_cooldown = 3.0
 export var roar_expansion = 5.0
 export var roar_radius = 3
 export var roar_delay = 1.5
+
+# Identifiers of properties that support boosting. These are to be used in
+# power-ups.
+enum Property {
+	SPEED = 1,
+	PICK_COOLDOWN,
+	PICK_LIMIT,
+	ROAR_COOLDOWN,
+	ROAR_RADIUS
+}
+
+# Internal map of boostable properties identifiers to actual names (the ones
+# exported above).
+const prop_names_map := {
+	SPEED = "speed",
+	PICK_COOLDOWN = "pick_cooldown",
+	PICK_LIMIT = "pick_limit",
+	ROAR_COOLDOWN = "roar_cooldown",
+	ROAR_RADIUS = "roar_radius",
+}
 
 enum {UP, DOWN, LEFT, RIGHT}
 
@@ -29,10 +48,31 @@ var roar_cooldown_remaining = 0.0
 var roar_pos
 var level = null
 var snap_to = null
+var boosts := []
+
+var computed_props: Dictionary
+var defaults: Dictionary
+
+class Boost extends Object:
+
+	var multipliers: Dictionary
+	var duration_remaining: float
+
+
+func add_boost(duration:float, multipliers:Dictionary):
+	var boost = Boost.new()
+	boost.multipliers = multipliers
+	boost.duration_remaining = duration
+	boosts.push_back(boost)
 
 func _ready():
 	name = "Player%d" % player_seat
 	picks = pick_limit
+
+	# store the default values of exported properties
+	defaults = {}
+	for key in prop_names_map:
+		defaults[key] = get(prop_names_map[key])
 
 	$Model.color = color
 	$RoarDelay.wait_time = roar_delay
@@ -69,6 +109,7 @@ func _unhandled_input(event):
 		__discharge_roar()
 
 func _process(delta):
+	__update_boosts(delta)
 	__update_cooldown()
 	__update_roar(delta)
 
@@ -205,6 +246,27 @@ func __update_roar(delta):
 		# expand the roar radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
+
+func __update_boosts(delta):
+	# reset properties to their defaults
+	for key in prop_names_map:
+		set(prop_names_map[key], defaults[key])
+
+	# update boosters and apply them
+	var expired = []
+	for boost in boosts:
+		boost.duration_remaining -= delta
+		if boost.duration_remaining <= 0:
+			expired.append(boost)
+
+		for key in boost.multipliers:
+			var prop_name = prop_names_map[key]
+			var val = get(prop_name)
+			set(prop_name, val * boost.multipliers[key])
+
+	# remove expired boosters
+	for boost in expired:
+		boosts.erase(boost)
 
 func _on_roar_delay_timeout():
 	if not level:
