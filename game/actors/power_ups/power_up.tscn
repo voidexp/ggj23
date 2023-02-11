@@ -42,7 +42,6 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="CSGMesh" type="CSGMesh" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.98899, 0 )
 mesh = SubResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

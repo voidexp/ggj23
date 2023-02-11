@@ -206,10 +206,7 @@ func __seed_power_up():
 	var pos = __coord_to_position(coord)
 	add_child(power_up)
 	power_up.translate(pos + Vector3.UP * 0.5)
-	power_up.connect("on_pick_up", self, "__on_power_up_pick_up")
-
-func __on_power_up_pick_up(__):
-	__seed_power_up()
+	power_up.connect("on_pick_up", self, "__seed_power_up")
 
 func __find_random_tile():
 	var iterations = 100
