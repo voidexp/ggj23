@@ -7,21 +7,18 @@ const Map = preload("res://objects/level/map.gd")
 
 export var color: Color
 export var player_seat: int = 1
-export var speed: float = 1.0
-
-export var pick_cooldown = 1.0
-export var pick_limit = 3
-export var roar_cooldown = 3.0
-export var roar_expansion = 5.0
-export var roar_radius = 3
-export var roar_delay = 1.5
+export var speed: float = 3.0
+export var pick_speed := 1.0
+export var roar_cooldown := 3.0
+export var roar_expansion := 5.0
+export var roar_radius := 3
+export var roar_delay := 1.5
 
 # Identifiers of properties that support boosting. These are to be used in
 # power-ups.
 enum Property {
 	SPEED = 1,
-	PICK_COOLDOWN,
-	PICK_LIMIT,
+	PICK_SPEED,
 	ROAR_COOLDOWN,
 	ROAR_RADIUS
 }
@@ -30,8 +27,7 @@ enum Property {
 # exported above).
 const prop_names_map := {
 	SPEED = "speed",
-	PICK_COOLDOWN = "pick_cooldown",
-	PICK_LIMIT = "pick_limit",
+	PICK_SPEED = "pick_speed",
 	ROAR_COOLDOWN = "roar_cooldown",
 	ROAR_RADIUS = "roar_radius",
 }
@@ -41,9 +37,9 @@ enum {UP, DOWN, LEFT, RIGHT}
 enum {NOT_ROARING, ROAR_CHARGING, ROAR_DISCHARGING}
 
 var movements = []
-var picks = 0
 var roaring = NOT_ROARING
 var roar = 0.0
+var pick_cooldown_remaining = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
 var level = null
@@ -67,7 +63,6 @@ func add_boost(duration:float, multipliers:Dictionary):
 
 func _ready():
 	name = "Player%d" % player_seat
-	picks = pick_limit
 
 	# store the default values of exported properties
 	defaults = {}
@@ -79,7 +74,6 @@ func _ready():
 
 	level = get_node("/root/Game/Level")
 
-	$AnimationPlayer.connect("animation_finished", self, "__exit_cooldown")
 
 func _unhandled_input(event):
 	if event.is_action_released("p%d_move_right" % player_seat):
@@ -110,7 +104,7 @@ func _unhandled_input(event):
 
 func _process(delta):
 	__update_boosts(delta)
-	__update_cooldown()
+	__update_pick(delta)
 	__update_roar(delta)
 
 func _physics_process(step):
@@ -182,13 +176,12 @@ func __get_snap_target(dir):
 			return n_pos
 
 func __do_pick():
-	if __is_in_cooldown():
+	if pick_cooldown_remaining > 0:
 		return
 
-	picks -= 1
+	pick_cooldown_remaining = 1.0 / pick_speed
+
 	$Model/RootNode/AnimationPlayer.play("pickaxe hit")
-	if picks == 0:
-		__enter_cooldown()
 
 	var target = $RayCast.get_collider() as Spatial
 	if not target:
@@ -199,25 +192,10 @@ func __do_pick():
 			var aspect = node as Trait
 			aspect.handle_pick(self, 10)
 
-func __enter_cooldown():
-	$AnimationPlayer.play("Cooldown", -1, 1 / pick_cooldown)
-
-func __exit_cooldown(__unused=null):
-	picks = pick_limit
-
-func __is_in_cooldown():
-	return $AnimationPlayer.is_playing()
-
-func __update_cooldown():
-	var overhead_pos = to_global(Vector3.UP)
-	$Cooldown.set_position(get_viewport().get_camera().unproject_position(overhead_pos))
-	if __is_in_cooldown():
-		$Cooldown.visible = true
-		$Cooldown.text = "%.1f" % stepify(
-			($AnimationPlayer.current_animation_length - $AnimationPlayer.current_animation_position) * pick_cooldown,
-			0.1)
-	else:
-		$Cooldown.text = "%d" % picks
+func __update_pick(delta):
+	pick_cooldown_remaining -= delta
+	if pick_cooldown_remaining < 0:
+		pick_cooldown_remaining = 0
 
 func __charge_roar():
 	if roar_cooldown_remaining > 0 or roaring:
