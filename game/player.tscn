@@ -12,7 +12,8 @@ flags_transparent = true
 albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
 
 [sub_resource type="Animation" id=5]
-resource_name = "DimLight"
+resource_name = "Pulse"
+length = 2.0
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:light_energy")
@@ -21,25 +22,50 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
+"times": PoolRealArray( 0, 1, 2 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
 "values": [ 9.807, 5.0, 9.807 ]
 }
 
-[sub_resource type="Animation" id=6]
-length = 0.001
+[sub_resource type="Animation" id=19]
+resource_name = "Toggle"
+length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:light_energy")
-tracks/0/interp = 1
+tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 2.82843 ),
 "update": 0,
-"values": [ 9.807 ]
+"values": [ 9.807, 0.0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Fire:emitting")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Smoke:emitting")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
 }
 
 [sub_resource type="Gradient" id=7]
@@ -129,26 +155,25 @@ radial_segments = 24
 rings = 12
 material = SubResource( 4 )
 
-[node name="OmniLight2" type="OmniLight" parent="."]
+[node name="CandleFX" type="OmniLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 1.79132, -0.349496 )
 light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
 light_energy = 9.807
 
-[node name="AnimationPlayer2" type="AnimationPlayer" parent="OmniLight2"]
-autoplay = "DimLight"
-playback_speed = 0.5
-anims/DimLight = SubResource( 5 )
-anims/RESET = SubResource( 6 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CandleFX"]
+autoplay = "Pulse"
+anims/Pulse = SubResource( 5 )
+anims/Toggle = SubResource( 19 )
 
-[node name="Candle" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84016, -0.246253 )
+[node name="Fire" type="Particles" parent="CandleFX"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00173378, 0.04884, 0.103243 )
 lifetime = 0.6
 speed_scale = 0.5
 process_material = SubResource( 11 )
 draw_pass_1 = SubResource( 13 )
 
-[node name="Smoke" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1089, -0.255897 )
+[node name="Smoke" type="Particles" parent="CandleFX"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00173378, 0.31758, 0.093599 )
 lifetime = 0.6
 speed_scale = 0.5
 process_material = SubResource( 16 )
@@ -157,4 +182,5 @@ draw_pass_1 = SubResource( 18 )
 [node name="RoarDelay" type="Timer" parent="."]
 one_shot = true
 
+[connection signal="animation_finished" from="CandleFX/AnimationPlayer" to="." method="_on_candle_animation_finished"]
 [connection signal="timeout" from="RoarDelay" to="." method="_on_roar_delay_timeout"]

@@ -213,13 +213,15 @@ func __discharge_roar():
 	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
 	$RoarDelay.start()
+	$CandleFX/AnimationPlayer.play("Toggle")
 
 func __update_roar(delta):
-	if not roaring:
+	if not roaring and roar_cooldown_remaining:
 		# update the cooldown
 		roar_cooldown_remaining -= delta
-		if roar_cooldown_remaining <= 0:
+		if roar_cooldown_remaining < 0:
 			roar_cooldown_remaining = 0
+			$CandleFX/AnimationPlayer.play_backwards("Toggle")
 	elif roaring == ROAR_CHARGING:
 		# expand the roar radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
@@ -261,3 +263,7 @@ func _on_roar_delay_timeout():
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
 	roaring = NOT_ROARING
+
+func _on_candle_animation_finished(anim_name:String):
+	if anim_name == "Toggle" and not roaring and not roar_cooldown_remaining:
+		$CandleFX/AnimationPlayer.play("Pulse")
