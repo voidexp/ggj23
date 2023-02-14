@@ -6,6 +6,9 @@ const Map = preload("res://objects/level/map.gd")
 const GoldBlock = preload("res://objects/gold_block.gd")
 const GridBlock = preload("res://objects/grid_block.gd")
 
+# Radius around gold spawn point to cover with soil.
+export var gold_cover_radius := 3
+
 export(PackedScene) var soil_block
 export(PackedScene) var rock_block
 export(PackedScene) var gold_block
@@ -31,28 +34,8 @@ var __gold_block_idx = -1
 
 # Spawn a soil block.
 func spawn_soil(coord):
-	var type = __map.get_tile(coord)
-	assert(type == Map.BLOCK_TYPE.NONE)
-
-	# Don't spawn soil on player bases
-	if coord in [p1_base_coord, p2_base_coord]:
-		return
-
-	# Don't spawn soil on top of non-block objects, such as power-ups
-	for child in get_children():
-		if child is PowerUp and __position_to_coord(child.transform.origin) == coord:
-			return
-
-	var spawner = $Spawner.duplicate()
-	add_child(spawner)
-	spawner.visible = true
-	spawner.spawn_duration = $Spawner.spawn_duration * __rng.randf_range(0.7, 1.4)
-	spawner.translate(__coord_to_position(coord))
-	spawner.ghost = __block_scene_by_type[Map.BLOCK_TYPE.SOIL]
-	# Once the spawn animation complets, update the underlying map directly,
-	# this will trigger the actual block creation
-	spawner.connect("spawn_completed", __map, "set_tile", [coord, Map.BLOCK_TYPE.SOIL])
-	spawner.spawn()
+	if __is_tile_spawnable(coord):
+		__delayed_spawn(coord, Map.BLOCK_TYPE.SOIL)
 
 # Clear a soil block.
 func clear_soil(coord):
@@ -130,7 +113,7 @@ func _ready():
 	__map.connect("map_changed", self, "__sync_blocks")
 	__map.set_size(cols, rows)
 	__init_players()
-	__seed_gold()
+	__seed_gold(false)
 	__seed_power_up()
 
 func _process(_delta):
@@ -141,8 +124,9 @@ func _process(_delta):
 	if __gold_block_idx != -1:
 		var node_name = __coord_to_block_name(__map.get_tile_coord(__gold_block_idx))
 		if has_node(node_name):
-			var gold = get_node(node_name) as GoldBlock
-			gold.get_node("Drainable").enabled = not __state.linked_bases.empty()
+			var gold = get_node(node_name)
+			if gold is GoldBlock:
+				gold.get_node("Drainable").enabled = not __state.linked_bases.empty()
 
 func __set_cols(c):
 	cols = c
@@ -178,28 +162,49 @@ func __init_players():
 	__draw_debug_sphere(p1_base_coord)
 	__draw_debug_sphere(p2_base_coord)
 
-func __seed_gold():
+func __delayed_spawn(coord, type, delay=-1):
+	var spawner = $Spawner.duplicate()
+	add_child(spawner)
+	spawner.visible = true
+	spawner.spawn_duration = delay if delay != -1 else $Spawner.spawn_duration * __rng.randf_range(0.7, 1.4)
+	spawner.translate(__coord_to_position(coord))
+	spawner.ghost = __block_scene_by_type[type]
+	# Once the spawn animation complets, update the underlying map directly,
+	# this will trigger the actual block creation
+	spawner.connect("spawn_completed", __map, "set_tile", [coord, type])
+	spawner.spawn()
+
+func __seed_gold(delay:bool=true):
+	# Clear any existing gold block
 	if __gold_block_idx != -1:
 		__map.set_tile(__map.get_tile_coord(__gold_block_idx), Map.BLOCK_TYPE.NONE)
 		__gold_block_idx = -1
 
-	# Loop until a non-rocky tile is found and replace it with gold
-	while __gold_block_idx == -1:
-		var idx = __rng.randi_range(0, __map.tiles_count() - 1)
-		var coord = __map.get_tile_coord(idx)
-		var type = __map.get_tile(coord)
-		if type != Map.BLOCK_TYPE.ROCK:
-			print("Gold spawning at %s (id=%d)" % [coord, idx])
-			__gold_block_idx = idx
-			# NOTE: the map will emit an update, which will trigger the block
-			# node spawn
-			__map.set_tile(coord, Map.BLOCK_TYPE.GOLD)
+	# Find a non-occupied empty or soil tile and spawn the gold on it
+	var coord = __find_random_spawnable_tile()
+	var idx = __map.get_tile_index(coord)
+	print("Spawning gold at %s (id=%d)" % [coord, idx])
 
-func __seed_power_up():
+	# Spawn soil on empty neighbor tiles first
+	var neighbors = get_tiles_in_radius(coord_to_world(coord), gold_cover_radius)
+	for neighbor in neighbors:  # [coord, type]
+		if neighbor[1] == Map.BLOCK_TYPE.NONE and neighbor[0] != coord:
+			spawn_soil(neighbor[0])
+
+	if delay:
+		__delayed_spawn(coord, Map.BLOCK_TYPE.GOLD, 2.0)
+	else:
+		# NOTE: the map will emit an update, which will trigger the block
+		# node spawn on __sync_blocks()
+		__map.set_tile(coord, Map.BLOCK_TYPE.GOLD)
+
+	return
+
+func __seed_power_up(delay:bool=false):
 	if not power_ups:
 		return
 
-	var coord = __find_random_tile()
+	var coord = __find_random_spawnable_tile()
 	__map.set_tile(coord, Map.BLOCK_TYPE.NONE)
 	var i = __rng.randi_range(0, len(power_ups) - 1)
 	var power_up = power_ups[i].instance()
@@ -208,16 +213,31 @@ func __seed_power_up():
 	power_up.translate(pos + Vector3.UP * 0.5)
 	power_up.connect("on_pick_up", self, "__seed_power_up")
 
-func __find_random_tile():
+func __find_random_spawnable_tile():
 	var iterations = 100
 	while iterations:
 		var idx = __rng.randi_range(0, __map.tiles_count() - 1)
 		var coord = __map.get_tile_coord(idx)
-		if __map.get_tile(coord) != Map.BLOCK_TYPE.ROCK:
+		if __is_tile_spawnable(coord):
 			return coord
 		iterations -= 1
 
 	assert(false, "could not find a free random tile")
+
+func __is_tile_spawnable(coord):
+	var type = __map.get_tile(coord)
+	if not type in [Map.BLOCK_TYPE.SOIL, Map.BLOCK_TYPE.NONE]:
+		return false
+
+	for p_coord in [p1_base_coord, p2_base_coord]:
+		if coord == p_coord:
+			return false
+
+	for child in get_children():
+		if child is PowerUp and __position_to_coord(child.transform.origin) == coord:
+			return false
+
+	return true
 
 func __sync_blocks(coords):
 	# If we're in Editor, just update the gizmo
@@ -254,11 +274,15 @@ func __sync_blocks(coords):
 			node.name = __coord_to_block_name(coord)
 			node.translate(__coord_to_position(coord))
 
-			# if the freshly created block is gold, on exhaustion signal reseed it
-			# again
 			if type == Map.BLOCK_TYPE.GOLD:
-				# Cast is unnecessary, just stating that a GoldBlock is expected :)
-				var __ = (node as GoldBlock).connect("exhausted", self, "__seed_gold")
+				assert(node is GoldBlock, "`gold_block` should reference a Scene inheriting from GoldBlock")
+
+				# Update the index of the gold block, for pathfinding
+				__gold_block_idx = __map.get_tile_index(coord)
+
+				# Re-seed the gold node again on exhaustion of the just created
+				# one
+				var __ = node.connect("exhausted", self, "__seed_gold")
 
 	# trigger state updates
 	__update_state()
@@ -266,10 +290,14 @@ func __sync_blocks(coords):
 func __update_state():
 	__state = State.new()
 
+	# For each player, clear up existing paths to the gold block and attempt to
+	# compute new ones.
 	var base_coords = [p1_base_coord, p2_base_coord]
 	for i in range(2):
 		var p_idx = __map.get_tile_index(base_coords[i])
 		__remove_path(p_idx)
+
+		# If there's gold, attempt to find a new to it from the given player.
 		if __gold_block_idx != -1:
 			var path = __map.find_path(__gold_block_idx, p_idx)
 			if path:
