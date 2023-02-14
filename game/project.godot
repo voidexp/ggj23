@@ -37,7 +37,7 @@ _global_script_classes=[ {
 "base": "Area",
 "class": "PowerUp",
 "language": "GDScript",
-"path": "res://actors/power_ups/power_up.gd"
+"path": "res://objects/power_ups/power_up.gd"
 }, {
 "base": "Node",
 "class": "Trait",

@@ -9,6 +9,15 @@ const GridBlock = preload("res://objects/grid_block.gd")
 # Radius around gold spawn point to cover with soil.
 export var gold_cover_radius := 3
 
+# Periodicity with which soil is randomly spawned on empty tiles
+export var random_soil_spawn_period := 10
+
+# Percentage of empty tiles to be covered during random soil spawn.
+export(float, 0, 1) var random_soil_spawn_factor = 0.25
+
+# Probability of spawning a bonus instead of soil block during random spawns.
+export(float, 0, 1) var random_soil_bonus_spawn_prob = 0.3
+
 export(PackedScene) var soil_block
 export(PackedScene) var rock_block
 export(PackedScene) var gold_block
@@ -19,18 +28,21 @@ export var p1_base_coord: Vector2 setget __set_p1_base_coord
 export var p2_base_coord: Vector2 setget __set_p2_base_coord
 export(Array, PackedScene) var power_ups
 
+
 # An object that holds the current state of the paths from the gold block to
 # player base tiles, useful for gameplay logic.
 class State extends Object:
 	# Indices of bases that are currently linked to the gold block.
 	var linked_bases := Array()
 
+
 var __map: Map = null
 var __rng: RandomNumberGenerator = null
-var __block_scene_by_type: Dictionary
 var __paths: Dictionary
 var __state: State
 var __gold_block_idx = -1
+var __  # trash var to suppress connect() warnings; FIXME
+
 
 # Spawn a soil block.
 func spawn_soil(coord):
@@ -94,15 +106,10 @@ func _ready():
 
 	if Engine.editor_hint:
 		# just set the map
-		__map.connect("map_changed", self, "__sync_blocks")
+		__ = __map.connect("map_changed", self, "__sync_blocks")
 		__map.set_size(cols, rows)
 		return
 
-	__block_scene_by_type = {
-		Map.BLOCK_TYPE.SOIL: soil_block,
-		Map.BLOCK_TYPE.ROCK: rock_block,
-		Map.BLOCK_TYPE.GOLD: gold_block,
-	}
 
 	__paths = {}
 	__state = State.new()
@@ -110,11 +117,13 @@ func _ready():
 	__rng = RandomNumberGenerator.new()
 	__rng.randomize()
 
-	__map.connect("map_changed", self, "__sync_blocks")
+	__ = __map.connect("map_changed", self, "__sync_blocks")
 	__map.set_size(cols, rows)
 	__init_players()
 	__seed_gold(false)
-	__seed_power_up()
+
+	$SoilSpawnTimer.wait_time = random_soil_spawn_period
+	$SoilSpawnTimer.start()
 
 func _process(_delta):
 	if Engine.editor_hint:
@@ -163,15 +172,19 @@ func __init_players():
 	__draw_debug_sphere(p2_base_coord)
 
 func __delayed_spawn(coord, type, delay=-1):
+	var scene = __get_block_scene_by_type(type)
+	if not scene:
+		return
+
 	var spawner = $Spawner.duplicate()
 	add_child(spawner)
 	spawner.visible = true
 	spawner.spawn_duration = delay if delay != -1 else $Spawner.spawn_duration * __rng.randf_range(0.7, 1.4)
 	spawner.translate(__coord_to_position(coord))
-	spawner.ghost = __block_scene_by_type[type]
+	spawner.ghost = scene
 	# Once the spawn animation complets, update the underlying map directly,
 	# this will trigger the actual block creation
-	spawner.connect("spawn_completed", __map, "set_tile", [coord, type])
+	__ = spawner.connect("spawn_completed", __map, "set_tile", [coord, type])
 	spawner.spawn()
 
 func __seed_gold(delay:bool=true):
@@ -200,18 +213,28 @@ func __seed_gold(delay:bool=true):
 
 	return
 
-func __seed_power_up(delay:bool=false):
-	if not power_ups:
-		return
+func __spawn_random_soil():
+	print("RAAANDOOOM!")
+	var empty_tiles = []
+	for i in __map.tiles_count():
+		var coord = __map.get_tile_coord(i)
+		var type = __map.get_tile(coord)
+		if type != Map.BLOCK_TYPE.NONE or not __is_tile_spawnable(coord):
+			continue
+		empty_tiles.append(coord)
 
-	var coord = __find_random_spawnable_tile()
-	__map.set_tile(coord, Map.BLOCK_TYPE.NONE)
-	var i = __rng.randi_range(0, len(power_ups) - 1)
-	var power_up = power_ups[i].instance()
-	var pos = __coord_to_position(coord)
-	add_child(power_up)
-	power_up.translate(pos + Vector3.UP * 0.5)
-	power_up.connect("on_pick_up", self, "__seed_power_up")
+	var remaining = ceil(len(empty_tiles) * random_soil_spawn_factor)
+	var power_up_spawned = false
+	while remaining > 0:
+		remaining -= 1
+
+		var i = __rng.randi_range(0, len(empty_tiles) - 1)
+		var coord = empty_tiles.pop_at(i)
+		if not power_up_spawned and __rng.randf() <= random_soil_bonus_spawn_prob:
+			power_up_spawned = true
+			__delayed_spawn(coord, Map.BLOCK_TYPE.POWER_UP)
+		else:
+			__delayed_spawn(coord, Map.BLOCK_TYPE.SOIL)
 
 func __find_random_spawnable_tile():
 	var iterations = 100
@@ -231,10 +254,6 @@ func __is_tile_spawnable(coord):
 
 	for p_coord in [p1_base_coord, p2_base_coord]:
 		if coord == p_coord:
-			return false
-
-	for child in get_children():
-		if child is PowerUp and __position_to_coord(child.transform.origin) == coord:
 			return false
 
 	return true
@@ -264,25 +283,29 @@ func __sync_blocks(coords):
 				# nothing to do for this block
 				continue
 
-		# create a new block, if needed
+		# Spawn a new block, if needed
 		if type:
-			var node = __block_scene_by_type[type].instance() as GridBlock
+			var scene = __get_block_scene_by_type(type)
+			var node = scene.instance()
 			add_child(node)
-			node.row = coord.y
-			node.col = coord.x
-			node.type = type
-			node.name = __coord_to_block_name(coord)
 			node.translate(__coord_to_position(coord))
 
-			if type == Map.BLOCK_TYPE.GOLD:
-				assert(node is GoldBlock, "`gold_block` should reference a Scene inheriting from GoldBlock")
+			if type != Map.BLOCK_TYPE.POWER_UP:
+				assert(node is GridBlock)
+				node.row = coord.y
+				node.col = coord.x
+				node.type = type
+				node.name = __coord_to_block_name(coord)
 
-				# Update the index of the gold block, for pathfinding
-				__gold_block_idx = __map.get_tile_index(coord)
+				if type == Map.BLOCK_TYPE.GOLD:
+					assert(node is GoldBlock, "`gold_block` should reference a Scene inheriting from GoldBlock")
 
-				# Re-seed the gold node again on exhaustion of the just created
-				# one
-				var __ = node.connect("exhausted", self, "__seed_gold")
+					# Update the index of the gold block, for pathfinding
+					__gold_block_idx = __map.get_tile_index(coord)
+
+					# Re-seed the gold node again on exhaustion of the just created
+					# one
+					__ = node.connect("exhausted", self, "__seed_gold")
 
 	# trigger state updates
 	__update_state()
@@ -358,3 +381,20 @@ func __coord_to_block_name(coord):
 # Convert local position to tile coordinate
 func __position_to_coord(position):
 	return Vector2(int(round(position.x + cols / 2)), int(round(position.z + rows / 2)))
+
+# Get the scene resource for a given block type
+func __get_block_scene_by_type(type:int) -> PackedScene:
+	match type:
+		Map.BLOCK_TYPE.SOIL:
+			return soil_block
+		Map.BLOCK_TYPE.GOLD:
+			return gold_block
+		Map.BLOCK_TYPE.ROCK:
+			return rock_block
+		Map.BLOCK_TYPE.POWER_UP:
+			if power_ups:
+				var i = __rng.randi_range(0, len(power_ups) - 1)
+				return power_ups[i]
+
+	push_warning("A scene is not defined for block type %s!" % type)
+	return null
