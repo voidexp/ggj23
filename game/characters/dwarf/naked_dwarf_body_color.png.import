@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/helmet.png-3379e7128da56ddb0245c67687dce2c4.s3tc.stex"
-path.etc2="res://.import/helmet.png-3379e7128da56ddb0245c67687dce2c4.etc2.stex"
+path.s3tc="res://.import/naked_dwarf_body_color.png-13c446d46a9ca7bb46b7aa1128c3b187.s3tc.stex"
+path.etc2="res://.import/naked_dwarf_body_color.png-13c446d46a9ca7bb46b7aa1128c3b187.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://characters/helmet.png"
-dest_files=[ "res://.import/helmet.png-3379e7128da56ddb0245c67687dce2c4.s3tc.stex", "res://.import/helmet.png-3379e7128da56ddb0245c67687dce2c4.etc2.stex" ]
+source_file="res://characters/dwarf/naked_dwarf_body_color.png"
+dest_files=[ "res://.import/naked_dwarf_body_color.png-13c446d46a9ca7bb46b7aa1128c3b187.s3tc.stex", "res://.import/naked_dwarf_body_color.png-13c446d46a9ca7bb46b7aa1128c3b187.etc2.stex" ]
 
 [params]
 
