@@ -289,9 +289,13 @@ func __update_boosts(delta):
 	# iterate over boosts and collect modifier/setter values
 	for boost in boosts:
 		# update the remaining duration
-		boost.duration -= delta
-		if boost.duration <= 0:
-			expired.append(boost)
+		if boost.duration != -2:
+			if boost.duration == -1:  # one shot expire immediately
+				expired.append(boost)
+			else:
+				boost.duration -= delta
+				if boost.duration <= 0:
+					expired.append(boost)
 
 		match boost.type:
 			# setter boosts override the base value; if multiple setter boosts
