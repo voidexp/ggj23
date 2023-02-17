@@ -13,32 +13,32 @@ export var roar_cooldown := 3.0
 export var roar_expansion := 5.0
 export var roar_radius := 3
 export var roar_delay := 1.5
+export var detonator_max_distance := 5.0
+export var detonator_radius := 3.0
+export var detonator_available := false
 
-# Identifiers of properties that support boosting. These are to be used in
-# power-ups.
-enum Property {
-	SPEED = 1,
-	PICK_SPEED,
-	ROAR_COOLDOWN,
-	ROAR_EXPANSION,
-	ROAR_RADIUS,
-	ROAR_DELAY,
-}
+# Scene to use as a mark for the ultimate positioning.
+export var ultimate_placement_mark: PackedScene
 
-# Internal map of boostable properties identifiers to actual names (the ones
-# exported above).
-const prop_names_map := {
-	SPEED = "speed",
-	PICK_SPEED = "pick_speed",
-	ROAR_COOLDOWN = "roar_cooldown",
-	ROAR_EXPANSION = "roar_expansion",
-	ROAR_RADIUS = "roar_radius",
-	ROAR_DELAY = "roar_dleay",
+# Identifiers of properties that support boosting. These will be available for
+# boosting in power-ups.
+const BOOSTABLE_PROPERTIES := {
+	"speed": TYPE_REAL,
+	"pick_speed": TYPE_REAL,
+	"roar_cooldown": TYPE_REAL,
+	"roar_expansion": TYPE_REAL,
+	"roar_radius": TYPE_REAL,
+	"roar_delay": TYPE_REAL,
+	"detonator_max_distance": TYPE_REAL,
+	"detonator_radius": TYPE_REAL,
+	"detonator_available": TYPE_BOOL,
 }
 
 enum {UP, DOWN, LEFT, RIGHT}
 
 enum {NOT_ROARING, ROAR_CHARGING, ROAR_DISCHARGING}
+
+enum {WAIT_NOTHING, WAIT_FOR_COORDS = 1}
 
 var movements = []
 var roaring = NOT_ROARING
@@ -46,71 +46,54 @@ var roar = 0.0
 var pick_cooldown_remaining = 0.0
 var roar_cooldown_remaining = 0.0
 var roar_pos
-var level = null
 var snap_to = null
 var boosts := []
 
 var computed_props: Dictionary
 var defaults: Dictionary
 
+var _waiting = WAIT_NOTHING
+
+onready var level = get_node("/root/Game/Level")
+onready var _mark = ultimate_placement_mark.instance()
 onready var _model = get_node("Model")
 
 
 class Boost extends Object:
-	var multipliers: Dictionary
-	var duration_remaining: float
+	enum Type {MODIFIER, SETTER}
+	var type: int
+	var values: Dictionary
+	var duration: float
 
-
-func add_boost(duration:float, multipliers:Dictionary):
-	var boost = Boost.new()
-	boost.multipliers = multipliers
-	boost.duration_remaining = duration
-	boosts.push_back(boost)
 
 func _ready():
-	# store the default values of exported properties
+	add_child(_mark)
+
+	# store the default values of boostable properties
 	defaults = {}
-	for key in prop_names_map:
-		defaults[key] = get(prop_names_map[key])
+	for prop in BOOSTABLE_PROPERTIES:
+		defaults[prop] = get(prop)
 
-	# colorize the model
+	# colorize player attributes (mark, model, etc)
 	_model.color = color
+	_mark.color = color
 
-	$RoarDelay.wait_time = roar_delay
-
-	level = get_node("/root/Game/Level")
+	# hide the ultimate mark initially
+	_mark.visible = false
 
 func _unhandled_input(event):
-	if event.is_action_released("p%d_move_right" % player_seat):
-		movements.erase(RIGHT)
-	if event.is_action_released("p%d_move_left" % player_seat):
-		movements.erase(LEFT)
-	if event.is_action_released("p%d_move_up" % player_seat):
-		movements.erase(UP)
-	if event.is_action_released("p%d_move_down" % player_seat):
-		movements.erase(DOWN)
+	match _waiting:
+		WAIT_NOTHING:
+			__handle_normal_input(event)
 
-	if event.is_action_pressed("p%d_move_down" % player_seat):
-		movements.push_back(DOWN)
-	if event.is_action_pressed("p%d_move_up" % player_seat):
-		movements.push_back(UP)
-	if event.is_action_pressed("p%d_move_left" % player_seat):
-		movements.push_back(LEFT)
-	if event.is_action_pressed("p%d_move_right" % player_seat):
-		movements.push_back(RIGHT)
-
-	if event.is_action_pressed("p%d_action" % player_seat):
-		__do_pick()
-
-	if event.is_action_pressed("p%d_aux_action" % player_seat):
-		__charge_roar()
-	elif event.is_action_released("p%d_aux_action" % player_seat):
-		__discharge_roar()
+		WAIT_FOR_COORDS:
+			__handle_mark_placement_input(event)
 
 func _process(delta):
 	__update_boosts(delta)
 	__update_pick(delta)
 	__update_roar(delta)
+	__update_ultimate(delta)
 
 func _physics_process(step):
 	var dir
@@ -156,11 +139,59 @@ func _physics_process(step):
 	if snap_to and collision:
 		snap_to = null
 
-func __get_snap_target(dir):
-	if not level:
-		# no level found, abort
-		return null
+func add_boost(boost:Boost):
+	boosts.push_back(boost)
 
+func __handle_normal_input(event):
+	if event.is_action_released("p%d_move_right" % player_seat):
+		movements.erase(RIGHT)
+	if event.is_action_released("p%d_move_left" % player_seat):
+		movements.erase(LEFT)
+	if event.is_action_released("p%d_move_up" % player_seat):
+		movements.erase(UP)
+	if event.is_action_released("p%d_move_down" % player_seat):
+		movements.erase(DOWN)
+
+	if event.is_action_pressed("p%d_move_down" % player_seat):
+		movements.push_back(DOWN)
+	if event.is_action_pressed("p%d_move_up" % player_seat):
+		movements.push_back(UP)
+	if event.is_action_pressed("p%d_move_left" % player_seat):
+		movements.push_back(LEFT)
+	if event.is_action_pressed("p%d_move_right" % player_seat):
+		movements.push_back(RIGHT)
+
+	if event.is_action_pressed("p%d_action" % player_seat):
+		__do_pick()
+
+	if event.is_action_pressed("p%d_secondary_action" % player_seat):
+		__charge_roar()
+	elif event.is_action_released("p%d_secondary_action" % player_seat):
+		__discharge_roar()
+
+	if event.is_action_released("p%d_ultimate_action" % player_seat):
+		__initiate_ultimate()
+
+func __handle_mark_placement_input(event):
+	var coord_offset = Vector2.ZERO
+
+	if event.is_action_released("p%d_ultimate_action" % player_seat):
+		__activate_ultimate()
+		return
+
+	if event.is_action_pressed("p%d_move_down" % player_seat):
+		coord_offset.y += 1
+	if event.is_action_pressed("p%d_move_up" % player_seat):
+		coord_offset.y -= 1
+	if event.is_action_pressed("p%d_move_left" % player_seat):
+		coord_offset.x -= 1
+	if event.is_action_pressed("p%d_move_right" % player_seat):
+		coord_offset.x += 1
+
+	if coord_offset.length() != 0.0:
+		__reposition_mark(coord_offset)
+
+func __get_snap_target(dir):
 	var pos = global_transform.origin
 	var coord = level.world_to_coord(pos)
 	if not coord:
@@ -219,7 +250,7 @@ func __discharge_roar():
 	roaring = ROAR_DISCHARGING
 	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
-	$RoarDelay.start()
+	$RoarDelay.start(roar_delay)
 	_model.toggle_headlamp(false)
 
 func __update_roar(delta):
@@ -237,31 +268,7 @@ func __update_roar(delta):
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
-func __update_boosts(delta):
-	# reset properties to their defaults
-	for key in prop_names_map:
-		set(prop_names_map[key], defaults[key])
-
-	# update boosters and apply them
-	var expired = []
-	for boost in boosts:
-		boost.duration_remaining -= delta
-		if boost.duration_remaining <= 0:
-			expired.append(boost)
-
-		for key in boost.multipliers:
-			var prop_name = prop_names_map[key]
-			var val = get(prop_name)
-			set(prop_name, val * boost.multipliers[key])
-
-	# remove expired boosters
-	for boost in expired:
-		boosts.erase(boost)
-
-func _on_roar_delay_timeout():
-	if not level:
-		return
-
+func __on_roar_delay_timeout():
 	var occupied_tile = level.world_to_coord(global_transform.origin)
 	var tiles = level.get_tiles_in_radius(roar_pos, roar)
 	for tile_info in tiles:  # tile_info = [coord, type]
@@ -273,3 +280,86 @@ func _on_roar_delay_timeout():
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
 	roaring = NOT_ROARING
+
+func __update_boosts(delta):
+	var expired = []
+	var mod_boosts = {}
+	var set_boosts = {}
+
+	# iterate over boosts and collect modifier/setter values
+	for boost in boosts:
+		# update the remaining duration
+		boost.duration -= delta
+		if boost.duration <= 0:
+			expired.append(boost)
+
+		match boost.type:
+			# setter boosts override the base value; if multiple setter boosts
+			# are changing the same property, the last applied value will be
+			# used
+			Boost.Type.SETTER:
+				for prop_name in boost.values:
+					set_boosts[prop_name] = boost.values[prop_name]
+
+			# modifier boosts act as multipliers, i.e 1.0 = 100% of the base
+			# value, and thus, all modifier *deltas* are added together before
+			# application
+			Boost.Type.MODIFIER:
+				for prop_name in boost.values:
+					if not prop_name in mod_boosts:
+						mod_boosts[prop_name] = 1.0
+					mod_boosts[prop_name] += 1.0 - boost.values[prop_name]
+
+	# apply first setter values
+	for prop_name in set_boosts:
+		set(prop_name, set_boosts[prop_name])
+
+	# apply modifiers on top of currently set base values
+	for prop_name in mod_boosts:
+		var base_value = get(prop_name)
+		var factor = mod_boosts[prop_name]
+		match BOOSTABLE_PROPERTIES[prop_name]:
+			TYPE_REAL:
+				set(prop_name, base_value * factor)
+			TYPE_BOOL:
+				set(prop_name, base_value && factor)
+
+	# remove expired boosters
+	for boost in expired:
+		boosts.erase(boost)
+
+func __initiate_ultimate():
+	if not detonator_available:
+		return
+
+	_waiting = WAIT_FOR_COORDS
+
+	# reset the mark
+	_mark.visible = true
+	_mark.transform.origin = Vector3.ZERO
+	__reposition_mark(Vector2(0, 0))
+
+func __update_ultimate(_delta):
+	_model.toggle_aura(detonator_available)
+
+func __activate_ultimate():
+	_waiting = WAIT_NOTHING
+
+	_mark.visible = false
+
+	detonator_available = false
+
+	var tiles = level.get_tiles_in_radius(_mark.global_transform.origin, detonator_radius)
+	for tile_info in tiles:  # tile_info = [coord, type]
+		if tile_info[1] == Map.BLOCK_TYPE.NONE:
+			level.spawn_soil(tile_info[0])
+
+func __reposition_mark(offset:Vector2):
+	var coord = level.world_to_coord(_mark.global_transform.origin)
+	coord += offset
+
+	var tile = level.get_map().get_tile(coord)
+	if tile != -1:
+		var pos = level.coord_to_world(coord)
+		if pos.distance_to(global_transform.origin) <= detonator_max_distance:
+			_mark.global_transform.origin = pos

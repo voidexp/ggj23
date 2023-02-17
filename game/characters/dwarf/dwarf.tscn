@@ -243,6 +243,7 @@ draw_pass_1 = SubResource( 30 )
 emitting = false
 amount = 40
 lifetime = 1.27
+preprocess = 2.0
 visibility_aabb = AABB( -0.810697, -0.0514903, -0.723314, 1.62139, 2.79829, 1.44663 )
 process_material = SubResource( 31 )
 draw_pass_1 = SubResource( 32 )

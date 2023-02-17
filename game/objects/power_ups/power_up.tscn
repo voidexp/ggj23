@@ -38,12 +38,6 @@ tracks/0/keys = PoolRealArray( 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0.5, 1, 0, 1,
 [node name="PowerUp" type="Area"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
 script = ExtResource( 1 )
-SPEED = 1.0
-PICK_SPEED = 1.0
-ROAR_COOLDOWN = 1.0
-ROAR_EXPANSION = 1.0
-ROAR_RADIUS = 1.0
-ROAR_DELAY = 1.0
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
