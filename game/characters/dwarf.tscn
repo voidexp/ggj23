@@ -12,6 +12,7 @@ albedo_color = Color( 0.992157, 0.419608, 0, 1 )
 albedo_texture = ExtResource( 3 )
 
 [sub_resource type="SpatialMaterial" id=3]
+resource_local_to_scene = true
 albedo_color = Color( 0.384314, 0.219608, 0.219608, 1 )
 
 [sub_resource type="SpatialMaterial" id=4]
