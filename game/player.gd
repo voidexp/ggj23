@@ -349,10 +349,13 @@ func __activate_ultimate():
 
 	detonator_available = false
 
-	var tiles = level.get_tiles_in_radius(_mark.global_transform.origin, detonator_radius)
+	var pos = _mark.global_transform.origin
+	var coord = level.world_to_coord(pos)
+	var tiles = level.get_tiles_in_radius(pos, detonator_radius)
 	for tile_info in tiles:  # tile_info = [coord, type]
 		if tile_info[1] == Map.BLOCK_TYPE.NONE:
 			level.spawn_soil(tile_info[0])
+	level.spawn_soil(coord)
 
 func __reposition_mark(offset:Vector2):
 	var coord = level.world_to_coord(_mark.global_transform.origin)

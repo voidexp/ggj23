@@ -214,7 +214,6 @@ func __seed_gold(delay:bool=true):
 	return
 
 func __spawn_random_soil():
-	print("RAAANDOOOM!")
 	var empty_tiles = []
 	for i in __map.tiles_count():
 		var coord = __map.get_tile_coord(i)
