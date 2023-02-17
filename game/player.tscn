@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
 [ext_resource path="res://characters/dwarf.tscn" type="PackedScene" id=2]
@@ -10,130 +10,6 @@ height = 0.002
 [sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
 albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
-
-[sub_resource type="Animation" id=5]
-resource_name = "Pulse"
-length = 2.0
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:light_energy")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 1, 2 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ 9.807, 5.0, 9.807 ]
-}
-
-[sub_resource type="Animation" id=19]
-resource_name = "Toggle"
-length = 0.5
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:light_energy")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 2.82843 ),
-"update": 0,
-"values": [ 9.807, 0.0 ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Fire:emitting")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ true, false ]
-}
-tracks/2/type = "value"
-tracks/2/path = NodePath("Smoke:emitting")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ true, false ]
-}
-
-[sub_resource type="Gradient" id=7]
-colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0335255, 1 )
-
-[sub_resource type="GradientTexture" id=8]
-gradient = SubResource( 7 )
-
-[sub_resource type="Curve" id=9]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.235955, 0.209091 ), 0.0, 0.0, 0, 0, Vector2( 0.483146, 0.0909091 ), 0.0, 0.0, 0, 0, Vector2( 0.741573, 0 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="CurveTexture" id=10]
-curve = SubResource( 9 )
-
-[sub_resource type="ParticlesMaterial" id=11]
-emission_shape = 1
-emission_sphere_radius = 0.01
-spread = 0.0
-gravity = Vector3( 0, 4, 0 )
-angular_velocity = 90.0
-angular_velocity_random = 1.0
-scale = 0.5
-scale_curve = SubResource( 10 )
-color = Color( 0.94902, 0.180392, 0.054902, 1 )
-color_ramp = SubResource( 8 )
-
-[sub_resource type="SpatialMaterial" id=12]
-flags_unshaded = true
-vertex_color_use_as_albedo = true
-params_blend_mode = 1
-params_billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
-
-[sub_resource type="QuadMesh" id=13]
-material = SubResource( 12 )
-
-[sub_resource type="Curve" id=14]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.0955056, 0.292045 ), 0.0, 0.0, 0, 0, Vector2( 0.393258, 0.219318 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0011363 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="CurveTexture" id=15]
-curve = SubResource( 14 )
-
-[sub_resource type="ParticlesMaterial" id=16]
-lifetime_randomness = 1.0
-emission_shape = 1
-emission_sphere_radius = 0.01
-spread = 0.0
-gravity = Vector3( 0, 4, 0 )
-angular_velocity = 90.0
-angular_velocity_random = 1.0
-scale = 0.4
-scale_curve = SubResource( 15 )
-color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
-
-[sub_resource type="SpatialMaterial" id=17]
-flags_transparent = true
-flags_unshaded = true
-vertex_color_use_as_albedo = true
-params_blend_mode = 1
-params_billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
-
-[sub_resource type="QuadMesh" id=18]
-material = SubResource( 17 )
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -155,32 +31,7 @@ radial_segments = 24
 rings = 12
 material = SubResource( 4 )
 
-[node name="CandleFX" type="OmniLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 1.79132, -0.349496 )
-light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
-light_energy = 9.807
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="CandleFX"]
-autoplay = "Pulse"
-anims/Pulse = SubResource( 5 )
-anims/Toggle = SubResource( 19 )
-
-[node name="Fire" type="Particles" parent="CandleFX"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00173378, 0.04884, 0.103243 )
-lifetime = 0.6
-speed_scale = 0.5
-process_material = SubResource( 11 )
-draw_pass_1 = SubResource( 13 )
-
-[node name="Smoke" type="Particles" parent="CandleFX"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00173378, 0.31758, 0.093599 )
-lifetime = 0.6
-speed_scale = 0.5
-process_material = SubResource( 16 )
-draw_pass_1 = SubResource( 18 )
-
 [node name="RoarDelay" type="Timer" parent="."]
 one_shot = true
 
-[connection signal="animation_finished" from="CandleFX/AnimationPlayer" to="." method="_on_candle_animation_finished"]
 [connection signal="timeout" from="RoarDelay" to="." method="_on_roar_delay_timeout"]

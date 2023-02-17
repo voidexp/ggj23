@@ -49,8 +49,10 @@ var boosts := []
 var computed_props: Dictionary
 var defaults: Dictionary
 
-class Boost extends Object:
+onready var _model = get_node("Model")
 
+
+class Boost extends Object:
 	var multipliers: Dictionary
 	var duration_remaining: float
 
@@ -69,11 +71,12 @@ func _ready():
 	for key in prop_names_map:
 		defaults[key] = get(prop_names_map[key])
 
-	$Model.color = color
+	# colorize the model
+	_model.color = color
+
 	$RoarDelay.wait_time = roar_delay
 
 	level = get_node("/root/Game/Level")
-
 
 func _unhandled_input(event):
 	if event.is_action_released("p%d_move_right" % player_seat):
@@ -181,7 +184,7 @@ func __do_pick():
 
 	pick_cooldown_remaining = 1.0 / pick_speed
 
-	$Model/RootNode/AnimationPlayer.play("pickaxe hit")
+	_model.play_pick_animation()
 
 	var target = $RayCast.get_collider() as Spatial
 	if not target:
@@ -213,7 +216,7 @@ func __discharge_roar():
 	roar_pos = self.global_transform.origin
 	$RoarSphere.visible = false
 	$RoarDelay.start()
-	$CandleFX/AnimationPlayer.play("Toggle")
+	_model.toggle_headlamp(false)
 
 func __update_roar(delta):
 	if not roaring and roar_cooldown_remaining:
@@ -221,7 +224,8 @@ func __update_roar(delta):
 		roar_cooldown_remaining -= delta
 		if roar_cooldown_remaining < 0:
 			roar_cooldown_remaining = 0
-			$CandleFX/AnimationPlayer.play_backwards("Toggle")
+			_model.toggle_headlamp(true)
+
 	elif roaring == ROAR_CHARGING:
 		# expand the roar radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
@@ -263,7 +267,3 @@ func _on_roar_delay_timeout():
 	# remaining cooldown = basic cooldown + % of reached charge
 	roar_cooldown_remaining = roar_cooldown + roar_cooldown * (roar / roar_radius)
 	roaring = NOT_ROARING
-
-func _on_candle_animation_finished(anim_name:String):
-	if anim_name == "Toggle" and not roaring and not roar_cooldown_remaining:
-		$CandleFX/AnimationPlayer.play("Pulse")
