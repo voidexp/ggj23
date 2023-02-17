@@ -68,8 +68,6 @@ func add_boost(duration:float, multipliers:Dictionary):
 	boosts.push_back(boost)
 
 func _ready():
-	name = "Player%d" % player_seat
-
 	# store the default values of exported properties
 	defaults = {}
 	for key in prop_names_map:
@@ -169,7 +167,7 @@ func __get_snap_target(dir):
 		# not on level, abort
 		return null
 
-	# go over neighbors of the current tile and pick the one we're looking at
+	# go over neighbors of the current tile and find the one we're looking at
 	var neighbors = level.get_neighbors(coord)
 	for neighbor in neighbors:
 		# 1. obtain world position of the tile
@@ -188,6 +186,8 @@ func __do_pick():
 
 	pick_cooldown_remaining = 1.0 / pick_speed
 
+	# TODO: bind the exact moment of the axe "hitting" the block with the actual
+	# .handle_pick() call; now animation and action are unrelated
 	_model.play_pick_animation()
 
 	var target = $RayCast.get_collider() as Spatial
@@ -226,12 +226,14 @@ func __update_roar(delta):
 	if not roaring and roar_cooldown_remaining:
 		# update the cooldown
 		roar_cooldown_remaining -= delta
+
+		# turn the head lamp back on, if cooldown expired
 		if roar_cooldown_remaining < 0:
 			roar_cooldown_remaining = 0
 			_model.toggle_headlamp(true)
 
 	elif roaring == ROAR_CHARGING:
-		# expand the roar radius
+		# expand the roar sphere radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
