@@ -20,7 +20,9 @@ enum Property {
 	SPEED = 1,
 	PICK_SPEED,
 	ROAR_COOLDOWN,
-	ROAR_RADIUS
+	ROAR_EXPANSION,
+	ROAR_RADIUS,
+	ROAR_DELAY,
 }
 
 # Internal map of boostable properties identifiers to actual names (the ones
@@ -29,7 +31,9 @@ const prop_names_map := {
 	SPEED = "speed",
 	PICK_SPEED = "pick_speed",
 	ROAR_COOLDOWN = "roar_cooldown",
+	ROAR_EXPANSION = "roar_expansion",
 	ROAR_RADIUS = "roar_radius",
+	ROAR_DELAY = "roar_dleay",
 }
 
 enum {UP, DOWN, LEFT, RIGHT}

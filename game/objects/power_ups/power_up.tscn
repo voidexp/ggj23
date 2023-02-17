@@ -41,7 +41,9 @@ script = ExtResource( 1 )
 SPEED = 1.0
 PICK_SPEED = 1.0
 ROAR_COOLDOWN = 1.0
+ROAR_EXPANSION = 1.0
 ROAR_RADIUS = 1.0
+ROAR_DELAY = 1.0
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
