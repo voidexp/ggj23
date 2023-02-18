@@ -3,8 +3,6 @@ extends Spatial
 class_name Level
 
 const Map = preload("res://objects/level/map.gd")
-const GoldBlock = preload("res://objects/gold_block.gd")
-const GridBlock = preload("res://objects/grid_block.gd")
 
 # Radius around gold spawn point to cover with soil.
 export var gold_cover_radius := 3
@@ -329,7 +327,7 @@ func __sync_blocks(coords):
 
 			match type:
 				Map.BLOCK_TYPE.SOIL, Map.BLOCK_TYPE.ROCK, Map.BLOCK_TYPE.GOLD:
-					assert(node is GridBlock)
+					assert(node is Block)
 					node.row = coord.y
 					node.col = coord.x
 					node.type = type

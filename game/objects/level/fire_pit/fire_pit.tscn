@@ -1,14 +1,12 @@
 [gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://objects/level/fire_pit/fire_particle_material.tres" type="Material" id=1]
-[ext_resource path="res://objects/level/fire_pit/fire_pit.gd" type="Script" id=2]
+[ext_resource path="res://objects/level/block.tscn" type="PackedScene" id=2]
 [ext_resource path="res://objects/metal.material" type="Material" id=3]
 [ext_resource path="res://objects/metal_texture.png" type="Texture" id=4]
+[ext_resource path="res://objects/level/fire_pit/fire_pit.gd" type="Script" id=5]
 
-[sub_resource type="BoxShape" id=9]
-extents = Vector3( 0.5, 0.5, 0.5 )
-
-[sub_resource type="ArrayMesh" id=10]
+[sub_resource type="ArrayMesh" id=5]
 resource_name = "fire_pit_Cube001"
 surfaces/0 = {
 "aabb": AABB( -0.33287, 0.65, -0.35, 0.665741, 0.35, 0.7 ),
@@ -33,21 +31,21 @@ surfaces/1 = {
 "vertex_count": 38
 }
 
-[sub_resource type="SpatialMaterial" id=11]
+[sub_resource type="SpatialMaterial" id=6]
 resource_name = "metal"
 albedo_color = Color( 0.45, 0.45, 0.45, 1 )
 albedo_texture = ExtResource( 4 )
 
-[sub_resource type="Gradient" id=3]
+[sub_resource type="Gradient" id=7]
 interpolation_mode = 2
 offsets = PoolRealArray( 0.260394, 0.588621, 0.87965 )
 colors = PoolColorArray( 0.989258, 1, 0, 1, 0.945098, 0.486275, 0.054902, 1, 0.913725, 0.0980392, 0.0980392, 0.356863 )
 
 [sub_resource type="GradientTexture" id=4]
-gradient = SubResource( 3 )
+gradient = SubResource( 7 )
 width = 1000
 
-[sub_resource type="ParticlesMaterial" id=5]
+[sub_resource type="ParticlesMaterial" id=8]
 lifetime_randomness = 0.5
 trail_divisor = 20
 emission_shape = 5
@@ -62,10 +60,10 @@ radial_accel = -2.0
 tangential_accel = 1.59
 color_ramp = SubResource( 4 )
 
-[sub_resource type="PointMesh" id=6]
+[sub_resource type="PointMesh" id=9]
 material = ExtResource( 1 )
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=10]
 resource_name = "Toggle"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Light:omni_range")
@@ -92,32 +90,26 @@ tracks/1/keys = {
 "values": [ false, true ]
 }
 
-[node name="FirePit" type="StaticBody"]
-collision_layer = 2
-collision_mask = 0
-script = ExtResource( 2 )
+[node name="Block" instance=ExtResource( 2 )]
+script = ExtResource( 5 )
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
-shape = SubResource( 9 )
-
-[node name="Model" type="MeshInstance" parent="."]
-mesh = SubResource( 10 )
-material/0 = SubResource( 11 )
+[node name="Model" type="MeshInstance" parent="." index="1"]
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
 material/1 = ExtResource( 3 )
 
-[node name="Fire" type="Particles" parent="."]
+[node name="Fire" type="Particles" parent="." index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.21747, 0 )
 emitting = false
 amount = 500
 visibility_aabb = AABB( -0.880164, -0.219578, -0.98634, 1.76033, 1.92158, 1.97268 )
-process_material = SubResource( 5 )
-draw_pass_1 = SubResource( 6 )
+process_material = SubResource( 8 )
+draw_pass_1 = SubResource( 9 )
 
-[node name="Light" type="OmniLight" parent="."]
+[node name="Light" type="OmniLight" parent="." index="3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2109, 0 )
 light_energy = 8.0
 omni_range = 0.0
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Toggle = SubResource( 8 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="4"]
+anims/Toggle = SubResource( 10 )

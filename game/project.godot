@@ -10,9 +10,14 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "StaticBody",
-"class": "GridBlock",
+"class": "Block",
 "language": "GDScript",
-"path": "res://objects/grid_block.gd"
+"path": "res://objects/level/block.gd"
+}, {
+"base": "Block",
+"class": "GoldBlock",
+"language": "GDScript",
+"path": "res://objects/level/gold_block/gold_block.gd"
 }, {
 "base": "Spatial",
 "class": "Level",
@@ -45,7 +50,8 @@ _global_script_classes=[ {
 "path": "res://traits/trait.gd"
 } ]
 _global_script_class_icons={
-"GridBlock": "",
+"Block": "",
+"GoldBlock": "",
 "Level": "",
 "LevelGizmo": "",
 "Map": "",
@@ -64,7 +70,6 @@ config/icon="res://icon.png"
 
 window/size/width=1920
 window/size/height=1080
-window/size/fullscreen=true
 
 [editor_plugins]
 

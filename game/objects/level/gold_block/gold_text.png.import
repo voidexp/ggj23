@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/gold_text.png-6a9abe3e0ff47a76125eaf9537d10a41.s3tc.stex"
-path.etc2="res://.import/gold_text.png-6a9abe3e0ff47a76125eaf9537d10a41.etc2.stex"
+path.s3tc="res://.import/gold_text.png-b8293bcf091f64f22f74cb98e14214ae.s3tc.stex"
+path.etc2="res://.import/gold_text.png-b8293bcf091f64f22f74cb98e14214ae.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://objects/gold_text.png"
-dest_files=[ "res://.import/gold_text.png-6a9abe3e0ff47a76125eaf9537d10a41.s3tc.stex", "res://.import/gold_text.png-6a9abe3e0ff47a76125eaf9537d10a41.etc2.stex" ]
+source_file="res://objects/level/gold_block/gold_text.png"
+dest_files=[ "res://.import/gold_text.png-b8293bcf091f64f22f74cb98e14214ae.s3tc.stex", "res://.import/gold_text.png-b8293bcf091f64f22f74cb98e14214ae.etc2.stex" ]
 
 [params]
 

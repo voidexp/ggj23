@@ -2,9 +2,9 @@
 
 [ext_resource path="res://objects/level/level.gd" type="Script" id=1]
 [ext_resource path="res://objects/power_ups/ultimate_charge.tscn" type="PackedScene" id=2]
-[ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
-[ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
-[ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
+[ext_resource path="res://objects/level/soil_block/soil_block.tscn" type="PackedScene" id=3]
+[ext_resource path="res://objects/level/rock_block/rock_block.tscn" type="PackedScene" id=4]
+[ext_resource path="res://objects/level/gold_block/gold_block.tscn" type="PackedScene" id=5]
 [ext_resource path="res://objects/level/fire_pit/fire_pit.tscn" type="PackedScene" id=6]
 [ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
 [ext_resource path="res://objects/power_ups/speed_boost.tscn" type="PackedScene" id=8]

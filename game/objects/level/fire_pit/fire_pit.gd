@@ -1,4 +1,4 @@
-extends GridBlock
+extends Block
 
 onready var _anim: AnimationPlayer = get_node("AnimationPlayer")
 

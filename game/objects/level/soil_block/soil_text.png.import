@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/soil_text.png-ab9a373499876b48c63ad566f81ff1bb.s3tc.stex"
-path.etc2="res://.import/soil_text.png-ab9a373499876b48c63ad566f81ff1bb.etc2.stex"
+path.s3tc="res://.import/soil_text.png-9a5d7a742e76b9aa5a7bdedcb886ce8e.s3tc.stex"
+path.etc2="res://.import/soil_text.png-9a5d7a742e76b9aa5a7bdedcb886ce8e.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://objects/soil_text.png"
-dest_files=[ "res://.import/soil_text.png-ab9a373499876b48c63ad566f81ff1bb.s3tc.stex", "res://.import/soil_text.png-ab9a373499876b48c63ad566f81ff1bb.etc2.stex" ]
+source_file="res://objects/level/soil_block/soil_text.png"
+dest_files=[ "res://.import/soil_text.png-9a5d7a742e76b9aa5a7bdedcb886ce8e.s3tc.stex", "res://.import/soil_text.png-9a5d7a742e76b9aa5a7bdedcb886ce8e.etc2.stex" ]
 
 [params]
 

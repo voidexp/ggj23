@@ -1,4 +1,6 @@
-extends GridBlock
+extends Block
+
+class_name GoldBlock
 
 signal exhausted
 

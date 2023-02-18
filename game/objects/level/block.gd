@@ -1,6 +1,6 @@
 extends StaticBody
 
-class_name GridBlock
+class_name Block
 
 var col
 var row
