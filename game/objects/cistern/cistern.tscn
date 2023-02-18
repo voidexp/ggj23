@@ -1,0 +1,66 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://objects/barrel_texture.jpg" type="Texture" id=1]
+[ext_resource path="res://objects/metal_texture.jpg" type="Texture" id=2]
+[ext_resource path="res://objects/cistern/rusty_metal.jpg" type="Texture" id=3]
+[ext_resource path="res://objects/cistern/luquid_gold.jpg" type="Texture" id=4]
+[ext_resource path="res://objects/cistern/cistern.fbx" type="PackedScene" id=5]
+[ext_resource path="res://objects/barel.material" type="Material" id=6]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="Shader" id=5]
+code = "shader_type spatial;
+render_mode unshaded;
+
+uniform vec2 direction_and_speed = vec2(0.25, 0.00);
+uniform vec2 scale = vec2 (1.0);
+uniform bool flip = false;
+uniform sampler2D albedo : hint_albedo;
+
+void fragment()
+{
+	vec2 uv= UV * scale - direction_and_speed * TIME ;
+	if (flip) { uv = 1.0 - uv;}
+	ALBEDO = texture (albedo, uv).rgb;
+	 
+}"
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = SubResource( 5 )
+shader_param/direction_and_speed = Vector2( 0, -0.1 )
+shader_param/scale = Vector2( 1, 1 )
+shader_param/flip = false
+shader_param/albedo = ExtResource( 4 )
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 0.184314, 0.431373, 0.564706, 1 )
+albedo_texture = ExtResource( 2 )
+
+[node name="cistern" instance=ExtResource( 5 )]
+
+[node name="cistern" parent="RootNode" index="0"]
+material/0 = SubResource( 1 )
+material/1 = SubResource( 6 )
+material/2 = ExtResource( 6 )
+
+[node name="ledder1" parent="RootNode" index="1"]
+material/0 = SubResource( 3 )
+
+[node name="inside_1" parent="RootNode" index="2"]
+visible = false
+material/0 = SubResource( 4 )
+
+[node name="inside_2" parent="RootNode" index="3"]
+visible = false
+material/0 = SubResource( 4 )
+
+[node name="inside_3" parent="RootNode" index="4"]
+material/0 = SubResource( 4 )
+
+[node name="inside_4" parent="RootNode" index="5"]
+material/0 = SubResource( 4 )
