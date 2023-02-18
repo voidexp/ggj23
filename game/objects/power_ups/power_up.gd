@@ -11,17 +11,13 @@ export var boosts := {}
 
 func _on_body_entered(body:Node):
 	if body is Player:
+		var boost = Player.Boost.new()
+		boost.type = boost_type
+		boost.values = boosts
+		boost.duration = duration
+		body.add_boost(boost)
 		emit_signal("on_pick_up")
 		_on_pick_up(body)
-		$AnimationPlayer.play("Disappear")
-
-func _on_animation_finished(name:String):
-	if name == "Disappear":
-		queue_free()
 
 func _on_pick_up(p: Player) -> void:
-	var boost = Player.Boost.new()
-	boost.type = boost_type
-	boost.values = boosts
-	boost.duration = duration
-	p.add_boost(boost)
+	queue_free()

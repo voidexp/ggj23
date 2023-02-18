@@ -12,6 +12,9 @@ export var gold_cover_radius := 3
 # Periodicity with which soil is randomly spawned on empty tiles
 export var random_soil_spawn_period := 10
 
+# Periodicity of spawning the special POI power-up
+export var poi_spawn_period := 10
+
 # Percentage of empty tiles to be covered during random soil spawn.
 export(float, 0, 1) var random_soil_spawn_factor = 0.25
 
@@ -29,7 +32,7 @@ export var p1_base_coord: Vector2 setget __set_p1_base_coord
 export var p2_base_coord: Vector2 setget __set_p2_base_coord
 export var poi_coord: Vector2 setget __set_poi_coord
 export(Array, PackedScene) var power_ups
-
+export(PackedScene) var poi_power_up
 
 # An object that holds the current state of the paths from the gold block to
 # player base tiles, useful for gameplay logic.
@@ -43,6 +46,8 @@ var __rng: RandomNumberGenerator = null
 var __paths: Dictionary
 var __state: State
 var __gold_block_idx = -1
+var __poi_power_up_node: Node  # currently spawned POI powerup
+var __poi_node: Node  # the POI itself
 var __  # trash var to suppress connect() warnings; FIXME
 
 
@@ -126,8 +131,8 @@ func _ready():
 	__init_poi()
 	__seed_gold(false)
 
-	$SoilSpawnTimer.wait_time = random_soil_spawn_period
-	$SoilSpawnTimer.start()
+	$SoilSpawnTimer.start(random_soil_spawn_period)
+	$POISpawnTimer.start(poi_spawn_period)
 
 func _process(_delta):
 	if Engine.editor_hint:
@@ -249,6 +254,25 @@ func __spawn_random_soil():
 		else:
 			__delayed_spawn(coord, Map.BLOCK_TYPE.SOIL)
 
+func __spawn_poi_powerup():
+	if not poi_power_up:
+		return
+
+	var pos = __poi_node.transform.origin
+	__poi_power_up_node = poi_power_up.instance()
+	add_child(__poi_power_up_node)
+	__poi_power_up_node.translate(pos)
+
+	__ = __poi_power_up_node.connect("on_pick_up", self, "__cleanup_poi_powerup")
+
+	__poi_node.toggle(true)
+
+func __cleanup_poi_powerup():
+	__poi_node.toggle(false)
+	__poi_power_up_node = null
+
+	$POISpawnTimer.start(poi_spawn_period)
+
 func __find_random_spawnable_tile():
 	var iterations = 100
 	while iterations:
@@ -321,6 +345,9 @@ func __sync_blocks(coords):
 					# Re-seed the gold node again on exhaustion of the just created
 					# one
 					__ = node.connect("exhausted", self, "__seed_gold")
+
+				Map.BLOCK_TYPE.POI:
+					__poi_node = node
 
 	# trigger state updates
 	__update_state()

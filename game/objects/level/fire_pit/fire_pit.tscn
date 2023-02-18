@@ -120,5 +120,4 @@ light_energy = 8.0
 omni_range = 0.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-autoplay = "Toggle"
 anims/Toggle = SubResource( 8 )
