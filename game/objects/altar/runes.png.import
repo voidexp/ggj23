@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/altar_texture_no center.png-d7c47dd19d3182773976a7e295794c1a.s3tc.stex"
-path.etc2="res://.import/altar_texture_no center.png-d7c47dd19d3182773976a7e295794c1a.etc2.stex"
+path.s3tc="res://.import/runes.png-45ad1a5d1777301fbe151b3b76740d80.s3tc.stex"
+path.etc2="res://.import/runes.png-45ad1a5d1777301fbe151b3b76740d80.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://objects/altar_texture_no center.png"
-dest_files=[ "res://.import/altar_texture_no center.png-d7c47dd19d3182773976a7e295794c1a.s3tc.stex", "res://.import/altar_texture_no center.png-d7c47dd19d3182773976a7e295794c1a.etc2.stex" ]
+source_file="res://objects/altar/runes.png"
+dest_files=[ "res://.import/runes.png-45ad1a5d1777301fbe151b3b76740d80.s3tc.stex", "res://.import/runes.png-45ad1a5d1777301fbe151b3b76740d80.etc2.stex" ]
 
 [params]
 

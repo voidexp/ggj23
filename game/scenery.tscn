@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://objects/gun_bullet.tscn" type="PackedScene" id=1]
 [ext_resource path="res://objects/gun.tscn" type="PackedScene" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://scenery.gd" type="Script" id=6]
 [ext_resource path="res://objects/mountain.tscn" type="PackedScene" id=7]
 [ext_resource path="res://objects/river.tscn" type="PackedScene" id=8]
+[ext_resource path="res://objects/new_plane.tscn" type="PackedScene" id=9]
 
 [sub_resource type="BoxShape" id=2]
 extents = Vector3( 1, 1, 2.25949 )
@@ -260,6 +261,11 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -12.613, -0.824944, -4.5064 )
 
 [node name="Mountain" parent="." instance=ExtResource( 7 )]
 transform = Transform( 1.19573, 0, 0, 0, 1, 0, 0, 0, 0.820025, 1.64265, 3.6, 0 )
+visible = false
 
 [node name="River" parent="." instance=ExtResource( 8 )]
 transform = Transform( 1.19573, 0, 0, 0, 0.871463, -0.42644, 0, 0.487806, 0.702273, -5.86321, -0.512591, -13.2104 )
+visible = false
+
+[node name="new" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1.18658, 5.45034, 1.18624, -0.173643 )

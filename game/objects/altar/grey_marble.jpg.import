@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/altar_not_ready.png-095b5d9908045275274ee5ad2670e9be.s3tc.stex"
-path.etc2="res://.import/altar_not_ready.png-095b5d9908045275274ee5ad2670e9be.etc2.stex"
+path.s3tc="res://.import/grey_marble.jpg-cb320fc72aa97a098f5a9fbe90c95613.s3tc.stex"
+path.etc2="res://.import/grey_marble.jpg-cb320fc72aa97a098f5a9fbe90c95613.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://objects/altar_not_ready.png"
-dest_files=[ "res://.import/altar_not_ready.png-095b5d9908045275274ee5ad2670e9be.s3tc.stex", "res://.import/altar_not_ready.png-095b5d9908045275274ee5ad2670e9be.etc2.stex" ]
+source_file="res://objects/altar/grey_marble.jpg"
+dest_files=[ "res://.import/grey_marble.jpg-cb320fc72aa97a098f5a9fbe90c95613.s3tc.stex", "res://.import/grey_marble.jpg-cb320fc72aa97a098f5a9fbe90c95613.etc2.stex" ]
 
 [params]
 

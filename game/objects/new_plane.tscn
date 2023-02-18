@@ -2,7 +2,7 @@
 
 [ext_resource path="res://objects/lava_text.jpg" type="Texture" id=1]
 [ext_resource path="res://objects/new.fbx" type="PackedScene" id=2]
-[ext_resource path="res://objects/rock_text.jpg" type="Texture" id=3]
+[ext_resource path="res://objects/level/rock_block/rock_text.jpg" type="Texture" id=3]
 
 [sub_resource type="SpatialMaterial" id=3]
 albedo_texture = ExtResource( 3 )
@@ -80,9 +80,19 @@ light_specular = 0.607
 spot_range = 5.591
 
 [node name="SpotLight6" type="SpotLight" parent="RootNode" index="8"]
-transform = Transform( 1, 0, 0, 0, -0.12135, 0.99261, 0, -0.99261, -0.12135, -11.721, 0.87254, -12.9679 )
+transform = Transform( 1, 0, 0, 0, -0.12135, 0.99261, 0, -0.99261, -0.12135, -11.967, 0.991833, -13.0366 )
 light_color = Color( 0.87451, 0.392157, 0.0392157, 1 )
 light_energy = 16.0
 light_indirect_energy = 13.564
 light_specular = 0.607
-spot_range = 5.591
+spot_range = 6.8005
+spot_angle = 49.2187
+
+[node name="SpotLight7" type="SpotLight" parent="RootNode" index="9"]
+transform = Transform( 1, 0, 0, 0, -0.12135, 0.99261, 0, -0.99261, -0.12135, -17.0678, 0.87254, -11.8688 )
+light_color = Color( 0.87451, 0.392157, 0.0392157, 1 )
+light_energy = 16.0
+light_indirect_energy = 13.564
+light_specular = 0.607
+spot_range = 9.68313
+spot_angle = 41.7527

@@ -1,0 +1,90 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://objects/altar/grey_marble.jpg" type="Texture" id=1]
+[ext_resource path="res://objects/altar/runes.png" type="Texture" id=2]
+[ext_resource path="res://objects/altar/altar.fbx" type="PackedScene" id=4]
+
+[sub_resource type="SpatialMaterial" id=1]
+flags_transparent = true
+params_line_width = 0.1
+albedo_texture = ExtResource( 2 )
+emission_enabled = true
+emission = Color( 0.564706, 0.733333, 0.819608, 1 )
+emission_energy = 3.24
+emission_operator = 0
+emission_on_uv2 = false
+clearcoat_enabled = true
+clearcoat = 1.0
+clearcoat_gloss = 0.5
+
+[sub_resource type="SpatialMaterial" id=11]
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="Animation" id=9]
+resource_name = "Toggle"
+
+[sub_resource type="Animation" id=5]
+resource_name = "runes_rotation"
+length = 6.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("runes_bot:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 110, 0 ), Vector3( 0, -250, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("runes_mid:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 65, 0 ), Vector3( 0, 425, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("runes_top:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( 0, -360, 0 ) ]
+}
+
+[node name="altar" instance=ExtResource( 4 )]
+
+[node name="RootNode" parent="." index="0"]
+transform = Transform( -0.999985, 0, 0.00555551, 0, 1, 0, -0.00555551, 0, -0.999985, 0, 0, 0 )
+
+[node name="runes_bot" parent="RootNode" index="1"]
+transform = Transform( -0.00228289, 0, 0.00627218, 0, 0.00927043, 0, -0.00627218, 0, -0.00228289, 0, 1.12305, 0 )
+material/0 = SubResource( 1 )
+
+[node name="runes_mid" parent="RootNode" index="2"]
+transform = Transform( 0.00282085, 0, 0.00604934, 0, 0.00927043, 0, -0.00604934, 0, 0.00282085, 0, 1.80273, 0 )
+material/0 = SubResource( 1 )
+
+[node name="runes_top" parent="RootNode" index="3"]
+transform = Transform( 0.00667472, 0, 0, 0, 0.00926964, 0, 0, 0, 0.0066758, 0, 2.48369, 0 )
+material/0 = SubResource( 1 )
+
+[node name="altar_" parent="RootNode" index="4"]
+material/0 = SubResource( 11 )
+
+[node name="AnimationPlayer" parent="RootNode" index="5"]
+autoplay = "runes_rotation"
+anims/Toggle = SubResource( 9 )
+anims/runes_rotation = SubResource( 5 )
