@@ -21,11 +21,13 @@ export(float, 0, 1) var random_soil_bonus_spawn_prob = 0.3
 export(PackedScene) var soil_block
 export(PackedScene) var rock_block
 export(PackedScene) var gold_block
+export(PackedScene) var poi_block
 
 export(int, 3, 100) var cols setget __set_cols
 export(int, 3, 100) var rows setget __set_rows
 export var p1_base_coord: Vector2 setget __set_p1_base_coord
 export var p2_base_coord: Vector2 setget __set_p2_base_coord
+export var poi_coord: Vector2 setget __set_poi_coord
 export(Array, PackedScene) var power_ups
 
 
@@ -103,6 +105,7 @@ func _init():
 func _ready():
 	assert(p1_base_coord.x < cols and p1_base_coord.y < rows)
 	assert(p2_base_coord.x < cols and p2_base_coord.y < rows)
+	assert(poi_coord.x < cols and poi_coord.y < rows)
 
 	if Engine.editor_hint:
 		# just set the map
@@ -120,6 +123,7 @@ func _ready():
 	__ = __map.connect("map_changed", self, "__sync_blocks")
 	__map.set_size(cols, rows)
 	__init_players()
+	__init_poi()
 	__seed_gold(false)
 
 	$SoilSpawnTimer.wait_time = random_soil_spawn_period
@@ -140,18 +144,12 @@ func _process(_delta):
 func __set_cols(c):
 	cols = c
 	__map.set_size(cols, rows)
-	if __map.get_tile_index(p1_base_coord) == -1:
-		__set_p1_base_coord(Vector2.ZERO)
-	if __map.get_tile_index(p2_base_coord) == -1:
-		__set_p2_base_coord(Vector2.ZERO)
+	__reset_coords()
 
 func __set_rows(r):
 	rows = r
 	__map.set_size(cols, rows)
-	if __map.get_tile_index(p1_base_coord) == -1:
-		__set_p1_base_coord(Vector2.ZERO)
-	if __map.get_tile_index(p2_base_coord) == -1:
-		__set_p2_base_coord(Vector2.ZERO)
+	__reset_coords()
 
 func __set_p1_base_coord(coord: Vector2):
 	p1_base_coord = coord
@@ -163,6 +161,19 @@ func __set_p2_base_coord(coord: Vector2):
 	if Engine.editor_hint:
 		update_gizmo()
 
+func __set_poi_coord(coord: Vector2):
+	poi_coord = coord
+	if Engine.editor_hint:
+		update_gizmo()
+
+func __reset_coords():
+	if __map.get_tile_index(p1_base_coord) == -1:
+		__set_p1_base_coord(Vector2.ZERO)
+	if __map.get_tile_index(p2_base_coord) == -1:
+		__set_p2_base_coord(Vector2.ZERO)
+	if __map.get_tile_index(poi_coord) == -1:
+		__set_poi_coord(Vector2.ZERO)
+
 func __init_players():
 	# clear the tiles where players spawn
 	__map.set_tile(p1_base_coord, Map.BLOCK_TYPE.NONE)
@@ -170,6 +181,9 @@ func __init_players():
 
 	__draw_debug_sphere(p1_base_coord)
 	__draw_debug_sphere(p2_base_coord)
+
+func __init_poi():
+	__map.set_tile(poi_coord, Map.BLOCK_TYPE.POI)
 
 func __delayed_spawn(coord, type, delay=-1):
 	var scene = __get_block_scene_by_type(type)
@@ -251,7 +265,7 @@ func __is_tile_spawnable(coord):
 	if not type in [Map.BLOCK_TYPE.SOIL, Map.BLOCK_TYPE.NONE]:
 		return false
 
-	for p_coord in [p1_base_coord, p2_base_coord]:
+	for p_coord in [p1_base_coord, p2_base_coord, poi_coord]:
 		if coord == p_coord:
 			return false
 
@@ -289,14 +303,16 @@ func __sync_blocks(coords):
 			add_child(node)
 			node.translate(__coord_to_position(coord))
 
-			if type != Map.BLOCK_TYPE.POWER_UP:
-				assert(node is GridBlock)
-				node.row = coord.y
-				node.col = coord.x
-				node.type = type
-				node.name = __coord_to_block_name(coord)
+			match type:
+				Map.BLOCK_TYPE.SOIL, Map.BLOCK_TYPE.ROCK, Map.BLOCK_TYPE.GOLD:
+					assert(node is GridBlock)
+					node.row = coord.y
+					node.col = coord.x
+					node.type = type
+					node.name = __coord_to_block_name(coord)
+					continue
 
-				if type == Map.BLOCK_TYPE.GOLD:
+				Map.BLOCK_TYPE.GOLD:
 					assert(node is GoldBlock, "`gold_block` should reference a Scene inheriting from GoldBlock")
 
 					# Update the index of the gold block, for pathfinding
@@ -394,6 +410,8 @@ func __get_block_scene_by_type(type:int) -> PackedScene:
 			if power_ups:
 				var i = __rng.randi_range(0, len(power_ups) - 1)
 				return power_ups[i]
+		Map.BLOCK_TYPE.POI:
+			return poi_block
 
 	push_warning("A scene is not defined for block type %s!" % type)
 	return null

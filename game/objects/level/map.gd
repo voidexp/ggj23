@@ -1,9 +1,16 @@
 extends Object
 class_name Map
 
-enum BLOCK_TYPE {NONE, SOIL, ROCK, GOLD, POWER_UP}
+enum BLOCK_TYPE {NONE, SOIL, ROCK, GOLD, POWER_UP, POI}
 
-const _WAYPOINT_BLOCKS = [BLOCK_TYPE.NONE, BLOCK_TYPE.GOLD, BLOCK_TYPE.POWER_UP]
+# Tiles that are valid pathfinding waypoints (but not necessarily walkable
+# through by the players).
+const _WAYPOINT_BLOCKS = [
+	BLOCK_TYPE.NONE,
+	BLOCK_TYPE.GOLD,
+	BLOCK_TYPE.POWER_UP,
+	BLOCK_TYPE.POI
+]
 
 signal map_changed
 
