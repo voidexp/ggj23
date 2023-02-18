@@ -6,7 +6,7 @@
 extents = Vector3( 0.5, 0.5, 0.5 )
 
 [sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 0.898039, 0.678431, 0.0941176, 1 )
+albedo_color = Color( 0.0196078, 0.215686, 0.980392, 1 )
 
 [sub_resource type="Animation" id=2]
 resource_name = "Float"
@@ -24,11 +24,11 @@ tracks/0/keys = {
 "values": [ Vector3( 0, 0.5, 0 ), Vector3( 0, 0.65, 0 ), Vector3( 0, 0.5, 0 ) ]
 }
 
-[node name="Speed" instance=ExtResource( 1 )]
+[node name="Roar_radius" instance=ExtResource( 1 )]
 collision_layer = 0
 duration = -2.0
 boosts = {
-"speed": 1.1
+"roar_radius": 1.2
 }
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="0"]
