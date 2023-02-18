@@ -46,6 +46,7 @@ var __state: State
 var __gold_block_idx = -1
 var __poi_power_up_node: Node  # currently spawned POI powerup
 var __poi_node: Node  # the POI itself
+var __ghost_blocks = []
 var __  # trash var to suppress connect() warnings; FIXME
 
 
@@ -143,6 +144,15 @@ func _process(_delta):
 			var gold = get_node(node_name)
 			if gold is GoldBlock:
 				gold.get_node("Drainable").enabled = not __state.linked_bases.empty()
+
+func _physics_process(_delta):
+	# make non-colliding ghost blocks "real"
+	var ghosts_to_process = __ghost_blocks.duplicate()
+	while ghosts_to_process:
+		var block = ghosts_to_process.pop_back() as Block
+		if not __check_block_players_collision(block):
+			__ghost_blocks.erase(block)
+			block.collisions_enabled = true
 
 func __set_cols(c):
 	cols = c
@@ -332,6 +342,20 @@ func __sync_blocks(coords):
 					node.col = coord.x
 					node.type = type
 					node.name = __coord_to_block_name(coord)
+					node.collisions_enabled = true
+					continue
+
+				Map.BLOCK_TYPE.SOIL:
+					# check whether this block collides with any player at the
+					# moment of spawn
+					var collides_with_players = __check_block_players_collision(node)
+					node.collisions_enabled = not collides_with_players
+
+					if collides_with_players:
+						# append this block to the list of temporary ghosts, to
+						# be made "physical" later
+						__ghost_blocks.append(node)
+
 					continue
 
 				Map.BLOCK_TYPE.GOLD:
@@ -349,6 +373,19 @@ func __sync_blocks(coords):
 
 	# trigger state updates
 	__update_state()
+
+func __check_block_players_collision(block:Block) -> bool:
+	var players = get_tree().get_nodes_in_group("players")
+	var players_mask = 0
+	for p in players:
+		players_mask |= p.collision_layer
+
+	var query = PhysicsShapeQueryParameters.new()
+	query.collision_mask = players_mask
+	query.transform = block.global_transform
+	query.set_shape(block.get_shape())
+	var collisions = get_world().direct_space_state.collide_shape(query, len(players))
+	return not collisions.empty()
 
 func __update_state():
 	__state = State.new()

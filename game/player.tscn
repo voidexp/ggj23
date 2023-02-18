@@ -5,7 +5,7 @@
 [ext_resource path="res://fx/location_mark.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
-radius = 0.45
+radius = 0.48
 height = 0.5
 
 [sub_resource type="SpatialMaterial" id=4]

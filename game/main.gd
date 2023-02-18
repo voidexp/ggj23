@@ -13,8 +13,8 @@ func _ready():
 	randomize()  # init random seed
 
 	var player_positions = $Level.get_player_positions()
-	$Player1.transform.origin = player_positions[0]
-	$Player2.transform.origin = player_positions[1]
+	$Player1.global_transform.origin = player_positions[0]
+	$Player2.global_transform.origin = player_positions[1]
 
 	_is_game_running = true
 
