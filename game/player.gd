@@ -312,7 +312,7 @@ func __update_boosts(delta):
 				for prop_name in boost.values:
 					if not prop_name in mod_boosts:
 						mod_boosts[prop_name] = 1.0
-					mod_boosts[prop_name] += 1.0 - boost.values[prop_name]
+					mod_boosts[prop_name] += boost.values[prop_name] - 1.0
 
 	# apply first setter values
 	for prop_name in set_boosts:
