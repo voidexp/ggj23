@@ -7,10 +7,9 @@ height = 1.0
 
 [node name="UltimateCharge" instance=ExtResource( 1 )]
 collision_layer = 0
-duration = -1.0
-boost_type = 1
+boost_type = 2
 boosts = {
-"detonator_available": true
+"detonator_counts": 1
 }
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="0"]

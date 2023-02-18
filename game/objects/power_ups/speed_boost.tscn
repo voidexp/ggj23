@@ -23,7 +23,7 @@ tracks/0/keys = {
 
 [node name="Speed" instance=ExtResource( 1 )]
 collision_layer = 0
-duration = -1.0
+duration = -2.0
 boosts = {
 "speed": 1.5
 }

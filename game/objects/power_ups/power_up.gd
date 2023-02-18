@@ -5,8 +5,8 @@ class_name PowerUp
 
 signal on_pick_up
 
-export var duration := 1.0
-export(Player.Boost.Type) var boost_type
+export var duration := -1.0
+export(Player.Boost.Type) var boost_type = 0
 export var boosts := {}
 
 func _on_body_entered(body:Node):

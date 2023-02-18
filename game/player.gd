@@ -15,7 +15,7 @@ export var roar_radius := 3
 export var roar_delay := 1.5
 export var detonator_max_distance := 5.0
 export var detonator_radius := 3.0
-export var detonator_available := false
+export var detonator_counts := 0
 
 # Scene to use as a mark for the ultimate positioning.
 export var ultimate_placement_mark: PackedScene
@@ -31,7 +31,7 @@ const BOOSTABLE_PROPERTIES := {
 	"roar_delay": TYPE_REAL,
 	"detonator_max_distance": TYPE_REAL,
 	"detonator_radius": TYPE_REAL,
-	"detonator_available": TYPE_BOOL,
+	"detonator_counts": TYPE_INT,
 }
 
 enum {UP, DOWN, LEFT, RIGHT}
@@ -49,7 +49,6 @@ var roar_pos
 var snap_to = null
 var boosts := []
 
-var computed_props: Dictionary
 var defaults: Dictionary
 
 var _waiting = WAIT_NOTHING
@@ -60,7 +59,7 @@ onready var _model = get_node("Model")
 
 
 class Boost extends Object:
-	enum Type {MODIFIER, SETTER}
+	enum Type {MOD, SET, ADD}
 	var type: int
 	var values: Dictionary
 	var duration: float
@@ -285,55 +284,95 @@ func __update_boosts(delta):
 	var expired = []
 	var mod_boosts = {}
 	var set_boosts = {}
+	var add_boosts = {}
 
-	# iterate over boosts and collect modifier/setter values
+	# iterate over boosters and collect modifier/setter values
 	for boost in boosts:
-		# update the remaining duration
-		if boost.duration != -2:
-			if boost.duration == -1:  # one shot expire immediately
+		var is_oneshot = false
+
+		if boost.duration == -1.0:
+			# one shot boosters are applied to object's properties directly and
+			# popped right after
+			is_oneshot = true
+			expired.append(boost)
+		elif boost.duration == -2.0:
+			# permanent boosters are never removed
+			pass
+		else:
+			# temporary boosters are removed once they expire
+			boost.duration -= delta
+			if boost.duration <= 0:
 				expired.append(boost)
-			else:
-				boost.duration -= delta
-				if boost.duration <= 0:
-					expired.append(boost)
 
 		match boost.type:
-			# setter boosts override the base value; if multiple setter boosts
-			# are changing the same property, the last applied value will be
-			# used
-			Boost.Type.SETTER:
+			# setter boosts override the base value
+			# NOTE: if multiple setter boosts are changing the same property,
+			# the last applied value will be used
+			Boost.Type.SET:
 				for prop_name in boost.values:
-					set_boosts[prop_name] = boost.values[prop_name]
+					if is_oneshot:
+						set(prop_name, boost.values[prop_name])
+					else:
+						set_boosts[prop_name] = boost.values[prop_name]
 
-			# modifier boosts act as multipliers, i.e 1.0 = 100% of the base
-			# value, and thus, all modifier *deltas* are added together before
-			# application
-			Boost.Type.MODIFIER:
+			# adder boosts add to the base value
+			# NOTE: multiple adder boosts perform algebraic additions, thus,
+			# they apply commutatively
+			Boost.Type.ADD:
 				for prop_name in boost.values:
-					if not prop_name in mod_boosts:
-						mod_boosts[prop_name] = 1.0
-					mod_boosts[prop_name] += boost.values[prop_name] - 1.0
+					if is_oneshot:
+						set(prop_name, get(prop_name) + boost.values[prop_name])
+					else:
+						if not prop_name in mod_boosts:
+							add_boosts[prop_name] = 0
+						add_boosts[prop_name] += boost.values[prop_name]
 
-	# apply first setter values
-	for prop_name in set_boosts:
-		set(prop_name, set_boosts[prop_name])
+			# modifier boosts act as multipliers of base value; 1.0 = 100%
+			# NOTE: modifiers which affect the same property are stacked by
+			# *multiplying* them
+			Boost.Type.MOD:
+				for prop_name in boost.values:
+					if is_oneshot:
+						set(prop_name, get(prop_name) * boost.values[prop_name])
+					else:
+						if not prop_name in mod_boosts:
+							mod_boosts[prop_name] = 1
+						mod_boosts[prop_name] *= boost.values[prop_name]
 
-	# apply modifiers on top of currently set base values
-	for prop_name in mod_boosts:
-		var base_value = get(prop_name)
-		var factor = mod_boosts[prop_name]
-		match BOOSTABLE_PROPERTIES[prop_name]:
-			TYPE_REAL:
-				set(prop_name, base_value * factor)
-			TYPE_BOOL:
-				set(prop_name, base_value && factor)
+	# boost properties
+	for prop_name in BOOSTABLE_PROPERTIES:
+		if not prop_name in set_boosts and\
+		   not prop_name in add_boosts and\
+		   not prop_name in mod_boosts:
+
+		   # skip resetting the value if it's not overridden by any booster:
+		   # this allows to keep the decaying behavior for properties modified
+		   # internally during the tick by other game logic
+		   continue
+
+		# start with current default value
+		var value = defaults[prop_name]
+
+		# override with SET boost
+		if prop_name in set_boosts:
+			value = set_boosts[prop_name]
+
+		# apply the ADD boost, adjusted by elapsed time
+		if prop_name in add_boosts:
+			value += add_boosts[prop_name] * delta
+
+		# apply the MOD boost
+		if prop_name in mod_boosts:
+			value *= mod_boosts[prop_name]
+
+		set(prop_name, value)
 
 	# remove expired boosters
 	for boost in expired:
 		boosts.erase(boost)
 
 func __initiate_ultimate():
-	if not detonator_available:
+	if not detonator_counts:
 		return
 
 	_waiting = WAIT_FOR_COORDS
@@ -344,14 +383,14 @@ func __initiate_ultimate():
 	__reposition_mark(Vector2(0, 0))
 
 func __update_ultimate(_delta):
-	_model.toggle_aura(detonator_available)
+	_model.toggle_aura(detonator_counts > 0)
 
 func __activate_ultimate():
 	_waiting = WAIT_NOTHING
 
 	_mark.visible = false
 
-	detonator_available = false
+	detonator_counts -= 1
 
 	var pos = _mark.global_transform.origin
 	var coord = level.world_to_coord(pos)

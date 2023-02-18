@@ -63,6 +63,8 @@ func _get_default(type):
 	match type:
 		TYPE_REAL:
 			return 1.0
+		TYPE_INT:
+			return 1
 		TYPE_BOOL:
 			return false
 		_:

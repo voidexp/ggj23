@@ -11,11 +11,13 @@ func _ready():
 func add_entry(label, id, type, value):
 	var node
 	match type:
-		TYPE_REAL:
+		TYPE_REAL, TYPE_INT:
 			node = $RealEntry.duplicate()
 			var control = node.get_node("SpinBox")
 			control.value = value
 			control.connect("value_changed", self, "_handle_real_change", [id])
+			control.rounded = type == TYPE_INT
+			control.step = 1 if type == TYPE_INT else 0.1
 
 		TYPE_BOOL:
 			node = $BoolEntry.duplicate()
