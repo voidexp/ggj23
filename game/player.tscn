@@ -1,168 +1,34 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://player.gd" type="Script" id=1]
-[ext_resource path="res://characters/dwarf.tscn" type="PackedScene" id=2]
+[ext_resource path="res://characters/dwarf/dwarf.tscn" type="PackedScene" id=2]
+[ext_resource path="res://fx/location_mark.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.45
-height = 0.002
-
-[sub_resource type="Animation" id=2]
-resource_name = "Cooldown"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Cooldown:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 0,
-"values": [ Color( 1, 0, 0, 1 ), Color( 0.0784314, 1, 0, 1 ) ]
-}
-
-[sub_resource type="Animation" id=3]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath("Cooldown:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 1, 1, 1, 1 ) ]
-}
+height = 0.5
 
 [sub_resource type="SpatialMaterial" id=4]
 flags_transparent = true
-albedo_color = Color( 1, 1, 1, 0.0392157 )
-
-[sub_resource type="Animation" id=5]
-resource_name = "DimLight"
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:light_energy")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ 9.807, 5.0, 9.807 ]
-}
-
-[sub_resource type="Animation" id=6]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:light_energy")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ 9.807 ]
-}
-
-[sub_resource type="Gradient" id=7]
-colors = PoolColorArray( 0.98877, 0.030899, 0.030899, 1, 0.949121, 0.953613, 0.0335255, 1 )
-
-[sub_resource type="GradientTexture" id=8]
-gradient = SubResource( 7 )
-
-[sub_resource type="Curve" id=9]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.235955, 0.209091 ), 0.0, 0.0, 0, 0, Vector2( 0.483146, 0.0909091 ), 0.0, 0.0, 0, 0, Vector2( 0.741573, 0 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="CurveTexture" id=10]
-curve = SubResource( 9 )
-
-[sub_resource type="ParticlesMaterial" id=11]
-emission_shape = 1
-emission_sphere_radius = 0.01
-spread = 0.0
-gravity = Vector3( 0, 4, 0 )
-angular_velocity = 90.0
-angular_velocity_random = 1.0
-scale = 0.5
-scale_curve = SubResource( 10 )
-color = Color( 0.94902, 0.180392, 0.054902, 1 )
-color_ramp = SubResource( 8 )
-
-[sub_resource type="SpatialMaterial" id=12]
-flags_unshaded = true
-vertex_color_use_as_albedo = true
-params_blend_mode = 1
-params_billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
-
-[sub_resource type="QuadMesh" id=13]
-material = SubResource( 12 )
-
-[sub_resource type="Curve" id=14]
-_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.0955056, 0.292045 ), 0.0, 0.0, 0, 0, Vector2( 0.393258, 0.219318 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0011363 ), 0.0, 0.0, 0, 0 ]
-
-[sub_resource type="CurveTexture" id=15]
-curve = SubResource( 14 )
-
-[sub_resource type="ParticlesMaterial" id=16]
-lifetime_randomness = 1.0
-emission_shape = 1
-emission_sphere_radius = 0.01
-spread = 0.0
-gravity = Vector3( 0, 4, 0 )
-angular_velocity = 90.0
-angular_velocity_random = 1.0
-scale = 0.4
-scale_curve = SubResource( 15 )
-color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
-
-[sub_resource type="SpatialMaterial" id=17]
-flags_transparent = true
-flags_unshaded = true
-vertex_color_use_as_albedo = true
-params_blend_mode = 1
-params_billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
-
-[sub_resource type="QuadMesh" id=18]
-material = SubResource( 17 )
+albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
 
 [node name="Player" type="KinematicBody"]
+collision_mask = 3
 script = ExtResource( 1 )
+ultimate_placement_mark = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0254365, -0.0186482, 0 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.5, 0 )
 shape = SubResource( 1 )
 
 [node name="Model" parent="." instance=ExtResource( 2 )]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
 
 [node name="RayCast" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
 enabled = true
-cast_to = Vector3( 0, 0, -1 )
-
-[node name="Cooldown" type="Label" parent="."]
-margin_right = 8.0
-margin_bottom = 14.0
-text = "*"
-align = 1
-valign = 1
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Cooldown = SubResource( 2 )
-anims/RESET = SubResource( 3 )
+cast_to = Vector3( 0, 0, -2 )
+collision_mask = 2
 
 [node name="RoarSphere" type="CSGSphere" parent="."]
 visible = false
@@ -170,32 +36,7 @@ radial_segments = 24
 rings = 12
 material = SubResource( 4 )
 
-[node name="OmniLight2" type="OmniLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00173378, 1.79132, -0.349496 )
-light_color = Color( 0.921569, 0.611765, 0.0156863, 1 )
-light_energy = 9.807
-
-[node name="AnimationPlayer2" type="AnimationPlayer" parent="OmniLight2"]
-autoplay = "DimLight"
-playback_speed = 0.5
-anims/DimLight = SubResource( 5 )
-anims/RESET = SubResource( 6 )
-
-[node name="Candle" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84016, -0.246253 )
-lifetime = 0.6
-speed_scale = 0.5
-process_material = SubResource( 11 )
-draw_pass_1 = SubResource( 13 )
-
-[node name="Smoke" type="Particles" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1089, -0.255897 )
-lifetime = 0.6
-speed_scale = 0.5
-process_material = SubResource( 16 )
-draw_pass_1 = SubResource( 18 )
-
 [node name="RoarDelay" type="Timer" parent="."]
 one_shot = true
 
-[connection signal="timeout" from="RoarDelay" to="." method="_on_roar_delay_timeout"]
+[connection signal="timeout" from="RoarDelay" to="." method="__on_roar_delay_timeout"]

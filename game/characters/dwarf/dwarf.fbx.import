@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/dwarf.fbx-d3af410a11ea3ce3b24d1fb227711485.scn"
+path="res://.import/dwarf.fbx-c00bf5698cb6244e36eacdd00f944a09.scn"
 
 [deps]
 
-source_file="res://characters/dwarf.fbx"
-dest_files=[ "res://.import/dwarf.fbx-d3af410a11ea3ce3b24d1fb227711485.scn" ]
+source_file="res://characters/dwarf/dwarf.fbx"
+dest_files=[ "res://.import/dwarf.fbx-c00bf5698cb6244e36eacdd00f944a09.scn" ]
 
 [params]
 

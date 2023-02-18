@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/pickaxe.png-d268937fa49f894908a801e402949e32.s3tc.stex"
-path.etc2="res://.import/pickaxe.png-d268937fa49f894908a801e402949e32.etc2.stex"
+path.s3tc="res://.import/pickaxe.png-515fa510b254ce295681afcd9856f97d.s3tc.stex"
+path.etc2="res://.import/pickaxe.png-515fa510b254ce295681afcd9856f97d.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://characters/pickaxe.png"
-dest_files=[ "res://.import/pickaxe.png-d268937fa49f894908a801e402949e32.s3tc.stex", "res://.import/pickaxe.png-d268937fa49f894908a801e402949e32.etc2.stex" ]
+source_file="res://characters/dwarf/pickaxe.png"
+dest_files=[ "res://.import/pickaxe.png-515fa510b254ce295681afcd9856f97d.s3tc.stex", "res://.import/pickaxe.png-515fa510b254ce295681afcd9856f97d.etc2.stex" ]
 
 [params]
 

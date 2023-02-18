@@ -1,0 +1,35 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://objects/level/level.gd" type="Script" id=1]
+[ext_resource path="res://objects/power_ups/ultimate_charge.tscn" type="PackedScene" id=2]
+[ext_resource path="res://objects/soil_block.tscn" type="PackedScene" id=3]
+[ext_resource path="res://objects/rock_block.tscn" type="PackedScene" id=4]
+[ext_resource path="res://objects/gold_block.tscn" type="PackedScene" id=5]
+[ext_resource path="res://objects/level/fire_pit/fire_pit.tscn" type="PackedScene" id=6]
+[ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
+[ext_resource path="res://objects/power_ups/speed_boost.tscn" type="PackedScene" id=8]
+
+[node name="Level" type="Spatial"]
+script = ExtResource( 1 )
+soil_block = ExtResource( 3 )
+rock_block = ExtResource( 4 )
+gold_block = ExtResource( 5 )
+poi_block = ExtResource( 6 )
+cols = 23
+rows = 23
+p1_base_coord = Vector2( 1, 11 )
+p2_base_coord = Vector2( 21, 11 )
+poi_coord = Vector2( 11, 11 )
+power_ups = [ ExtResource( 8 ) ]
+poi_power_up = ExtResource( 2 )
+
+[node name="Spawner" parent="." instance=ExtResource( 7 )]
+visible = false
+
+[node name="SoilSpawnTimer" type="Timer" parent="."]
+
+[node name="POISpawnTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="SoilSpawnTimer" to="." method="__spawn_random_soil"]
+[connection signal="timeout" from="POISpawnTimer" to="." method="__spawn_poi_powerup"]

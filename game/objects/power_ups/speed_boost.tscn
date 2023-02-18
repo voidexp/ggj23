@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://objects/power_ups/power_up.tscn" type="PackedScene" id=1]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.5, 0.5, 0.5 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "Float"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("CSGBox:translation")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0.5, 0 ), Vector3( 0, 0.65, 0 ), Vector3( 0, 0.5, 0 ) ]
+}
+
+[node name="Speed" instance=ExtResource( 1 )]
+collision_layer = 0
+duration = -2.0
+boosts = {
+"speed": 1.5
+}
+
+[node name="CollisionShape" type="CollisionShape" parent="." index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+shape = SubResource( 1 )
+
+[node name="CSGBox" type="CSGBox" parent="." index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+width = 1.0
+height = 1.0
+depth = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="2"]
+autoplay = "Float"
+anims/Float = SubResource( 2 )

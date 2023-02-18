@@ -4,3 +4,4 @@ class_name GridBlock
 
 var col
 var row
+var type
