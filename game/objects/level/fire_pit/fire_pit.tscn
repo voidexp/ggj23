@@ -93,6 +93,8 @@ tracks/1/keys = {
 }
 
 [node name="FirePit" type="StaticBody"]
+collision_layer = 2
+collision_mask = 0
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
