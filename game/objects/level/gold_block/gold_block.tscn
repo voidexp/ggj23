@@ -4,7 +4,7 @@
 [ext_resource path="res://objects/level/gold_block/gold_block.gd" type="Script" id=2]
 [ext_resource path="res://components/health.gd" type="Script" id=3]
 [ext_resource path="res://traits/drainable.gd" type="Script" id=4]
-[ext_resource path="res://objects/fountain/fountain.tscn" type="PackedScene" id=6]
+[ext_resource path="res://objects/fountain/beertain.tscn" type="PackedScene" id=5]
 
 [node name="GoldBlock" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
@@ -38,6 +38,6 @@ margin_right = 19.2
 margin_bottom = 6.48
 valign = 1
 
-[node name="fountain" parent="." index="5" instance=ExtResource( 6 )]
+[node name="Spatial" parent="." index="5" instance=ExtResource( 5 )]
 
 [connection signal="health_changed" from="Health" to="." method="_on_health_changed"]
