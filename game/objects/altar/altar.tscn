@@ -6,6 +6,7 @@
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_transparent = true
+params_cull_mode = 2
 params_line_width = 0.1
 albedo_texture = ExtResource( 2 )
 emission_enabled = true
