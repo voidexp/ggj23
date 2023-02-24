@@ -13,7 +13,7 @@ flags_transparent = true
 albedo_color = Color( 0.913725, 0.839216, 0.0588235, 0.301961 )
 
 [node name="Player" type="KinematicBody" groups=["players"]]
-collision_mask = 3
+collision_mask = 2
 script = ExtResource( 1 )
 ultimate_placement_mark = ExtResource( 3 )
 
