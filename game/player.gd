@@ -163,13 +163,21 @@ func __handle_normal_input(event):
 	if event.is_action_pressed("p%d_action" % player_seat):
 		__do_pick()
 
+	# must any ongoing movement be aborted?
+	var abort_movement = false
+
 	if event.is_action_pressed("p%d_secondary_action" % player_seat):
+		abort_movement = true
 		__charge_roar()
 	elif event.is_action_released("p%d_secondary_action" % player_seat):
 		__discharge_roar()
 
 	if event.is_action_released("p%d_ultimate_action" % player_seat):
+		abort_movement = true
 		__initiate_ultimate()
+
+	if abort_movement:
+		movements.clear()
 
 func __handle_mark_placement_input(event):
 	var coord_offset = Vector2.ZERO
