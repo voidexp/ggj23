@@ -276,11 +276,8 @@ func __update_roar(delta):
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
 func __on_roar_delay_timeout():
-	var occupied_tile = level.world_to_coord(global_transform.origin)
 	var tiles = level.get_tiles_in_radius(roar_pos, roar)
 	for tile_info in tiles:  # tile_info = [coord, type]
-		if tile_info[0] == occupied_tile:
-			continue
 		if tile_info[1] == Map.BLOCK_TYPE.NONE:
 			level.spawn_soil(tile_info[0])
 

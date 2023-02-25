@@ -88,10 +88,11 @@ func coord_to_world(coord):
 
 # Get the list of tiles within a given range from a global position.
 func get_tiles_in_radius(position, radius):
+	position = to_local(position)
 	var result = []
 	for idx in __map.tiles_count():
 		var coord = __map.get_tile_coord(idx)
-		if position.distance_to(to_global(__coord_to_position(coord))) <= radius:
+		if position.distance_to(__coord_to_position(coord)) <= radius:
 			result.append([coord, __map.get_tile(coord)])
 	return result
 
