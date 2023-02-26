@@ -19,8 +19,9 @@ export(float, 0, 1) var random_soil_spawn_factor = 0.25
 # Probability of spawning a bonus instead of soil block during random spawns.
 export(float, 0, 1) var random_soil_bonus_spawn_prob = 0.3
 
-export(PackedScene) var soil_block
-export(PackedScene) var rock_block
+export(Array, PackedScene) var soil_blocks
+export(Array, PackedScene) var rock_blocks
+
 export(PackedScene) var gold_block
 export(PackedScene) var poi_block
 
@@ -497,11 +498,13 @@ func __position_to_coord(position):
 func __get_block_scene_by_type(type:int) -> PackedScene:
 	match type:
 		Map.BLOCK_TYPE.SOIL:
-			return soil_block
+			var i = __rng.randi_range(0, len(soil_blocks) - 1)
+			return soil_blocks[i]
+		Map.BLOCK_TYPE.ROCK:
+			var i = __rng.randi_range(0, len(rock_blocks) - 1)
+			return rock_blocks[i]
 		Map.BLOCK_TYPE.GOLD:
 			return gold_block
-		Map.BLOCK_TYPE.ROCK:
-			return rock_block
 		Map.BLOCK_TYPE.POWER_UP:
 			if power_ups:
 				var i = __rng.randi_range(0, len(power_ups) - 1)

@@ -11,8 +11,8 @@
 
 [node name="Level" type="Spatial"]
 script = ExtResource( 1 )
-soil_block = ExtResource( 3 )
-rock_block = ExtResource( 4 )
+soil_blocks = [ ExtResource( 3 ) ]
+rock_blocks = [ ExtResource( 4 ) ]
 gold_block = ExtResource( 5 )
 poi_block = ExtResource( 6 )
 cols = 23
