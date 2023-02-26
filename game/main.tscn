@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://objects/level/level.tscn" type="PackedScene" id=2]
@@ -11,10 +11,8 @@
 [ext_resource path="res://scenery.tscn" type="PackedScene" id=9]
 [ext_resource path="res://ui/menu_scene.tscn" type="PackedScene" id=10]
 [ext_resource path="res://ui/ui.gd" type="Script" id=11]
-[ext_resource path="res://objects/power_ups/speed_boost.tscn" type="PackedScene" id=12]
 [ext_resource path="res://objects/power_ups/pick_speed_boost.tscn" type="PackedScene" id=13]
 [ext_resource path="res://objects/power_ups/roar_cooldown_boost.tscn" type="PackedScene" id=14]
-[ext_resource path="res://objects/power_ups/roar_radius_boost.tscn" type="PackedScene" id=15]
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 7 )
@@ -35,7 +33,7 @@ random_soil_spawn_period = 20
 poi_spawn_period = 15
 random_soil_spawn_factor = 0.3
 random_soil_bonus_spawn_prob = 0.45
-power_ups = [ ExtResource( 12 ), ExtResource( 13 ), ExtResource( 14 ), ExtResource( 15 ) ]
+power_ups = [ ExtResource( 13 ), ExtResource( 14 ) ]
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15.6395, 10.0332 )

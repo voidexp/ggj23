@@ -28,7 +28,8 @@ tracks/0/keys = {
 collision_layer = 0
 duration = -2.0
 boosts = {
-"roar_cooldown": 0.8
+"roar_cooldown": 0.8,
+"roar_radius": 1.1
 }
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="0"]
