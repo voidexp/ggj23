@@ -1,0 +1,154 @@
+[gd_scene load_steps=16 format=2]
+
+[ext_resource path="res://objects/metal_texture.jpg" type="Texture" id=1]
+[ext_resource path="res://objects/cistern/luquid_gold.jpg" type="Texture" id=2]
+[ext_resource path="res://objects/cistern/left_big_cistern.fbx" type="PackedScene" id=3]
+[ext_resource path="res://objects/cistern/rusty_metal.jpg" type="Texture" id=4]
+[ext_resource path="res://objects/barrel_texture.jpg" type="Texture" id=5]
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 5 )
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_texture = ExtResource( 4 )
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0.6, 0.6, 0.6, 1 )
+albedo_texture = ExtResource( 1 )
+metallic = 1.0
+metallic_specular = 0.52
+
+[sub_resource type="Shader" id=5]
+code = "shader_type spatial;
+render_mode unshaded;
+
+uniform vec2 direction_and_speed = vec2(0.25, 0.00);
+uniform vec2 scale = vec2 (1.0);
+uniform bool flip = false;
+uniform sampler2D albedo : hint_albedo;
+
+void fragment()
+{
+	vec2 uv= UV * scale - direction_and_speed * TIME ;
+	if (flip) { uv = 1.0 - uv;}
+	ALBEDO = texture (albedo, uv).rgb;
+	 
+}"
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = SubResource( 5 )
+shader_param/direction_and_speed = Vector2( 0, -0.1 )
+shader_param/scale = Vector2( 1, 1 )
+shader_param/flip = false
+shader_param/albedo = ExtResource( 2 )
+
+[sub_resource type="Curve" id=18]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.464481, 0.354545 ), 0.0, 0.0, 0, 0, Vector2( 0.622951, 0.736364 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.981818 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 18 )
+
+[sub_resource type="ParticlesMaterial" id=19]
+lifetime_randomness = 1.0
+emission_shape = 1
+emission_sphere_radius = 0.01
+spread = 0.0
+gravity = Vector3( 0, 4, 0 )
+angular_velocity = 90.0
+angular_velocity_random = 1.0
+scale = 0.4
+scale_curve = SubResource( 15 )
+color = Color( 0.364706, 0.329412, 0.329412, 0.211765 )
+
+[sub_resource type="SpatialMaterial" id=17]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id=20]
+material = SubResource( 17 )
+
+[node name="left_big_cistern" instance=ExtResource( 3 )]
+
+[node name="ledder1" parent="RootNode/group1" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7.70535, 0, 0 )
+material/0 = SubResource( 3 )
+
+[node name="pCube1" parent="RootNode/group1" index="1"]
+material/0 = SubResource( 3 )
+
+[node name="pCylinder1" parent="RootNode/group1" index="2"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder2" parent="RootNode/group1" index="3"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder3" parent="RootNode/group1" index="4"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder4" parent="RootNode/group1" index="5"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder5" parent="RootNode/group1" index="6"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder6" parent="RootNode/group1" index="7"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder14" parent="RootNode/group1/group3" index="1"]
+material/0 = SubResource( 1 )
+
+[node name="sweep1" parent="RootNode/group1/group3" index="2"]
+material/0 = SubResource( 1 )
+
+[node name="pCube2" parent="RootNode/group1/group2" index="0"]
+material/0 = SubResource( 3 )
+
+[node name="pCylinder7" parent="RootNode/group1/group2" index="1"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder8" parent="RootNode/group1/group2" index="2"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder9" parent="RootNode/group1/group2" index="3"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder10" parent="RootNode/group1/group2" index="4"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder11" parent="RootNode/group1/group2" index="5"]
+material/0 = SubResource( 7 )
+
+[node name="pCylinder12" parent="RootNode/group1/group2" index="6"]
+material/0 = SubResource( 7 )
+
+[node name="cistern" parent="RootNode/group1" index="10"]
+material/0 = SubResource( 7 )
+material/1 = SubResource( 6 )
+material/2 = SubResource( 3 )
+
+[node name="inside_1" parent="RootNode/group1" index="11"]
+visible = false
+material/0 = SubResource( 1 )
+
+[node name="inside_2" parent="RootNode/group1" index="12"]
+visible = false
+material/0 = SubResource( 1 )
+
+[node name="inside_3" parent="RootNode/group1" index="13"]
+material/0 = SubResource( 1 )
+
+[node name="inside_4" parent="RootNode/group1" index="14"]
+material/0 = SubResource( 1 )
+
+[node name="Smoke" type="Particles" parent="." index="1"]
+transform = Transform( -8.74228e-09, 0, -0.2, 0, 1, 0, 0.666667, 0, -2.91409e-08, -4.2367, 3.05685, -0.441899 )
+amount = 64
+speed_scale = 0.5
+process_material = SubResource( 19 )
+draw_pass_1 = SubResource( 20 )

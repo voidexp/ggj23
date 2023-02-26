@@ -7,7 +7,7 @@
 [ext_resource path="res://objects/cistern/cistern.fbx" type="PackedScene" id=5]
 [ext_resource path="res://objects/barel.material" type="Material" id=6]
 
-[sub_resource type="SpatialMaterial" id=1]
+[sub_resource type="SpatialMaterial" id=7]
 albedo_texture = ExtResource( 3 )
 
 [sub_resource type="Shader" id=5]
@@ -44,7 +44,7 @@ albedo_texture = ExtResource( 2 )
 [node name="cistern" instance=ExtResource( 5 )]
 
 [node name="cistern" parent="RootNode" index="0"]
-material/0 = SubResource( 1 )
+material/0 = SubResource( 7 )
 material/1 = SubResource( 6 )
 material/2 = ExtResource( 6 )
 
