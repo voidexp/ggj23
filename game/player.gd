@@ -34,13 +34,17 @@ const BOOSTABLE_PROPERTIES := {
 	"detonator_counts": TYPE_INT,
 }
 
-enum {UP, DOWN, LEFT, RIGHT}
+# Actions enum
+enum {UP, DOWN, LEFT, RIGHT, PICK, ROAR, ULTIMATE}
 
+# Roar state enum
 enum {NOT_ROARING, ROAR_CHARGING, ROAR_DISCHARGING}
 
+# FIXME: REWORK THIS
 enum {WAIT_NOTHING, WAIT_FOR_COORDS = 1}
 
-var movements = []
+var push_actions = []  # action buttons being currently held (hold behavior)
+var pop_actions = []  # action buttons just released (click behavior)
 var roaring = NOT_ROARING
 var roar = 0.0
 var pick_cooldown_remaining = 0.0
@@ -52,6 +56,16 @@ var boosts := []
 var defaults: Dictionary
 
 var _waiting = WAIT_NOTHING
+
+const _ACTIONS_MAP = {
+	"p%d_move_right": RIGHT,
+	"p%d_move_left": LEFT,
+	"p%d_move_up": UP,
+	"p%d_move_down": DOWN,
+	"p%d_action": PICK,
+	"p%d_secondary_action": ROAR,
+	"p%d_ultimate_action": ULTIMATE,
+}
 
 onready var level = get_node("/root/Game/Level")
 onready var _mark = ultimate_placement_mark.instance()
@@ -81,18 +95,20 @@ func _ready():
 	_mark.visible = false
 
 func _unhandled_input(event):
-	match _waiting:
-		WAIT_NOTHING:
-			__handle_normal_input(event)
-
-		WAIT_FOR_COORDS:
-			__handle_mark_placement_input(event)
+	for action in _ACTIONS_MAP:
+		if event.is_action_pressed(action % player_seat):
+			push_actions.push_back(_ACTIONS_MAP[action])
+		elif event.is_action_released(action % player_seat):
+			pop_actions.push_back(_ACTIONS_MAP[action])
+			push_actions.erase(_ACTIONS_MAP[action])
 
 func _process(delta):
 	__update_boosts(delta)
 	__update_pick(delta)
 	__update_roar(delta)
 	__update_ultimate(delta)
+
+	pop_actions.clear()
 
 func _physics_process(step):
 	var dir
@@ -101,18 +117,19 @@ func _physics_process(step):
 		dir = (snap_to - global_transform.origin).normalized()
 	else:
 		dir = Vector3.ZERO
-		if not movements or roaring == ROAR_CHARGING:
+		if roaring == ROAR_CHARGING or _waiting:
 			return
 
-		var last_action = movements.back()
-		if last_action == UP:
+		if push_actions.find_last(UP) != -1:
 			dir.z = -1
-		elif last_action == DOWN:
+		elif push_actions.find_last(DOWN) != -1:
 			dir.z = 1
-		elif last_action == LEFT:
+		elif push_actions.find_last(LEFT) != -1:
 			dir.x = -1
-		elif last_action == RIGHT:
+		elif push_actions.find_last(RIGHT) != -1:
 			dir.x = 1
+		else:
+			return
 
 		snap_to = __get_snap_target(dir)
 
@@ -141,55 +158,6 @@ func _physics_process(step):
 func add_boost(boost:Boost):
 	boosts.push_back(boost)
 
-func __handle_normal_input(event):
-	if event.is_action_released("p%d_move_right" % player_seat):
-		movements.erase(RIGHT)
-	if event.is_action_released("p%d_move_left" % player_seat):
-		movements.erase(LEFT)
-	if event.is_action_released("p%d_move_up" % player_seat):
-		movements.erase(UP)
-	if event.is_action_released("p%d_move_down" % player_seat):
-		movements.erase(DOWN)
-
-	if event.is_action_pressed("p%d_move_down" % player_seat):
-		movements.push_back(DOWN)
-	if event.is_action_pressed("p%d_move_up" % player_seat):
-		movements.push_back(UP)
-	if event.is_action_pressed("p%d_move_left" % player_seat):
-		movements.push_back(LEFT)
-	if event.is_action_pressed("p%d_move_right" % player_seat):
-		movements.push_back(RIGHT)
-
-	if event.is_action_pressed("p%d_action" % player_seat):
-		__do_pick()
-
-	if event.is_action_pressed("p%d_secondary_action" % player_seat):
-		__charge_roar()
-	elif event.is_action_released("p%d_secondary_action" % player_seat):
-		__discharge_roar()
-
-	if event.is_action_released("p%d_ultimate_action" % player_seat):
-		__initiate_ultimate()
-
-func __handle_mark_placement_input(event):
-	var coord_offset = Vector2.ZERO
-
-	if event.is_action_released("p%d_ultimate_action" % player_seat):
-		__activate_ultimate()
-		return
-
-	if event.is_action_pressed("p%d_move_down" % player_seat):
-		coord_offset.y += 1
-	if event.is_action_pressed("p%d_move_up" % player_seat):
-		coord_offset.y -= 1
-	if event.is_action_pressed("p%d_move_left" % player_seat):
-		coord_offset.x -= 1
-	if event.is_action_pressed("p%d_move_right" % player_seat):
-		coord_offset.x += 1
-
-	if coord_offset.length() != 0.0:
-		__reposition_mark(coord_offset)
-
 func __get_snap_target(dir):
 	var pos = global_transform.origin
 	var coord = level.world_to_coord(pos)
@@ -210,69 +178,60 @@ func __get_snap_target(dir):
 		if abs(dot - 1.0) <= 0.1:
 			return n_pos
 
-func __do_pick():
-	if pick_cooldown_remaining > 0:
-		return
-
-	pick_cooldown_remaining = 1.0 / pick_speed
-
-	# TODO: bind the exact moment of the axe "hitting" the block with the actual
-	# .handle_pick() call; now animation and action are unrelated
-	_model.play_pick_animation()
-
-	var target = $RayCast.get_collider() as Spatial
-	if not target:
-		return
-
-	for node in target.get_children():
-		if node.is_in_group("traits"):
-			var aspect = node as Trait
-			aspect.handle_pick(self, 10)
-
 func __update_pick(delta):
 	pick_cooldown_remaining -= delta
 	if pick_cooldown_remaining < 0:
 		pick_cooldown_remaining = 0
 
-func __charge_roar():
-	if roar_cooldown_remaining > 0 or roaring:
-		return
+	if pick_cooldown_remaining == 0 and PICK in push_actions:
+		pick_cooldown_remaining = 1.0 / pick_speed
 
-	roaring = ROAR_CHARGING
-	roar = 0.0
-	$RoarSphere.visible = true
+		# TODO: bind the exact moment of the axe "hitting" the block with the actual
+		# .handle_pick() call; now animation and action are unrelated
+		_model.play_pick_animation()
 
-func __discharge_roar():
-	if roaring != ROAR_CHARGING:
-		return
+		var target = $RayCast.get_collider() as Spatial
+		if not target:
+			return
 
-	roaring = ROAR_DISCHARGING
-	roar_pos = self.global_transform.origin
-	$RoarSphere.visible = false
-	$RoarDelay.start(roar_delay)
-	_model.toggle_headlamp(false)
+		for node in target.get_children():
+			if node.is_in_group("traits"):
+				var aspect = node as Trait
+				aspect.handle_pick(self, 10)
 
 func __update_roar(delta):
-	if not roaring and roar_cooldown_remaining:
-		# update the cooldown
+	# update the roaring cooldown
+	if roaring == NOT_ROARING and roar_cooldown_remaining > 0:
 		roar_cooldown_remaining -= delta
 
 		# turn the head lamp back on, if cooldown expired
-		if roar_cooldown_remaining < 0:
+		if roar_cooldown_remaining <= 0:
 			roar_cooldown_remaining = 0
 			_model.toggle_headlamp(true)
 
-	elif roaring == ROAR_CHARGING:
-		# expand the roar sphere radius
+	# initiate roar?
+	if roaring == NOT_ROARING and roar_cooldown_remaining == 0 and ROAR in push_actions:
+		roaring = ROAR_CHARGING
+		roar = 0.0
+		$RoarSphere.visible = true
+
+	# charge roar?
+	elif roaring == ROAR_CHARGING and ROAR in push_actions:
+		# expand the roar radius
 		roar = clamp(roar + delta * roar_expansion, 0, roar_radius)
 		$RoarSphere.transform.basis = Basis().scaled(Vector3.ONE * (1 + roar))
 
+	# discharge roar?
+	elif roaring == ROAR_CHARGING and ROAR in pop_actions:
+		roaring = ROAR_DISCHARGING
+		roar_pos = self.global_transform.origin
+		$RoarSphere.visible = false
+		$RoarDelay.start(roar_delay)
+		_model.toggle_headlamp(false)
+
 func __on_roar_delay_timeout():
-	var occupied_tile = level.world_to_coord(global_transform.origin)
 	var tiles = level.get_tiles_in_radius(roar_pos, roar)
 	for tile_info in tiles:  # tile_info = [coord, type]
-		if tile_info[0] == occupied_tile:
-			continue
 		if tile_info[1] == Map.BLOCK_TYPE.NONE:
 			level.spawn_soil(tile_info[0])
 
@@ -371,34 +330,45 @@ func __update_boosts(delta):
 	for boost in expired:
 		boosts.erase(boost)
 
-func __initiate_ultimate():
-	if not detonator_counts:
-		return
-
-	_waiting = WAIT_FOR_COORDS
-
-	# reset the mark
-	_mark.visible = true
-	_mark.transform.origin = Vector3.ZERO
-	__reposition_mark(Vector2(0, 0))
-
 func __update_ultimate(_delta):
 	_model.toggle_aura(detonator_counts > 0)
 
-func __activate_ultimate():
-	_waiting = WAIT_NOTHING
+	# activate ultimate?
+	if detonator_counts > 0 and not _waiting and ULTIMATE in pop_actions:
+		_waiting = WAIT_FOR_COORDS
+		_mark.visible = true
+		_mark.transform.origin = Vector3.ZERO
+		__reposition_mark(Vector2(0, 0))
 
-	_mark.visible = false
+	# release ultimate?
+	elif _waiting == WAIT_FOR_COORDS and ULTIMATE in pop_actions:
+		_waiting = WAIT_NOTHING
+		_mark.visible = false
 
-	detonator_counts -= 1
+		detonator_counts -= 1
 
-	var pos = _mark.global_transform.origin
-	var coord = level.world_to_coord(pos)
-	var tiles = level.get_tiles_in_radius(pos, detonator_radius)
-	for tile_info in tiles:  # tile_info = [coord, type]
-		if tile_info[1] == Map.BLOCK_TYPE.NONE:
-			level.spawn_soil(tile_info[0])
-	level.spawn_soil(coord)
+		var pos = _mark.global_transform.origin
+		var coord = level.world_to_coord(pos)
+		var tiles = level.get_tiles_in_radius(pos, detonator_radius)
+		for tile_info in tiles:  # tile_info = [coord, type]
+			if tile_info[1] == Map.BLOCK_TYPE.NONE:
+				level.spawn_soil(tile_info[0])
+		level.spawn_soil(coord)
+
+	# position ultimate mark?
+	elif _waiting == WAIT_FOR_COORDS:
+		var coord_offset = Vector2.ZERO
+		if DOWN in pop_actions:
+			coord_offset.y += 1
+		if UP in pop_actions:
+			coord_offset.y -= 1
+		if LEFT in pop_actions:
+			coord_offset.x -= 1
+		if RIGHT in pop_actions:
+			coord_offset.x += 1
+
+		if coord_offset.length() != 0.0:
+			__reposition_mark(coord_offset)
 
 func __reposition_mark(offset:Vector2):
 	var coord = level.world_to_coord(_mark.global_transform.origin)

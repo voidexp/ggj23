@@ -29,6 +29,7 @@ func redraw():
 	var size = 1.0
 	var primary = get_plugin().get_material("primary", self)
 	var secondary = get_plugin().get_material("secondary", self)
+	var tertiary = get_plugin().get_material("tertiary", self)
 	var handle = get_plugin().get_material("handle", self)
 
 	# Draw the boxes representing rock blocks
@@ -55,6 +56,15 @@ func redraw():
 		_models[i].draw(self, secondary)
 
 	add_handles(handles, handle)
+
+	# Draw the boxes representing gold spawn areas
+	for rect in level.gold_spawn_zones:
+		if rect.has_no_area():
+			continue
+		var pos = level.coord_to_world(rect.get_center() - Vector2(size/2, size/2))
+		var rect_size = rect.size
+		if pos != null and rect_size.x < cols and rect_size.y < rows:
+			__draw_box(tertiary, pos, rect_size.x, 0.1, rect_size.y)
 
 func get_handle_name(index):
 	if index == 2:

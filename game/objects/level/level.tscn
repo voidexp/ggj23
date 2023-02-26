@@ -11,8 +11,8 @@
 
 [node name="Level" type="Spatial"]
 script = ExtResource( 1 )
-soil_block = ExtResource( 3 )
-rock_block = ExtResource( 4 )
+soil_blocks = [ ExtResource( 3 ) ]
+rock_blocks = [ ExtResource( 4 ) ]
 gold_block = ExtResource( 5 )
 poi_block = ExtResource( 6 )
 cols = 23
@@ -22,6 +22,7 @@ p2_base_coord = Vector2( 21, 11 )
 poi_coord = Vector2( 11, 11 )
 power_ups = [ ExtResource( 8 ) ]
 poi_power_up = ExtResource( 2 )
+gold_spawn_zones = [ Rect2( 8, 0, 7, 7 ), Rect2( 8, 16, 7, 7 ) ]
 
 [node name="Spawner" parent="." instance=ExtResource( 7 )]
 visible = false

@@ -29,7 +29,8 @@ tracks/0/keys = {
 collision_layer = 0
 duration = -2.0
 boosts = {
-"pick_speed": 1.1
+"pick_speed": 1.1,
+"speed": 1.1
 }
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="0"]
