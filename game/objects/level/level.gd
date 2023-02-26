@@ -31,6 +31,7 @@ export var p2_base_coord: Vector2 setget __set_p2_base_coord
 export var poi_coord: Vector2 setget __set_poi_coord
 export(Array, PackedScene) var power_ups
 export(PackedScene) var poi_power_up
+export(Array, Rect2) var gold_spawn_zones setget __set_gold_spawn_zones
 
 # An object that holds the current state of the paths from the gold block to
 # player base tiles, useful for gameplay logic.
@@ -180,6 +181,11 @@ func __set_poi_coord(coord: Vector2):
 	if Engine.editor_hint:
 		update_gizmo()
 
+func __set_gold_spawn_zones(zones: Array):
+	gold_spawn_zones = zones
+	if Engine.editor_hint:
+		update_gizmo()
+
 func __reset_coords():
 	if __map.get_tile_index(p1_base_coord) == -1:
 		__set_p1_base_coord(Vector2.ZERO)
@@ -222,7 +228,7 @@ func __seed_gold(delay:bool=true):
 		__gold_block_idx = -1
 
 	# Find a non-occupied empty or soil tile and spawn the gold on it
-	var coord = __find_random_spawnable_tile()
+	var coord = __find_random_spawnable_tile_in_zones(gold_spawn_zones)
 	var idx = __map.get_tile_index(coord)
 	print("Spawning gold at %s (id=%d)" % [coord, idx])
 
@@ -292,6 +298,33 @@ func __find_random_spawnable_tile():
 		iterations -= 1
 
 	assert(false, "could not find a free random tile")
+
+func __find_random_spawnable_tile_in_zones(zones: Array):
+	assert(zones, "gold_spawn_zones must not be empty!")
+
+	var zone_indices = []
+	for zone in zones:
+		if zone.has_no_area():
+			continue
+
+		var col_min = zone.position.x
+		var col_max = zone.end.x
+		var row_min = zone.position.y
+		var row_max = zone.end.y
+
+		for r in range(row_min, row_max):
+			for c in range(col_min, col_max):
+				zone_indices.append(__map.get_tile_index(Vector2(c, r)))
+
+	var iterations = 100
+	while iterations:
+		var idx = __rng.randi_range(0, len(zone_indices) - 1)
+		var coord = __map.get_tile_coord(zone_indices[idx])
+		if __is_tile_spawnable(coord):
+			return coord
+		iterations -= 1
+
+	assert(false, "could not find a free random tile in provided zones!")
 
 func __is_tile_spawnable(coord):
 	var type = __map.get_tile(coord)

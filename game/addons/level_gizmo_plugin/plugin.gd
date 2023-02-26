@@ -6,6 +6,7 @@ class GizmoPlugin extends EditorSpatialGizmoPlugin:
 	func _init():
 		create_material("primary", Color.steelblue)
 		create_material("secondary", Color.cyan)
+		create_material("tertiary", Color.coral)
 		create_handle_material("handle")
 
 	func create_gizmo(spatial):
