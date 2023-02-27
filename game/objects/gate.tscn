@@ -115,12 +115,13 @@ process_material = SubResource( 23 )
 draw_pass_1 = SubResource( 24 )
 
 [node name="OmniLight" type="OmniLight" parent="CSGBox5"]
-transform = Transform( 0.2, 0, 0, 0, 1, 0, 1.77636e-15, 0, 0.666667, 0, 1.5447, 0 )
+transform = Transform( 0.2, 0, -2.92015e-09, 0, 1, 0, 9.73384e-09, 0, 0.666667, 0.101449, 1.5447, 0 )
 light_color = Color( 0.992157, 0.960784, 0.541176, 1 )
-light_energy = 0.1
+light_energy = 13.676
 light_indirect_energy = 0.1
 shadow_enabled = true
-omni_range = 10.578
+shadow_bias = 0.029
+omni_range = 2.16414
 
 [node name="CSGBox6" type="CSGBox" parent="."]
 transform = Transform( -2.18557e-07, 0, 1.5, 0, 1, 0, -5, 0, -6.55671e-08, -4.10543, 3, -0.872277 )
@@ -146,10 +147,10 @@ draw_pass_1 = SubResource( 24 )
 [node name="OmniLight" type="OmniLight" parent="CSGBox6"]
 transform = Transform( 0.2, 0, 0, 0, 1, 0, 1.77636e-15, 0, 0.666667, 0, 1.66262, 0 )
 light_color = Color( 0.992157, 0.960784, 0.541176, 1 )
-light_energy = 0.1
+light_energy = 13.676
 light_indirect_energy = 0.1
 shadow_enabled = true
-omni_range = 10.578
+omni_range = 2.16414
 
 [node name="CSGBox3" type="CSGBox" parent="."]
 transform = Transform( -2.18557e-07, -1.49998, -4.37126e-08, 0, -6.55663e-08, 1.00003, -5, 6.55663e-08, 1.91074e-15, 0.0635856, 6.99341, 4.76696 )
@@ -157,6 +158,7 @@ height = 8.0
 
 [node name="SpotLight" type="SpotLight" parent="."]
 transform = Transform( 0.999681, 0.00905078, 0.0235749, -0.0248929, 0.19621, 0.980246, 0.00424637, -0.98052, 0.196373, 0.127666, 6.38326, 6.41821 )
+visible = false
 light_color = Color( 0.898039, 0.784314, 0.403922, 1 )
 light_energy = 6.045
 light_specular = 2.95
