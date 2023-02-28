@@ -45,19 +45,19 @@ func import(source_file, save_path, options, platform_variants, gen_files):
 		for c in range(map.cols):
 			var coord = Vector2(c, r)
 			var pixel: Color = image.get_pixel(c, r)
-			if pixel.a == 0:
+			if pixel.a == 0.0:  # transparent
 				map.set_tile(coord, Map.BLOCK_TYPE.NONE)
-			elif pixel.v == 0:
+			elif pixel.v == 0.0:  # black
 				map.set_tile(coord, Map.BLOCK_TYPE.ROCK)
-			elif pixel.v == 1:
+			elif pixel.h == 0.0 and pixel.s == 0.0:  # white
 				map.set_tile(coord, Map.BLOCK_TYPE.BASE)
 			else:
-				if pixel.r > 0.3:
-					map.set_tile(coord, Map.BLOCK_TYPE.SOIL)
 				if pixel.b > 0.3:
 					map.set_tile(coord, Map.BLOCK_TYPE.POI)
-				if pixel.g > 0.3:
-					map.gold_zones.append(coord)
+				elif pixel.r > 0.3:
+					map.set_tile(coord, Map.BLOCK_TYPE.SOIL)
+					if pixel.g > 0.3:
+						map.gold_zones.append(coord)
 
 	image.unlock()
 
