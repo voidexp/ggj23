@@ -2,7 +2,15 @@ tool
 extends Resource
 class_name Map
 
-enum BLOCK_TYPE {NONE, SOIL, ROCK, GOLD, POWER_UP, POI}
+enum BLOCK_TYPE {
+	NONE,
+	SOIL,
+	ROCK,
+	GOLD,
+	POWER_UP,
+	POI,
+	BASE,
+}
 
 # Tiles that are valid pathfinding waypoints (but not necessarily walkable
 # through by the players).
@@ -10,7 +18,8 @@ const _WAYPOINT_BLOCKS = [
 	BLOCK_TYPE.NONE,
 	BLOCK_TYPE.GOLD,
 	BLOCK_TYPE.POWER_UP,
-	BLOCK_TYPE.POI
+	BLOCK_TYPE.POI,
+	BLOCK_TYPE.BASE,
 ]
 
 signal map_changed
@@ -18,7 +27,7 @@ signal map_changed
 export var cols: int setget __set_cols
 export var rows: int setget __set_rows
 
-var map: PoolByteArray
+var map: PoolByteArray setget __set_map
 var gold_zones: Array
 
 var __a_star
@@ -36,7 +45,7 @@ func _get_property_list():
 			name = "gold_zones",
 			type = TYPE_ARRAY,
 			usage = PROPERTY_USAGE_STORAGE
-		}
+		},
 	]
 
 func get_tile(coord: Vector2) -> int:
@@ -106,6 +115,11 @@ func __set_cols(c):
 
 func __set_rows(r):
 	set_size(cols, r)
+
+func __set_map(m):
+	for i in range(len(map)):
+		var coord = get_tile_coord(i)
+		__set_tile(coord, m[i])
 
 func __set_tile(coord: Vector2, type: int):
 	var idx = get_tile_index(coord)

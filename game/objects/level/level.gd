@@ -26,9 +26,6 @@ export(Array, PackedScene) var rock_blocks
 export(PackedScene) var gold_block
 export(PackedScene) var poi_block
 
-export var p1_base_coord: Vector2 setget __set_p1_base_coord
-export var p2_base_coord: Vector2 setget __set_p2_base_coord
-export var poi_coord: Vector2 setget __set_poi_coord
 export(Array, PackedScene) var power_ups
 export(PackedScene) var poi_power_up
 
@@ -43,6 +40,8 @@ var __rng: RandomNumberGenerator = null
 var __paths: Dictionary
 var __state: State
 var __gold_block_idx = -1
+var __player_coords = []
+var __poi_coord = null
 var __poi_power_up_node: Node  # currently spawned POI powerup
 var __poi_node: Node  # the POI itself
 var __ghost_blocks = []
@@ -61,10 +60,11 @@ func clear_soil(coord):
 
 # Get the locations of player bases as global world positions.
 func get_player_positions():
-	return [
-		to_global(__coord_to_position(p1_base_coord)),
-		to_global(__coord_to_position(p2_base_coord)),
-	]
+	var positions = []
+	for coord in __player_coords:
+		if map.get_tile(coord) == Map.BLOCK_TYPE.BASE:
+			positions.append(__coord_to_position(coord))
+	return positions
 
 # Map a global world position to the underlying tile coordinate.
 func world_to_coord(position):
@@ -148,37 +148,26 @@ func __set_map(m):
 
 	map = m
 
-	var coords = []
+	var sync_coords = []
 	for i in range(map.tiles_count()):
-		coords.append(map.get_tile_coord(i))
+		var coord = map.get_tile_coord(i)
+		sync_coords.append(coord)
 
-	call_deferred("__sync_blocks", coords)
+		match map.get_tile(coord):
+			Map.BLOCK_TYPE.BASE:
+				__player_coords.append(coord)
+			Map.BLOCK_TYPE.POI:
+				__poi_coord = coord
 
-func __set_p1_base_coord(coord: Vector2):
-	p1_base_coord = coord
-	if Engine.editor_hint:
-		update_gizmo()
-
-func __set_p2_base_coord(coord: Vector2):
-	p2_base_coord = coord
-	if Engine.editor_hint:
-		update_gizmo()
-
-func __set_poi_coord(coord: Vector2):
-	poi_coord = coord
-	if Engine.editor_hint:
-		update_gizmo()
+	call_deferred("__sync_blocks", sync_coords)
 
 func __init_players():
-	# clear the tiles where players spawn
-	map.set_tile(p1_base_coord, Map.BLOCK_TYPE.NONE)
-	map.set_tile(p2_base_coord, Map.BLOCK_TYPE.NONE)
-
-	__draw_debug_sphere(p1_base_coord)
-	__draw_debug_sphere(p2_base_coord)
+	for coord in __player_coords:
+		__draw_debug_sphere(coord)
 
 func __init_poi():
-	map.set_tile(poi_coord, Map.BLOCK_TYPE.POI)
+	if __poi_coord != null:
+		map.set_tile(__poi_coord, Map.BLOCK_TYPE.POI)
 
 func __delayed_spawn(coord, type, delay=-1):
 	var scene = __get_block_scene_by_type(type)
@@ -291,11 +280,6 @@ func __is_tile_spawnable(coord):
 	var type = map.get_tile(coord)
 	if not type in [Map.BLOCK_TYPE.SOIL, Map.BLOCK_TYPE.NONE]:
 		return false
-
-	for p_coord in [p1_base_coord, p2_base_coord, poi_coord]:
-		if coord == p_coord:
-			return false
-
 	return true
 
 func __sync_blocks(coords):
@@ -326,6 +310,10 @@ func __sync_blocks(coords):
 		# Spawn a new block, if needed
 		if type:
 			var scene = __get_block_scene_by_type(type)
+			if not scene:
+				push_warning("A scene is not defined for block type %s!" % type)
+				continue
+
 			var node = scene.instance()
 			add_child(node)
 			node.translate(__coord_to_position(coord))
@@ -387,9 +375,8 @@ func __update_state():
 
 	# For each player, clear up existing paths to the gold block and attempt to
 	# compute new ones.
-	var base_coords = [p1_base_coord, p2_base_coord]
-	for i in range(2):
-		var p_idx = map.get_tile_index(base_coords[i])
+	for i in range(len(__player_coords)):
+		var p_idx = map.get_tile_index(__player_coords[i])
 		__remove_path(p_idx)
 
 		# If there's gold, attempt to find a new to it from the given player.
@@ -472,5 +459,4 @@ func __get_block_scene_by_type(type:int) -> PackedScene:
 		Map.BLOCK_TYPE.POI:
 			return poi_block
 
-	push_warning("A scene is not defined for block type %s!" % type)
 	return null

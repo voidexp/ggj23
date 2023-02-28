@@ -17,9 +17,6 @@ soil_blocks = [ ExtResource( 3 ) ]
 rock_blocks = [ ExtResource( 4 ) ]
 gold_block = ExtResource( 5 )
 poi_block = ExtResource( 6 )
-p1_base_coord = Vector2( 1, 11 )
-p2_base_coord = Vector2( 21, 11 )
-poi_coord = Vector2( 11, 11 )
 power_ups = [ ExtResource( 8 ) ]
 poi_power_up = ExtResource( 2 )
 

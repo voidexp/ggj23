@@ -49,11 +49,15 @@ func import(source_file, save_path, options, platform_variants, gen_files):
 				map.set_tile(coord, Map.BLOCK_TYPE.NONE)
 			elif pixel.v == 0:
 				map.set_tile(coord, Map.BLOCK_TYPE.ROCK)
-			elif pixel.r > 0.3:
-				map.set_tile(coord, Map.BLOCK_TYPE.SOIL)
-
-			if pixel.g > 0.3:
-				map.gold_zones.append(coord)
+			elif pixel.v == 1:
+				map.set_tile(coord, Map.BLOCK_TYPE.BASE)
+			else:
+				if pixel.r > 0.3:
+					map.set_tile(coord, Map.BLOCK_TYPE.SOIL)
+				if pixel.b > 0.3:
+					map.set_tile(coord, Map.BLOCK_TYPE.POI)
+				if pixel.g > 0.3:
+					map.gold_zones.append(coord)
 
 	image.unlock()
 
