@@ -62,14 +62,10 @@ func redraw():
 
 	add_handles(handles, handle)
 
-	# Draw the boxes representing gold spawn areas
-	for rect in level.gold_spawn_zones:
-		if rect.has_no_area():
-			continue
-		var pos = level.coord_to_world(rect.get_center() - Vector2(size/2, size/2))
-		var rect_size = rect.size
-		if pos != null and rect_size.x < cols and rect_size.y < rows:
-			__draw_box(tertiary, pos, rect_size.x, 0.1, rect_size.y)
+	# Draw the boxes representing gold spawn tiles
+	for coord in map.gold_zones:
+		var pos = level.coord_to_world(coord)
+		__draw_box(tertiary, pos, 1, 0.1, 1)
 
 func get_handle_name(index):
 	if index == 2:

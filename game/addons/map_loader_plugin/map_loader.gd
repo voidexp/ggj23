@@ -41,14 +41,19 @@ func import(source_file, save_path, options, platform_variants, gen_files):
 	map.set_size(size.x, size.y)
 
 	image.lock()
-	for c in range(map.cols):
-		for r in range(map.rows):
+	for r in range(map.rows):
+		for c in range(map.cols):
 			var coord = Vector2(c, r)
 			var pixel: Color = image.get_pixel(c, r)
 			if pixel.a == 0:
 				map.set_tile(coord, Map.BLOCK_TYPE.NONE)
 			elif pixel.v == 0:
 				map.set_tile(coord, Map.BLOCK_TYPE.ROCK)
+			elif pixel.r > 0.3:
+				map.set_tile(coord, Map.BLOCK_TYPE.SOIL)
+
+			if pixel.g > 0.3:
+				map.gold_zones.append(coord)
 
 	image.unlock()
 

@@ -22,7 +22,6 @@ p2_base_coord = Vector2( 21, 11 )
 poi_coord = Vector2( 11, 11 )
 power_ups = [ ExtResource( 8 ) ]
 poi_power_up = ExtResource( 2 )
-gold_spawn_zones = [ Rect2( 8, 0, 7, 7 ), Rect2( 8, 16, 7, 7 ) ]
 
 [node name="Spawner" parent="." instance=ExtResource( 7 )]
 visible = false

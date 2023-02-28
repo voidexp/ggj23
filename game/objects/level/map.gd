@@ -19,16 +19,22 @@ export var cols: int setget __set_cols
 export var rows: int setget __set_rows
 
 var map: PoolByteArray
+var gold_zones: Array
 
 var __a_star
 
 func _get_property_list():
+	# explicitly define the internal property usage as storage only, without
+	# showing them up in the editor
 	return [
-		# explicitly define the `map` property usage for serialization only,
-		# without showing in the editor
 		{
 			name = "map",
 			type = TYPE_RAW_ARRAY,
+			usage = PROPERTY_USAGE_STORAGE
+		},
+		{
+			name = "gold_zones",
+			type = TYPE_ARRAY,
 			usage = PROPERTY_USAGE_STORAGE
 		}
 	]
@@ -90,6 +96,7 @@ func set_size(c, r):
 
 func _init():
 	map = PoolByteArray([])
+	gold_zones = []
 
 	if not Engine.editor_hint:
 		__a_star = AStar.new()
