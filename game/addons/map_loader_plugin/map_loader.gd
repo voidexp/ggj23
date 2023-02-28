@@ -23,6 +23,35 @@ func get_import_options(preset):
 	return {}
 
 func import(source_file, save_path, options, platform_variants, gen_files):
-	var res = Map.new()
-	res.set_size(23, 23)
-	return ResourceSaver.save("%s.%s" % [save_path, get_save_extension()], res)
+	var image_file = File.new()
+	var err = image_file.open(source_file, File.READ)
+	if err:
+		return err
+
+	var image_data = image_file.get_buffer(image_file.get_len())
+	image_file.close()
+
+	var image = Image.new()
+	err = image.load_png_from_buffer(image_data)
+	if err:
+		return err
+
+	var map = Map.new()
+	var size = image.get_size()
+	map.set_size(size.x, size.y)
+
+	image.lock()
+	for c in range(map.cols):
+		for r in range(map.rows):
+			var coord = Vector2(c, r)
+			var pixel: Color = image.get_pixel(c, r)
+			if pixel.a == 0:
+				map.set_tile(coord, Map.BLOCK_TYPE.NONE)
+			elif pixel.v == 0:
+				map.set_tile(coord, Map.BLOCK_TYPE.ROCK)
+
+	image.unlock()
+
+	print("Loaded %dx%d map from %s" % [size.x, size.y, source_file])
+
+	return ResourceSaver.save("%s.%s" % [save_path, get_save_extension()], map)

@@ -140,6 +140,7 @@ func _physics_process(_delta):
 			block.collisions_enabled = true
 
 func __set_map(m):
+	assert(m is Map, "`map` property should be set to Map resource!")
 	if m != map:
 		if map:
 			map.disconnect("map_changed", self, "__sync_blocks")

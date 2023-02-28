@@ -79,7 +79,8 @@ func set_size(c, r):
 	cols = c
 	rows = r
 	map.resize(rows * cols)
-	__populate()
+	for i in range(rows * cols):
+		map[i] = BLOCK_TYPE.NONE
 
 	var coords = []
 	for i in range(cols * rows):
@@ -98,18 +99,6 @@ func __set_cols(c):
 
 func __set_rows(r):
 	set_size(cols, r)
-
-func __populate():
-	var coords = []
-	for r in range(rows):
-		for c in range(cols):
-			var coord = Vector2(c, r)
-			coords.append(coord)
-
-			if (r % 2 and c % 2) or c == 0 or r == 0 or c == cols - 1 or r == rows - 1:
-				__set_tile(coord, BLOCK_TYPE.ROCK)
-			else:
-				__set_tile(coord, BLOCK_TYPE.SOIL)
 
 func __set_tile(coord: Vector2, type: int):
 	var idx = get_tile_index(coord)
