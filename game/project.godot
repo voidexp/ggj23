@@ -29,7 +29,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/level_gizmo_plugin/level_gizmo.gd"
 }, {
-"base": "Object",
+"base": "Resource",
 "class": "Map",
 "language": "GDScript",
 "path": "res://objects/level/map.gd"
@@ -73,7 +73,7 @@ window/size/height=1080
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/level_gizmo_plugin/plugin.cfg", "res://addons/power_up_inspector_plugin/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/level_gizmo_plugin/plugin.cfg", "res://addons/map_loader_plugin/plugin.cfg", "res://addons/power_up_inspector_plugin/plugin.cfg" )
 
 [global]
 

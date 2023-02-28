@@ -23,9 +23,12 @@ func redraw():
 	clear()
 
 	var level = get_spatial_node() as Level
-	var cols = level.cols
-	var rows = level.rows
-	var map = level.get_map() as Map
+	var map = level.map as Map
+	if not map or map.cols == 0 or map.rows == 0:
+		return
+
+	var cols = map.cols
+	var rows = map.rows
 	var size = 1.0
 	var primary = get_plugin().get_material("primary", self)
 	var secondary = get_plugin().get_material("secondary", self)
@@ -50,6 +53,8 @@ func redraw():
 	var handles = []
 	for i in range(len(coords)):
 		var pos = level.coord_to_world(coords[i])
+		if pos == null:
+			continue
 		pos = level.to_local(level.coord_to_world(coords[i]))
 		handles.append(pos)
 		_models[i].position = pos

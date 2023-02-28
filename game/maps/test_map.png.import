@@ -1,0 +1,13 @@
+[remap]
+
+importer="ggj23.map_loader"
+type="Resource"
+path="res://.import/test_map.png-620fd3949e5bc4130f541ca1176e7f14.res"
+
+[deps]
+
+source_file="res://maps/test_map.png"
+dest_files=[ "res://.import/test_map.png-620fd3949e5bc4130f541ca1176e7f14.res" ]
+
+[params]
+

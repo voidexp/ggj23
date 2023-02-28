@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://objects/level/level.gd" type="Script" id=1]
 [ext_resource path="res://objects/power_ups/ultimate_charge.tscn" type="PackedScene" id=2]
@@ -8,15 +8,15 @@
 [ext_resource path="res://objects/level/fire_pit/fire_pit.tscn" type="PackedScene" id=6]
 [ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
 [ext_resource path="res://objects/power_ups/speed_boost.tscn" type="PackedScene" id=8]
+[ext_resource path="res://maps/test_map.png" type="Resource" id=9]
 
 [node name="Level" type="Spatial"]
 script = ExtResource( 1 )
+map = ExtResource( 9 )
 soil_blocks = [ ExtResource( 3 ) ]
 rock_blocks = [ ExtResource( 4 ) ]
 gold_block = ExtResource( 5 )
 poi_block = ExtResource( 6 )
-cols = 23
-rows = 23
 p1_base_coord = Vector2( 1, 11 )
 p2_base_coord = Vector2( 21, 11 )
 poi_coord = Vector2( 11, 11 )
