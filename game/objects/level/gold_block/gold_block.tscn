@@ -1,24 +1,106 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://objects/level/block.tscn" type="PackedScene" id=1]
 [ext_resource path="res://objects/level/gold_block/gold_block.gd" type="Script" id=2]
 [ext_resource path="res://components/health.gd" type="Script" id=3]
 [ext_resource path="res://traits/drainable.gd" type="Script" id=4]
 [ext_resource path="res://objects/fountain/beertain.tscn" type="PackedScene" id=5]
+[ext_resource path="res://objects/level/crystal/big_crystal.tscn" type="PackedScene" id=6]
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("SpotLight:light_energy")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 11.994 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("SpotLight:spot_angle")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 12.19 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("SpotLight:light_color")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.188235, 0.8, 0.776471, 1 ) ]
+}
+
+[sub_resource type="Animation" id=1]
+resource_name = "loop"
+length = 4.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("SpotLight:light_energy")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 10.071, 10.533, 10.071 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("SpotLight:spot_angle")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 7.85928, 10.46, 7.85928 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("SpotLight:light_color")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.188235, 0.8, 0.776471, 1 ), Color( 0.627451, 0.823529, 0.815686, 1 ), Color( 0.188235, 0.8, 0.776471, 1 ) ]
+}
 
 [node name="GoldBlock" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
 [node name="SpotLight" type="SpotLight" parent="." index="1"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.90113, 0 )
-light_color = Color( 0.92549, 0.85098, 0.0627451, 1 )
-light_energy = 16.0
+light_color = Color( 0.188235, 0.8, 0.776471, 1 )
+light_energy = 11.994
 light_indirect_energy = 16.0
 light_specular = 3.527
 light_bake_mode = 2
 spot_range = 9.105
 spot_attenuation = 0.901251
-spot_angle = 6.0
+spot_angle = 12.19
+spot_angle_attenuation = 2.0
 
 [node name="Drainable" type="Node" parent="." index="2"]
 script = ExtResource( 4 )
@@ -39,5 +121,13 @@ margin_bottom = 6.48
 valign = 1
 
 [node name="Spatial" parent="." index="5" instance=ExtResource( 5 )]
+visible = false
+
+[node name="big_crystal" parent="." index="6" instance=ExtResource( 6 )]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="7"]
+autoplay = "loop"
+anims/RESET = SubResource( 2 )
+anims/loop = SubResource( 1 )
 
 [connection signal="health_changed" from="Health" to="." method="_on_health_changed"]
