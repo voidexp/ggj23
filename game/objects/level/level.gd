@@ -59,7 +59,7 @@ func clear_soil(coord):
 	map.set_tile(coord, Map.BLOCK_TYPE.NONE)
 
 # Get the locations of player bases as global world positions.
-func get_player_positions():
+func get_player_base_positions():
 	var positions = []
 	for coord in __player_coords:
 		if map.get_tile(coord) == Map.BLOCK_TYPE.BASE:

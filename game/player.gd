@@ -8,7 +8,7 @@ const Map = preload("res://objects/level/map.gd")
 export var color: Color
 export var player_seat: int = 1
 export var speed: float = 3.0
-export var pick_speed := 1.0
+export var pick_speed := 2.0
 export var roar_cooldown := 3.0
 export var roar_expansion := 5.0
 export var roar_radius := 3
