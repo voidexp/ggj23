@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://objects/level/rock_block/rock_floor_text.jpg" type="Texture" id=1]
+[ext_resource path="res://objects/level/Sctalatites/stalactite.fbx" type="PackedScene" id=2]
+[ext_resource path="res://objects/level/rock_block/rock_floor_normal.png" type="Texture" id=3]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_texture = ExtResource( 1 )
+normal_enabled = true
+normal_scale = 16.0
+normal_texture = ExtResource( 3 )
+
+[node name="stalactite" instance=ExtResource( 2 )]
+
+[node name="stalactite" parent="RootNode" index="0"]
+transform = Transform( 0.000606479, 0, 0.00998159, 0, 0.01, 0, -0.00998159, 0, 0.000606479, 0.520914, 0, -0.313373 )
+material/0 = SubResource( 1 )
