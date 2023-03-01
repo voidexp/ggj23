@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://objects/level/soil_block/soils.fbx" type="PackedScene" id=1]
+[ext_resource path="res://objects/level/soil_block/soil_text.png" type="Texture" id=2]
+[ext_resource path="res://objects/level/soil_block/soil_cuted_text.png" type="Texture" id=3]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 1, 0, 0, 1 )
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 2 )
+
+[node name="soils" instance=ExtResource( 1 )]
+transform = Transform( 1, 0.000624737, -0.000777894, -0.00062416, 1, 0.000735202, 0.000778357, -0.000734712, 0.999999, 0, 0, 0 )
+
+[node name="soil_inner" parent="RootNode" index="0"]
+material/0 = SubResource( 1 )
+
+[node name="soil_left" parent="RootNode" index="1"]
+visible = false
+material/0 = SubResource( 1 )
+material/1 = SubResource( 2 )
+
+[node name="soil_left_bot" parent="RootNode" index="2"]
+visible = false
+material/0 = SubResource( 1 )
+material/1 = SubResource( 2 )
+
+[node name="soil_left_bot_top" parent="RootNode" index="3"]
+visible = false
+material/0 = SubResource( 1 )
+material/1 = SubResource( 2 )
+
+[node name="soil_left_bot_right" parent="RootNode" index="4"]
+visible = false
+material/0 = SubResource( 1 )
+material/1 = SubResource( 2 )
+
+[node name="soil_left_top" parent="RootNode" index="5"]
+visible = false
+material/0 = SubResource( 2 )
+material/1 = SubResource( 1 )
+
+[node name="soil_left_top_right" parent="RootNode" index="6"]
+transform = Transform( 0.01, -2.03393e-13, -9.09495e-13, 1.89626e-13, 0.01, 0, 0, 0, 0.01, -1.93268e-12, 0.500025, 0 )
+visible = false
+material/0 = SubResource( 2 )
+material/1 = SubResource( 1 )
+
+[node name="soil_left_right" parent="RootNode" index="7"]
+transform = Transform( 0.00999999, -1.98064e-13, -8.18545e-12, -2.58904e-13, 0.00999999, 0, 0, 0, 0.00999998, 0.00163344, 0.495771, -0.00429462 )
+visible = false
+material/0 = SubResource( 3 )
+material/1 = SubResource( 2 )
+
+[node name="soil_left_top_right_bot" parent="RootNode" index="8"]
+visible = false
+material/0 = SubResource( 2 )
+material/1 = SubResource( 3 )

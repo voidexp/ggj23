@@ -374,7 +374,7 @@ func __reposition_mark(offset:Vector2):
 	var coord = level.world_to_coord(_mark.global_transform.origin)
 	coord += offset
 
-	var tile = level.get_map().get_tile(coord)
+	var tile = level.map.get_tile(coord)
 	if tile != -1:
 		var pos = level.coord_to_world(coord)
 		if pos.distance_to(global_transform.origin) <= detonator_max_distance:

@@ -1,7 +1,7 @@
 extends EditorSpatialGizmo
 class_name LevelGizmo
 
-class Model extends Object:
+class Model extends Reference:
 	var skel: Skeleton
 	var mesh: Mesh
 	var skin: SkinReference
@@ -17,28 +17,39 @@ class Model extends Object:
 
 var _pawn_scene: PackedScene
 var _poi_scene: PackedScene
-var _models: Array
+var _models: Array = []
 
 func redraw():
 	clear()
 
+	for model in _models:
+		__destroy_model(model)
+	_models.clear()
+
 	var level = get_spatial_node() as Level
-	var cols = level.cols
-	var rows = level.rows
-	var map = level.get_map() as Map
+	var map = level.map as Map
+	if not map or map.cols == 0 or map.rows == 0:
+		return
+
+	var cols = map.cols
+	var rows = map.rows
 	var size = 1.0
 	var primary = get_plugin().get_material("primary", self)
 	var secondary = get_plugin().get_material("secondary", self)
 	var tertiary = get_plugin().get_material("tertiary", self)
 	var handle = get_plugin().get_material("handle", self)
+	var poi_coords = {}
 
 	# Draw the boxes representing rock blocks
 	for r in range(rows):
 		for c in range(cols):
-			var type = map.get_tile(Vector2(c, r))
+			var coord = Vector2(c, r)
+			var type = map.get_tile(coord)
 			if type == Map.BLOCK_TYPE.ROCK:
-				var pos = level.to_local(level.coord_to_world(Vector2(c, r))) + Vector3(0.0, 0.5, 0.0)
+				var pos = level.to_local(level.coord_to_world(coord)) + Vector3(0.0, 0.5, 0.0)
 				__draw_box(primary, pos, size, size, size)
+			if type in [Map.BLOCK_TYPE.POI, Map.BLOCK_TYPE.BASE]:
+				poi_coords[coord] = type
 
 	# Add a collision box for the whole level, so it could be picked with mouse
 	var collision_box = CubeMesh.new()
@@ -46,25 +57,25 @@ func redraw():
 	add_collision_triangles(collision_box.generate_triangle_mesh())
 
 	# Add handles for player base positions and POI
-	var coords = [level.p1_base_coord, level.p2_base_coord, level.poi_coord]
-	var handles = []
-	for i in range(len(coords)):
-		var pos = level.coord_to_world(coords[i])
-		pos = level.to_local(level.coord_to_world(coords[i]))
-		handles.append(pos)
-		_models[i].position = pos
-		_models[i].draw(self, secondary)
-
-	add_handles(handles, handle)
-
-	# Draw the boxes representing gold spawn areas
-	for rect in level.gold_spawn_zones:
-		if rect.has_no_area():
+	for coord in poi_coords:
+		var pos = level.coord_to_world(coord)
+		if pos == null:
 			continue
-		var pos = level.coord_to_world(rect.get_center() - Vector2(size/2, size/2))
-		var rect_size = rect.size
-		if pos != null and rect_size.x < cols and rect_size.y < rows:
-			__draw_box(tertiary, pos, rect_size.x, 0.1, rect_size.y)
+		var scene = null
+		match poi_coords[coord]:
+			Map.BLOCK_TYPE.POI:
+				scene = _poi_scene
+			Map.BLOCK_TYPE.BASE:
+				scene = _pawn_scene
+		var model = __create_model(scene)
+		model.position = pos
+		model.draw(self, secondary)
+		_models.append(model)
+
+	# Draw the boxes representing gold spawn tiles
+	for coord in map.gold_zones:
+		var pos = level.coord_to_world(coord)
+		__draw_box(tertiary, pos, 1, 0.1, 1)
 
 func get_handle_name(index):
 	if index == 2:
@@ -91,11 +102,6 @@ func commit_handle(index, restore, cancel=true):
 func _init():
 	_pawn_scene = load("res://addons/level_gizmo_plugin/pawn.tscn") as PackedScene
 	_poi_scene = load("res://addons/level_gizmo_plugin/pyramid.tscn") as PackedScene
-	_models = [
-		__create_model(_pawn_scene),
-		__create_model(_pawn_scene),
-		__create_model(_poi_scene),
-	]
 
 func __create_model(res:PackedScene):
 	var model = Model.new()
@@ -105,6 +111,11 @@ func __create_model(res:PackedScene):
 	model.mesh = mesh_node.mesh
 	model.skin = node.register_skin(mesh_node.skin)
 	return model
+
+func __destroy_model(model: Model):
+	model.skel.queue_free()
+	model.skin.unreference()
+	model.unreference()
 
 func __set_coord(index, coord):
 	var level = get_spatial_node() as Level
