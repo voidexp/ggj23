@@ -130,11 +130,11 @@ transform = Transform( -0.968528, 0.187739, -0.163421, -0.147901, 0.0939882, 0.9
 
 [node name="Gate1" parent="." instance=ExtResource( 5 )]
 transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -13.7903, 0, 0.730324 )
-score_color = Color( 0.933333, 0.0509804, 0.0509804, 1 )
+score_color = Color( 0.0509804, 0.25098, 0.933333, 1 )
 
 [node name="Gate2" parent="." instance=ExtResource( 5 )]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 13.79, 0, 0.73 )
-score_color = Color( 0.0392157, 0.188235, 1, 1 )
+score_color = Color( 1, 0.152941, 0.0392157, 1 )
 
 [node name="StaticBody" type="StaticBody" parent="."]
 transform = Transform( -0.591915, 0, 0.806001, 0, 1, 0, -0.806001, 0, -0.591915, -13.1078, -0.00906563, 0.977494 )
