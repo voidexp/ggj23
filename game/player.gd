@@ -13,8 +13,6 @@ export var roar_cooldown := 3.0
 export var roar_expansion := 5.0
 export var roar_radius := 3
 export var roar_delay := 1.5
-export var detonator_max_distance := 5.0
-export var detonator_radius := 3.0
 export var detonator_counts := 0
 
 # Scene to use as a mark for the ultimate positioning.
@@ -29,8 +27,6 @@ const BOOSTABLE_PROPERTIES := {
 	"roar_expansion": TYPE_REAL,
 	"roar_radius": TYPE_REAL,
 	"roar_delay": TYPE_REAL,
-	"detonator_max_distance": TYPE_REAL,
-	"detonator_radius": TYPE_REAL,
 	"detonator_counts": TYPE_INT,
 }
 
