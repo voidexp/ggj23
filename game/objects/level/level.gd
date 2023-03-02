@@ -50,13 +50,13 @@ var __  # trash var to suppress connect() warnings; FIXME
 
 # Spawn a soil block.
 func spawn_soil(coord):
-	if __is_tile_spawnable(coord):
+	if __is_tile_spawnable(coord) and map.get_tile(coord) == Map.BLOCK_TYPE.NONE:
 		__delayed_spawn(coord, Map.BLOCK_TYPE.SOIL)
 
 # Clear a soil block.
 func clear_soil(coord):
-	assert(map.get_tile(coord) == Map.BLOCK_TYPE.SOIL)
-	map.set_tile(coord, Map.BLOCK_TYPE.NONE)
+	if __is_tile_spawnable(coord) and map.get_tile(coord) == Map.BLOCK_TYPE.SOIL:
+		map.set_tile(coord, Map.BLOCK_TYPE.NONE)
 
 # Get the locations of player bases as global world positions.
 func get_player_base_positions():
