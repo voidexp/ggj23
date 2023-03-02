@@ -354,6 +354,9 @@ func __sync_blocks(coords):
 				Map.BLOCK_TYPE.POI:
 					__poi_node = node
 
+				Map.BLOCK_TYPE.POWER_UP:
+					__ = node.connect("on_pick_up", map, "set_tile", [coord, Map.BLOCK_TYPE.NONE])
+
 	# trigger state updates
 	__update_state()
 
