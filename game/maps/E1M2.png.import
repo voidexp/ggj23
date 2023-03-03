@@ -1,0 +1,13 @@
+[remap]
+
+importer="ggj23.map_loader"
+type="Resource"
+path="res://.import/E1M2.png-58f72aa462816fa84ebd8f5e0e2f1a69.res"
+
+[deps]
+
+source_file="res://maps/E1M2.png"
+dest_files=[ "res://.import/E1M2.png-58f72aa462816fa84ebd8f5e0e2f1a69.res" ]
+
+[params]
+

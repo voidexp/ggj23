@@ -8,7 +8,7 @@
 [ext_resource path="res://objects/level/fire_pit/fire_pit.tscn" type="PackedScene" id=6]
 [ext_resource path="res://fx/spawner.tscn" type="PackedScene" id=7]
 [ext_resource path="res://objects/power_ups/speed_boost.tscn" type="PackedScene" id=8]
-[ext_resource path="res://maps/test_map.png" type="Resource" id=9]
+[ext_resource path="res://maps/E1M2.png" type="Resource" id=9]
 
 [node name="Level" type="Spatial"]
 script = ExtResource( 1 )
